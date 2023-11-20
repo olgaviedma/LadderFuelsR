@@ -1,0 +1,170 @@
+#' Plot of tree profiles with the canopy base height (CBH) based on the breaking point method
+#' @description This function plots the canopy base height (CBH) based on breaking point over the cummulative LAD values and gives the LAD percentage below and above that breaking point
+#' @usage get_plots_cumm(LAD_profiles, cum_LAD_metrics)
+#' @param LAD_profiles original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function from leafR package).
+#' An object of the class text
+#' @param cum_LAD_metrics tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).
+#' An object of the class text
+#' @return A plot of the CBH and LAD percentage below and above the CBH
+#' @author Olga Viedma.
+#'
+#' @examples
+#' ## Not run:
+#' library(ggplot2)
+#' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
+#' data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
+#' LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
+#' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
+#'
+#' # Tree metrics derived from get_cum_break() function
+#' cum_LAD_metrics_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "8_cbh_breaking_point_lad.txt")
+#' cum_LAD_metrics <- read.table(cum_LAD_metrics_path, sep = "\t", header = TRUE)
+#' cum_LAD_metrics$treeID <- factor(cum_LAD_metrics$treeID)
+#'
+#' # Generate cumulative LAD plots
+#' plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cum_LAD_metrics)
+#'
+#' # Save plots for each tree
+#' for (name in names(plots_trees_cumlad)) {
+#'   plots <- plots_trees_cumlad[[name]]
+#'
+#'   if (!is.null(plots)) {
+#'     print(paste("Saving plot for tree:", name))
+#'     ggsave(file.path(system.file("extdata", package = "LadderFuelsR"),  paste0( name, "_cumm_Hcbh", ".tiff")), plot = plots)
+#'   }}
+#'
+#' ## End(Not run)
+#'
+#' @export get_plots_cumm
+#' @importFrom ggplot2 ggplot
+#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom magrittr %>%
+#' @importFrom SSBtools RbindAll
+#' @importFrom gdata startsWith
+#' @include gap_fbh.R
+#' @include distances_calculation.R
+#' @include depths_calculation.R
+#' @include corrected_base_heights.R
+#' @include corrected_depth.R
+#' @include corrected_distances.R
+#' @include cummLAD_breaks_metrics.R
+get_plots_cumm <- function(LAD_profiles, cum_LAD_metrics) {
+
+  df_orig<- LAD_profiles
+  df_effective1 <- cum_LAD_metrics
+
+  #  Ensure treeID columns are factors
+  df_orig$treeID <- factor(df_orig$treeID)
+  df_effective1$treeID <- factor(df_effective1$treeID)
+
+  #Remove duplicates and columns with all NA values
+  df_effective1 <- df_effective1 %>% distinct(treeID, .keep_all = TRUE)
+
+  df_effective1 <- df_effective1[, !apply(is.na(df_effective1), 2, all)]
+
+  df_effective1$treeID <-factor(df_effective1$treeID)
+  trees_name1<- as.character(df_effective1$treeID)
+  trees_name2<- factor(unique(trees_name1))
+
+  #Print the number of unique trees
+  #print(paste("Number of unique trees: ", length(trees_name2)))
+
+  #Initialize the list for the plots with annotations
+  plot_with_annotations_list <- list()
+
+  for (i in levels(trees_name2)) {
+
+    #  Filter data for each tree
+    tree_data <- df_orig[df_orig$treeID == i, ]
+    df_effective1_tree <- df_effective1[df_effective1$treeID == i, ]
+
+    #  Print the tree being processed
+    #print(paste("Processing tree: ", i))
+
+    height <- tree_data$height
+    lad <- tree_data$lad
+
+    min_y <- min(tree_data$lad, na.rm = TRUE)
+    max_y <- max(tree_data$lad, na.rm = TRUE)
+
+
+    if (nrow(df_effective1_tree) > 0 && any(!is.na(df_effective1_tree$Hcbh_bp))) {
+
+      Hcbh_bp <- as.numeric(as.character(df_effective1_tree$Hcbh_bp))
+      Hcbh_bp <- round(Hcbh_bp, 1)
+
+      hcbh_cols <- df_effective1_tree[, grepl("^Hcbh_bp", names(df_effective1_tree))]
+      # columns_to_check <- names(hcbh_cols)[!(names(hcbh_cols) %in% c("Hcbh1", "Hcbh_bp"))]
+      is_only_Hcbh <- sum(!is.na(as.numeric(unlist(hcbh_cols)))) >=1
+
+
+      #print(paste("is_only_Hcbh for tree ", i, ": ", is_only_Hcbh))
+
+      if (is_only_Hcbh) {
+        bp2a <- ggplot()  #  Initialize bp2 inside the loop
+
+        tryCatch({
+          bp2a <- bp2a +
+            geom_line(data = tree_data, aes(x = height, y = lad), color = "black", size = 0.5) +
+            geom_point(data = tree_data, aes(x = height, y = lad), color = "black", size = 1.5)
+
+          line_data_bp <- data.frame(x = c(Hcbh_bp, Hcbh_bp), y = c(min_y, max_y))
+          bp2a <- bp2a +
+            geom_path(data = line_data_bp, aes(x = x, y = y), color = "dark green", linewidth = 1, linetype = "solid", na.rm = TRUE)
+
+
+          bp2a <- bp2a +
+            theme_bw() +
+            theme(
+              axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 1, color = "black", size = 14, family = "sans"),
+              axis.text.y = element_text(angle = 0, vjust = 0.5, hjust = 1, color = "black", size = 14, family = "sans"),
+              axis.title.x = element_text(size = 14, family = "sans", color = "black", face = "bold"),
+              axis.title.y = element_text(size = 14, family = "sans", color = "black", face = "bold")
+            )
+
+          bp2a <- bp2a + xlab("Height") +
+            ylab("LAD") +
+            ggtitle(paste0("tree_", i)) +
+            coord_flip()
+
+          below_hcbhbp <- as.numeric(as.character(df_effective1_tree$below_hcbhbp))
+          above_hcbhbp <- as.numeric(as.character(df_effective1_tree$above_hcbhbp))
+          label_below <- round(below_hcbhbp, 1)
+          label_above <- round(above_hcbhbp, 1)
+
+          below_hcbhbp1 <- as.character(label_below)
+          above_hcbhbp1 <- as.character(label_above)
+
+          Hcbh_bp1 <- as.numeric(as.character(df_effective1_tree$Hcbh_bp))
+          label_cbh_bp <- round(Hcbh_bp1, 1)
+          label_cbh_bp1<- as.character(label_cbh_bp)
+
+
+
+          bp2_annotations1 <- bp2a +
+            geom_text(data = data.frame(Hcbh_bp = Hcbh_bp, min_y = min_y, below_hcbhbp1 = below_hcbhbp1),
+                      aes(x = Hcbh_bp, y = min_y, label = paste0(below_hcbhbp1,"","%")),
+                      color = "black", hjust = -1, vjust = 2, size = 6) +
+            geom_text(data = data.frame(Hcbh_bp = Hcbh_bp, max_y = max_y, above_hcbhbp1 = above_hcbhbp1),
+                      aes(x = Hcbh_bp, y = max_y, label = paste0(above_hcbhbp1,"","%")),
+                      color = "black", hjust = 1, vjust = -1, size = 6) +
+            geom_text(data = data.frame(Hcbh_bp = Hcbh_bp, max_y = max_y, label_cbh_bp1 = label_cbh_bp1),
+                      aes(x = Hcbh_bp, y = max_y, label =  paste0("CBH_bp ="," ",label_cbh_bp1," m")),
+                      color = "black", hjust = 1, vjust = 2, size = 6)
+
+
+          plot_with_annotations_list[[i]] <- bp2_annotations1  #  Store plot with annotations separately
+          #print(paste("Plot for tree ", i, " created successfully"))
+
+        }, error = function(e) {
+          #print(paste("Error occurred for tree:", i))
+          #print(e)
+        })
+      }
+    }
+  }
+
+  return(plot_with_annotations_list)
+}
+
+

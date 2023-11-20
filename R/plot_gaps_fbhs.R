@@ -1,0 +1,133 @@
+#'
+#' Plots of tree profiles with gaps and fuel layers base height (fbh)
+#' @description This function plots gaps and fuel layers base height (fbh) in the vertical tree profile (VTP).
+#' @usage get_plots_gap_fbh (LAD_profiles,depth_metrics)
+#' @param LAD_profiles original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
+#' An object of the class text
+#' @param depth_metrics tree metrics with gaps (distances), fuel base heights and depths (output of [get_depths()] function).
+#' An object of the class text
+#' @return A plot drawing by lines the height of gaps and fuel layers bases in tiff format.
+#' @author Olga Viedma.
+#'
+#' @examples
+#' ## Not run:
+#' library(ggplot2)
+#'
+#' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
+#' data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
+#' LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
+#' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
+#'
+#' # Tree metrics derived from get_depths() function
+#' depth_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "3_depth_metrics.txt")
+#' depth_metrics <- read.table(depth_path, sep = "\t", header = TRUE)
+#' depth_metrics$treeID <- factor(depth_metrics$treeID)
+#'
+#' # Generate plots for gaps and fbhs
+#' plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
+#'
+#' # Save plots for each tree
+#' for (name in names(plots_gaps_fbhs)) {
+#'   print(plots_gaps_fbhs[[name]])  # print the plot
+#'   ggsave(file.path(system.file("extdata", package = "LadderFuelsR"),  paste0( name, "_gap_fbh", ".tiff")), plot = plots_gaps_fbhs[[name]])
+#' }
+#' ## End(Not run)
+#'
+#' @export get_plots_gap_fbh
+#' @importFrom ggplot2 ggplot
+#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom magrittr %>%
+#' @include gap_fbh.R
+#' @include distances_calculation.R
+#' @include depths_calculation.R
+get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
+
+  df_orig<-LAD_profiles
+
+  df_orig$treeID<-factor(df_orig$treeID)
+  trees_name1a<- as.character(df_orig$treeID)
+  trees_name3<- factor(unique(trees_name1a))
+
+  df_metrics<- depth_metrics
+
+
+  plot_list <- list()
+
+  for (i in levels(trees_name3)){
+
+    tree_data <- df_orig %>%
+      filter(treeID == i ) %>%
+      mutate(lad = as.numeric(lad)) %>%
+      filter(!is.na(lad))
+
+    height<-df_orig$height
+    lad<-df_orig$lad
+
+    df_metrics11<-df_metrics %>% filter(treeID == i )
+
+    CBH_1<-as.numeric(as.character(df_metrics11$cbh1))
+    CBH_2<-as.numeric(as.character(df_metrics11$cbh2))
+    CBH_3<-as.numeric(as.character(df_metrics11$cbh3))
+    CBH_4<-as.numeric(as.character(df_metrics11$cbh4))
+    CBH_5<-as.numeric(as.character(df_metrics11$cbh5))
+    CBH_6<-as.numeric(as.character(df_metrics11$cbh6))
+    CBH_7<-as.numeric(as.character(df_metrics11$cbh7))
+    CBH_8<-as.numeric(as.character(df_metrics11$cbh8))
+    CBH_9<-as.numeric(as.character(df_metrics11$cbh9))
+
+    GAP_1<-as.numeric(as.character(df_metrics11$gap1))
+    GAP_2<-as.numeric(as.character(df_metrics11$gap2))
+    GAP_3<-as.numeric(as.character(df_metrics11$gap3))
+    GAP_4<-as.numeric(as.character(df_metrics11$gap4))
+    GAP_5<-as.numeric(as.character(df_metrics11$gap5))
+    GAP_6<-as.numeric(as.character(df_metrics11$gap6))
+    GAP_7<-as.numeric(as.character(df_metrics11$gap7))
+    GAP_8<-as.numeric(as.character(df_metrics11$gap8))
+    GAP_9<-as.numeric(as.character(df_metrics11$gap9))
+
+
+
+    bp <- ggplot(tree_data, aes(x = height)) +
+      geom_line(aes(y = lad), color = "black", linewidth = 1.1) +
+      geom_point(aes(y = lad), color = "black", size = 2.5) +
+
+      geom_vline(xintercept = GAP_1 , linetype="dotted", color = "red", linewidth=1) +
+      geom_vline(xintercept = GAP_2, linetype="dotted", color = "red", linewidth=1) +
+      geom_vline(xintercept = GAP_3, linetype="dotted", color = "red", linewidth=1) +
+      geom_vline(xintercept = GAP_4, linetype="dotted", color = "red", linewidth=1) +
+      geom_vline(xintercept = GAP_5, linetype="dotted", color = "red", linewidth=1) +
+      geom_vline(xintercept = GAP_6, linetype="dotted", color = "red", linewidth=1) +
+      geom_vline(xintercept = GAP_7, linetype="dotted", color = "red", linewidth=1) +
+      geom_vline(xintercept = GAP_8, linetype="dotted", color = "red", linewidth=1) +
+      geom_vline(xintercept = GAP_9, linetype="dotted", color = "red", linewidth=1) +
+
+
+      geom_vline(xintercept = CBH_1, color="dark green", linetype="twodash", linewidth=1) +
+      geom_vline(xintercept = CBH_2, color="dark green", linetype="twodash", linewidth=1) +
+      geom_vline(xintercept = CBH_3, color="dark green", linetype="twodash", linewidth=1) +
+      geom_vline(xintercept = CBH_4, color="dark green", linetype="twodash", linewidth=1) +
+      geom_vline(xintercept = CBH_5, color="dark green", linetype="twodash", linewidth=1) +
+      geom_vline(xintercept = CBH_6, color="dark green", linetype="twodash", linewidth=1) +
+      geom_vline(xintercept = CBH_7, color="dark green", linetype="twodash", linewidth=1) +
+      geom_vline(xintercept = CBH_8, color="dark green", linetype="twodash", linewidth=1) +
+      geom_vline(xintercept = CBH_9, color="dark green", linetype="twodash", linewidth=1) +
+
+      ggtitle(paste0("tree_", i)) +
+
+      theme_bw() +
+      coord_flip() +
+      theme(axis.title.x=element_text(size=14),    # Adjust font size of x-axis label here
+            axis.title.y=element_text(size=14),    # Adjust font size of y-axis label here
+            axis.text.x = element_text(size = 14),   # Size for x axis text
+            axis.text.y = element_text(size = 14))
+
+    plot_list[[i]] <- bp
+    #print(paste("Plot for tree ", i, " created successfully"))
+  }
+  #dev.off()
+
+  return(plot_list)
+}
+
+
+
