@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
   warning = FALSE,
   cache = TRUE)
 knitr::opts_knit$set(root.dir = file.path(system.file("extdata", package = "LadderFuelsR")))
-knitr::include_graphics(file.path(system.file("extdata", package = "LadderFuelsR"), "Profile1.jpg"))
+knitr::include_graphics(file.path(system.file("inst/extdata", package = "LadderFuelsR"), "Profile1.jpg"))
 
 ```
 
