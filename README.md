@@ -1113,7 +1113,7 @@ ggplot() +
 ![](https://github.com/carlos-alberto-silva/rGEDI/blob/master/readme/fig3.png)
 
 # Acknowledgements
-We gratefully acknowledge funding from XXXX, Carlos Silva was supported by the Carbon Monitoring System funding (CMS, grant 22-CMS22-0015). 
+We gratefully acknowledge funding from XXXX, Carlos Silva was supported by the NASA's Carbon Monitoring System funding (CMS, grant 22-CMS22-0015). 
 
 # Reporting Issues 
 Please report any issue regarding the LadderFuelsR package to Dr. Olga Viedma (olga.viedma@uclm.es)
