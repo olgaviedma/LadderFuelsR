@@ -1,4 +1,4 @@
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/readme/cover.png)<br/>
+![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/cover.png)<br/>
 
 [![CRAN](https://www.r-pkg.org/badges/version/LadderFuelsR)](https://cran.r-project.org/package=LadderFuelsR)
 ![Github](https://img.shields.io/badge/Github-0.0.1-green.svg)
@@ -445,7 +445,7 @@ write.table(lidar_lai_list,file =paste(stats_out, "/","alltrees_LAI_profile_voxe
 write.table(understory_lai_list,file =paste(stats_out, "/","alltrees_understory_profile_voxels2m",".txt", sep=""), sep="\t", row.names = FALSE)
 write.table(LAHV_metric_list,file =paste(stats_out, "/","alltrees_LAHV_profile_voxels2m",".txt", sep=""), sep="\t", row.names = FALSE)
 #head(profile_list)
-```
+
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -453,7 +453,7 @@ write.table(LAHV_metric_list,file =paste(stats_out, "/","alltrees_LAHV_profile_v
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 ## 9. Depurating tree lab profiles (\> 3 height values)
 
@@ -520,7 +520,7 @@ sep = "\t",row.names = FALSE)
 
 #head(tree_metrics_filtered)
 
-```
+
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -528,7 +528,7 @@ sep = "\t",row.names = FALSE)
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 ## 11. Computing distance between fuel layers
 
@@ -563,7 +563,7 @@ write.table(metrics_all_distance, file=distance_path, sep="\t", row.names=FALSE)
 metrics_all_distance <- metrics_all_distance[, order(names(metrics_all_distance))]
 #head(metrics_all_distance)
 
-```
+
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -571,7 +571,7 @@ metrics_all_distance <- metrics_all_distance[, order(names(metrics_all_distance)
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 ## 12. Computing fuel layer depth
 
@@ -611,7 +611,7 @@ write.table(metrics_all_depth, file = depth_path, sep = "\t", row.names = FALSE)
 metrics_all_depth <- metrics_all_depth[, order(names(metrics_all_depth))]
 #head(metrics_all_depth)
 
-```
+
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -619,7 +619,7 @@ metrics_all_depth <- metrics_all_depth[, order(names(metrics_all_depth))]
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 ## 13. Plotting gaps and fuel layer base height (FBH)
 
@@ -715,7 +715,7 @@ write.table(fbh_corr_all, file = fbh_corr_path, sep = "\t", row.names = FALSE)
 #head(fbh_corr_all)
 
 
-```
+
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -723,7 +723,7 @@ write.table(fbh_corr_all, file = fbh_corr_path, sep = "\t", row.names = FALSE)
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 
 ## 15.Computing fuel lauer depth after removing distance =1
@@ -755,7 +755,6 @@ write.table(depth_corr_all, file = depth_corr_path, sep = "\t", row.names = FALS
 
 #head(depth_corr_all)
 
-```
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -763,7 +762,7 @@ write.table(depth_corr_all, file = depth_corr_path, sep = "\t", row.names = FALS
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 
 ## 16.Computing fuel layer distance (\> 1 M) and CBH based on maximum and last distance
@@ -824,7 +823,7 @@ write.table(distances_corr_all1, file = distance_corr_path, sep = "\t", row.name
 
 #head(distances_corr_all1)
 
-```
+
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -832,7 +831,7 @@ write.table(distances_corr_all1, file = distance_corr_path, sep = "\t", row.name
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 ## 17.Computing fuel layer LAD in percentage (\> 25 %) and CBH based on maximum LAD percentage
 
@@ -917,8 +916,7 @@ for (i in seq_along(LAD_metrics_list)) {
  write.table(reordered_list[[2]], file = fuels_lad_gt25_path, sep = "\t", row.names = FALSE)
  
  #head(reordered_list[[2]])
- 
-```
+
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -926,7 +924,7 @@ for (i in seq_along(LAD_metrics_list)) {
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 
 
@@ -1038,7 +1036,6 @@ write.table(cum_LAD_metrics_order, file = cum_LAD_metrics_path, sep = "\t", row.
 
 #head(cum_LAD_metrics_order)
 
-```
 ##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
 ##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
 ##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
@@ -1046,7 +1043,7 @@ write.table(cum_LAD_metrics_order, file = cum_LAD_metrics_path, sep = "\t", row.
 ##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
 ##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
 ##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
-
+```
 
 ## 20. Plotting CBH based on the breaking point method and LAD percentage
 
