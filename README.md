@@ -1118,7 +1118,7 @@ We gratefully acknowledge funding from XXXX, Carlos Silva was supported by the N
 # Reporting Issues 
 Please report any issue regarding the LadderFuelsR package to Dr. Olga Viedma (olga.viedma@uclm.es)
 
-# Citing rICESat2Veg
+# Citing LadderFuelsR
 Viedma,O.M;C.LadderFuelsR: LadderFuelsR: An R Package  for vertical fuel continuity analysis using LiDAR data.version 0.0.1, accessed on November. 22 2023, available at: <https://CRAN.R-project.org/package=LadderFuelsR>
 
 # Disclaimer
