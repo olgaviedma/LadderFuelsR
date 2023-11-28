@@ -1,93 +1,74 @@
-# LadderfuelsR
----
-title: "Workflow LadderFuelsR"
-author: "Olga Viedma"
-date: "2023-11-20"
-output: html_document
----
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/readme/cover.png)<br/>
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  fig.align = "center",
-  message = FALSE,
-  warning = FALSE,
-  cache = TRUE)
-knitr::opts_knit$set(root.dir = file.path(system.file("extdata", package = "LadderFuelsR")))
-knitr::include_graphics(file.path(system.file("inst/extdata", package = "LadderFuelsR"), "Profile1.jpg"))
+[![CRAN](https://www.r-pkg.org/badges/version/LadderFuelsR)](https://cran.r-project.org/package=LadderFuelsR)
+![Github](https://img.shields.io/badge/Github-0.0.1-green.svg)
+![licence](https://img.shields.io/badge/Licence-GPL--3-blue.svg) 
+![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/LadderFuelsR)
+[![Build Status](https://travis-ci.com/olgaviedma/LadderFuelsR.svg?token=Jqizwyc6gBxNafNccTdU&branch=master)](https://travis-ci.com/olgaviedma/LadderFuelsR)
 
-```
 
-# LadderFuelsR
+**LadderFuelsR: An R Package  for vertical fuel continuity analysis using LiDAR data.**
 
-![](images/Profile1-01.jpg)
+Authors: Olga Viedma  
 
-```{r Introduction, echo=FALSE}
-#LadderFuelsR: An R Package  for vertical fuel continuity analysis using LiDAR data
+The LadderFuelsR package is an automated tool for vertical fuel continuity analysis using LiDAR data that can be applied on multiple tree species and for large-scale studies. We include a suite of tools integrated into a standard workflow for deriving outputs meaningful to vertical fuel continuity analysis and canopy base height detection. The workflow consisted of: 1) calculating the vertical height profiles (VHP) of each segmented tree; 2) identifying gaps and fuel layers; 3) estimating the distance between fuel layers; and 4) retrieving the fuel layers base height (FBH) and depth. Additionally, other functions recalculate previous metrics after considering distances > 1 m and calculate the canopy base height (CBH) as the FBH located at the largest- and at the last-distance. Moreover, the package calculates: i) the percentage of LAD comprised in each fuel layer, ii) remove fuel layers with LAD percentage < 25 %, iii) recalculate the distances among the reminder ones, and iv) identify the CBH as the FBH with the highest LAD percentage. On the other hand, when the vertical height profiles (VHP) showed only one fuel layer, it identifies a possible CBH performing a segmented linear regression (breaking points) on the cumulative sum of LAD as a function of height. Finally, a collection of plotting functions is developed to represent: i) the VHP with the initial gaps and fuel layers; ii) the FBHs, depths and gaps with distances > 1 m and, iii) the FBHs and depths after applying the breaking point method over trees with only one fuel layer..
 
-#Authors: Olga Viedma
-
-# Automated tool for vertical fuel continuity analysis using LiDAR data that can be applied on multiple tree species and for large-scale studies. We include a suite of tools integrated into a standard workflow for deriving outputs meaningful to vertical fuel continuity analysis and canopy base height detection. The workflow consisted of: 1) calculating the vertical height profiles (VHP) of each segmented tree; 2) identifying gaps and fuel layers; 3) estimating the distance between fuel layers; and 4) retrieving the fuel layers base height (FBH) and depth. Additionally, other functions recalculate previous metrics after considering distances > 1 m and calculate the canopy base height (CBH) as the FBH located at the largest- and at the last-distance. Moreover, the package calculates: i) the percentage of LAD comprised in each fuel layer, ii) remove fuel layers with LAD percentage < 25 %, iii) recalculate the distances among the reminder ones, and iv) identify the CBH as the FBH with the highest LAD percentage. On the other hand, when the vertical height profiles (VHP) showed only one fuel layer, it identifies a possible CBH performing a segmented linear regression (breaking points) on the cumulative sum of LAD as a function of height. Finally, a collection of plotting functions is developed to represent: i) the VHP with the initial gaps and fuel layers; ii) the FBHs, depths and gaps with distances > 1 m and, iii) the FBHs and depths after applying the breaking point method over trees with only one fuel layer.
-```
+# Getting Started
 
 ## Installation
-
-```{r installation, echo=FALSE}
-
-#The development version:
-#library(devtools)
-#devtools::install_github("olgaviedma/LadderFuelsR")
-
+```r
 #The CRAN version:
-#install.packages("LadderFuelsR")
-```
+install.packages("LadderFuelsR")
 
-## LIBRARIES
+# The development version:
+#install.packages("remotes")
+library(remotes)
+install_github("https://github.com/olgaviedma/LadderFuelsR", dependencies = TRUE)
+
+# loading rGEDI package
+library(LadderFuelsR)
+
+```    
+
+
+## Rquired libraries
 
 ```{r pressure, echo=FALSE}
-
-library(devtools)
-library(plyr)
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(stringi)
-library(purrr)
-library(rlang)
-library(tidyverse)
-library(magrittr)
-
-library(sp)
-library(sf)
-library(raster)
-library(data.table)
-library(rgdal)
-library(viridis)
-
-library(lidR)
-library(leafR)
-library(segmented)
-library(lidRplugins)
-
-
-library(ggplot2)
-library(gt)
-library(gridExtra)
-library(patchwork)
-
-library(SSBtools)
-library(tibble)
-
-library(rgl)
-library(rglwidget)
-
-library(LadderFuelsR)
-library(magrittr)
-library(gdata)
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(plyr,
+               dplyr,
+               tidyr,
+               stringr,
+               stringi,
+               purrr,
+               rlang,
+               tidyverse,
+               magrittr,
+               sp,
+               sf,
+               raster,
+               data.table,
+               rgdal,
+               viridis,
+               lidR,
+               leafR,
+               segmented,
+               lidRplugins,
+               ggplot2,
+               gt,
+               gridExtra,
+               patchwork,
+               SSBtools,
+               tibble,
+               rgl,
+               rglwidget,
+               LadderFuelsR,
+               magrittr,
+               gdata)
 
 ```
 
-### #1.CHM PITFREE 0.5 m
+## 1. Computing Canopy hieght model (CHM) using lidR package
 
 ```{r CHM pitfree 0.5 m, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -125,7 +106,7 @@ plot(chm_pitfree_list[[1]],col=col)
 
 ```
 
-### #2.DETECT TREE TOPS
+## 2.Detecting individual tree top from the lidar-derived CHM
 
 ```{r Tree tops detection, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -181,7 +162,7 @@ rglwidget(elementId = "x", width = 800, height = 600)
 
 ```
 
-### #3.CROWNS (Silva) with locate_trees (ws: MULTICHM FIXED)
+## 3. Individual tree crown deliniation (Silva et al. 2016) 
 
 ```{r Crowns Silva, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -232,7 +213,7 @@ rglwidget(elementId = "x1", width = 800, height = 600)
 
 ```
 
-### FUNCTION CROWN METRICS
+## 4. Definiding function for computing crown-level metrics
 
 ```{r tree metrics function, echo=TRUE}
 
@@ -258,7 +239,7 @@ ccm = ~custom_crown_metrics(z = Z, i = Intensity)
 
 ```
 
-### #4.TREE METRICS CROWNS standard and customized (Silva)
+## 5.Computing crown level standard metrics within all trees detected
 
 ```{r tree and crown standard and own metrics, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -308,8 +289,9 @@ plot(ttops_within_crowns, add = TRUE, pch= 16, col = "darkblue", main = "Tree to
 
 
 ```
+![](https://github.com/carlos-alberto-silva/rGEDI/blob/master/readme/fig3.png)
 
-### #5.NO OVERLAPPING CROWN POLYGONS
+### 6. Checking for no overlapping crown poygons
 
 ```{r no overlapping crown polygons, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -334,8 +316,10 @@ st_write(polys1,paste0(tree_dir, "/", "crown2m_silva_convex_no_overlap.shp"), ap
 
 
 ```
+![](https://github.com/carlos-alberto-silva/rGEDI/blob/master/readme/fig3.png)
 
-### #6.CROP LAS FILES WITH CROWN POLYGONS
+
+## 7.Extracting individual trees within the crown polygons
 
 ```{r cropLAS files with no overlapping crowns, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -395,8 +379,10 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 60, zoom = 0.75)
 rglwidget(elementId = "x2", width = 400, height = 600)
 
 ```
+![](https://github.com/carlos-alberto-silva/rGEDI/blob/master/readme/fig3.png)
 
-### #7.LAI-LAD METRICS BY TREE
+
+## 8. Computing LAI-LAD derived metrics within all trees extracted
 
 ```{r LAI and LAD tree metrics, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -460,8 +446,16 @@ write.table(understory_lai_list,file =paste(stats_out, "/","alltrees_understory_
 write.table(LAHV_metric_list,file =paste(stats_out, "/","alltrees_LAHV_profile_voxels2m",".txt", sep=""), sep="\t", row.names = FALSE)
 #head(profile_list)
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #8.DEPURATING TREE LAD PROFILES (\> 3 HEIGHT VALUES)
+
+## 9. Depurating tree lab profiles (\> 3 height values)
 
 ```{r depurating LAD databases, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -483,7 +477,7 @@ write.table(stats_tot2, file = output_file, sep = "\t", row.names = FALSE)
 
 ```
 
-### #9.GAPS AND FUEL LAYERS BASE HEIGHT (FBH)
+## 10. Computing gaps and fuel layers base height (FBH)
 
 ```{r Gaps and Fuel layers Base Height (fbh), echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -527,8 +521,16 @@ sep = "\t",row.names = FALSE)
 #head(tree_metrics_filtered)
 
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #10.DISTANCE BETWEEN FUEL LAYERS
+
+## 11. Computing distance between fuel layers
 
 ```{r Distances (and their heights) between fuel layers, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -562,8 +564,16 @@ metrics_all_distance <- metrics_all_distance[, order(names(metrics_all_distance)
 #head(metrics_all_distance)
 
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #11.FUEL LAYERS DEPTH
+
+## 12. Computing fuel layer depth
 
 ```{r Distane between fuel layers, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -602,8 +612,16 @@ metrics_all_depth <- metrics_all_depth[, order(names(metrics_all_depth))]
 #head(metrics_all_depth)
 
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #12.PLOTS GAPS AND FUEL LAYERS BASE HEIGHT (FBH)
+
+## 13. Plotting gaps and fuel layer base height (FBH)
 
 ```{r Plots Gaps and Fuel layers Base Height (fbh), echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -636,7 +654,7 @@ plot(plots_gaps_fbhs[[1]],width = 5, height = 5)
 
 ```
 
-### #13.FUEL LAYERS BASE HEIGHT (FBH) AFTER REMOVING DISTANCES = 1
+## 14.Computig fuel layer base height (FBH) after reomving distances =1
 
 ```{r Fuels base height after removing distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -698,8 +716,17 @@ write.table(fbh_corr_all, file = fbh_corr_path, sep = "\t", row.names = FALSE)
 
 
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #14.FUEL LAYERS DEPTH AFTER REMOVING DISTANCES = 1
+
+
+## 15.Computing fuel lauer depth after removing distance =1
 
 ```{r Fuel layers depth after removinG distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -729,8 +756,17 @@ write.table(depth_corr_all, file = depth_corr_path, sep = "\t", row.names = FALS
 #head(depth_corr_all)
 
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #15.FUEL LAYERS DISTANCES (\> 1 M) AND CBH BASE ON MAXIMUM- AND LAST- DISTANCE
+
+
+## 16.Computing fuel layer distance (\> 1 M) and CBH based on maximum and last distance
 
 ```{r Fuel layers distances after removing distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -789,8 +825,16 @@ write.table(distances_corr_all1, file = distance_corr_path, sep = "\t", row.name
 #head(distances_corr_all1)
 
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #16.FUELS LAD PERCENTAGE (\> 25 %) AND CBH BASED ON MAXIMUM LAD PERCENTAGE
+
+## 17.Computing fuel layer LAD in percentage (\> 25 %) and CBH based on maximum LAD percentage
 
 ```{r Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m), echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -875,8 +919,18 @@ for (i in seq_along(LAD_metrics_list)) {
  #head(reordered_list[[2]])
  
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #17. PLOT FUEL LAYERS WITH LAD \> 25 % AND CBH BASED ON MAXIMUM LAD PERCENTAGE
+
+
+
+## 18. Plotting fuel layers with LAD \> 25 % and CBH based on maximum LAD percentage
 
 ```{r Plots of fuel layers with LAD percentage greater than 25 and the canopy base height (CBH) based on the maximum LAD percentage, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -913,8 +967,10 @@ par(mfrow = c(1, 1))
 plot(plots_trees_LAD[[1]],width = 6, height = 6)
 
 ```
+![](https://github.com/carlos-alberto-silva/rGEDI/blob/master/readme/fig3.png)
 
-### #18. CBH BASED ON THE BREAKING POINT METHOD AND LAD PERCENTAGE
+
+## 19. Compute CBH based on tree breaking point method and LAD percentage
 
 ```{r CBH and the LAD percentage below and above the CBH using the breaking point method, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -983,8 +1039,16 @@ write.table(cum_LAD_metrics_order, file = cum_LAD_metrics_path, sep = "\t", row.
 #head(cum_LAD_metrics_order)
 
 ```
+##           shot_number latitude_bin0 latitude_lastbin longitude_bin0 longitude_lastbin elevation_bin0
+##  1: 19640002800109382     -13.75903        -13.75901      -44.17219         -44.17219       784.8348
+##  2: 19640003000109383     -13.75862        -13.75859      -44.17188         -44.17188       799.0491
+##  3: 19640003200109384     -13.75821        -13.75818      -44.17156         -44.17156       814.4647
+##  4: 19640003400109385     -13.75780        -13.75777      -44.17124         -44.17124       820.1437
+##  5: 19640003600109386     -13.75738        -13.75736      -44.17093         -44.17093       821.7012
+##  6: 19640003800109387     -13.75697        -13.75695      -44.17061         -44.17061       823.2526
 
-### #19. PLOT CBH BASED ON THE BREAKING POINT METHOD AND LAD PERCENTAGE
+
+## 20. Plotting CBH based on the breaking point method and LAD percentage
 
 ```{r Plots of the CBH and the LAD percentage below and above the CBH using the breaking point method, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -1016,8 +1080,9 @@ par(mfrow = c(1, 1))
 plot(plots_trees_cumlad[[1]],width = 6, height = 6)
 
 ```
+![](https://github.com/carlos-alberto-silva/rGEDI/blob/master/readme/fig3.png)
 
-### #20. JOINING FUEL LADDER PROPERITES WITH CROWN POLYGONS
+## 21. Joining fuel ladder properties with crown polygons
 
 ```{r Joining crown polygons and ladder fuels metrics, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -1048,3 +1113,17 @@ ggplot() +
 
 
 ```
+![](https://github.com/carlos-alberto-silva/rGEDI/blob/master/readme/fig3.png)
+
+# Acknowledgements
+We gratefully acknowledge funding from XXXX, Carlos Silva was supported by the Carbon Monitoring System funding (CMS, grant 22-CMS22-0015). 
+
+# Reporting Issues 
+Please report any issue regarding the LadderFuelsR package to Dr. Olga Viedma (olga.viedma@uclm.es)
+
+# Citing rICESat2Veg
+Viedma,O.M;C.LadderFuelsR: LadderFuelsR: An R Package  for vertical fuel continuity analysis using LiDAR data.version 0.0.1, accessed on November. 22 2023, available at: <https://CRAN.R-project.org/package=LadderFuelsR>
+
+# Disclaimer
+**LadderFuelsR package comes with no guarantee, expressed or implied, and the authors hold no responsibility for its use or reliability of its outputs.**
+
