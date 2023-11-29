@@ -1,8 +1,5 @@
 ![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/LadderFuels_image.png)<br/>
-<<<<<<< HEAD
 
-=======
->>>>>>> 28cc787464e01eba887ae125c0a49710b18ab9b2
 [![CRAN](https://www.r-pkg.org/badges/version/LadderFuelsR)](https://cran.r-project.org/package=LadderFuelsR) ![Github](https://img.shields.io/badge/Github-0.0.1-green.svg) ![licence](https://img.shields.io/badge/Licence-GPL--3-blue.svg) ![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/LadderFuelsR) [![Build Status](https://travis-ci.com/olgaviedma/LadderFuelsR.svg?token=Jqizwyc6gBxNafNccTdU&branch=master)](https://travis-ci.com/olgaviedma/LadderFuelsR)
 
 **LadderFuelsR: An R Package for vertical fuel continuity analysis using LiDAR data.**
@@ -113,7 +110,7 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 10, zoom = 0.75)
 rglwidget(elementId = "x1", width = 800, height = 600)
 
 ```
-## 4. Definiding function for computing crown-level metrics
+## 4. Defining function for computing crown-level metrics
 ```{r tree metrics function, echo=TRUE}
 
 custom_crown_metrics <- function(z, i) { # user-defined function
