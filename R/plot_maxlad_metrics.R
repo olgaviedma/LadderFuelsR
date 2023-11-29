@@ -19,7 +19,7 @@
 #' A plot drawing the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
 #'
 #' @author
-#' Olga Viedma.
+#' Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
 #' ## Not run:

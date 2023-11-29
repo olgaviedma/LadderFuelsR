@@ -63,5 +63,5 @@ write.table(metrics_all_distance, file=distance_path, sep="\t", row.names=FALSE)
 ## End(Not run)
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

@@ -60,5 +60,5 @@ write.table(depth_corr_all, file = depth_corr_path, sep = "\t", row.names = FALS
 \code{\link{get_renamed0_df}}
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

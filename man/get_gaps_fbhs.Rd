@@ -75,5 +75,5 @@ sep = "\t",row.names = FALSE)
 ## End(Not run)
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

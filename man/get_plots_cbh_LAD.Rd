@@ -52,5 +52,5 @@ for (name in names(plots_trees_LAD)) {
 
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

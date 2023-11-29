@@ -68,5 +68,5 @@ write.table(metrics_all_depth, file = depth_path, sep = "\t", row.names = FALSE)
 ## End(Not run)
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

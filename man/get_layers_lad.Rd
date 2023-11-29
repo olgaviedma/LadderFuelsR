@@ -125,5 +125,5 @@ for (i in seq_along(LAD_metrics_list)) {
 \code{\link{get_renamed_df}}
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

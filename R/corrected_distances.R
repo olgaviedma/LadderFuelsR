@@ -17,7 +17,7 @@
 #' at the maximum distance and at the last distance.
 #'
 #' @author
-#' Olga Viedma.
+#' Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @details
 #' List of tree metrics:

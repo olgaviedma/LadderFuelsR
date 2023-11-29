@@ -20,7 +20,7 @@
 #' A data frame identifying the canopy base height (CBH) of the fuel layer with maximum LAD percentage and other fuel layers with their corresponding LAD percentage.
 #'
 #' @author
-#' Olga Viedma.
+#' Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @details
 #' # List of tree metrics:

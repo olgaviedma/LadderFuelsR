@@ -9,7 +9,7 @@
 #' @param distance_metrics tree metrics with gaps (distances) and fuel base heights (output of [get_distance()] function).
 #' An object of the class text
 #' @return A data frame giving fuel layers depth and the height of the depths in meters.
-#' @author Olga Viedma.
+#' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @details
 #' # List of tree metrics:

@@ -94,5 +94,5 @@ write.table(distances_corr_all, file = distance_corr_path, sep = "\t", row.names
 
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

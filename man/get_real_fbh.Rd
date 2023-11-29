@@ -92,5 +92,5 @@ write.table(fbh_corr_all, file = fbh_corr_path, sep = "\t", row.names = FALSE)
 
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

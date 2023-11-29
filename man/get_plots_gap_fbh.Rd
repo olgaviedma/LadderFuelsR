@@ -45,5 +45,5 @@ for (name in names(plots_gaps_fbhs)) {
 
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

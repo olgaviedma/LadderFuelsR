@@ -6,7 +6,7 @@
 #' @param fbh_metrics_corr tree metrics with the recalculated base height of fuel layers after considering distances > 1 m  (output of [get_real_fbh()] function).
 #' An object of the class text
 #' @return A data frame giving the fuel layers depth after removing distances = 1 m.
-#' @author Olga Viedma.
+#' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @details
 #' # List of tree metrics:

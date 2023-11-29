@@ -7,7 +7,7 @@
 #' @param depth_metrics tree metrics with gaps (distances), fuel base heights and depths (output of [get_depths()] function).
 #' An object of the class text
 #' @return A plot drawing by lines the height of gaps and fuel layers bases in tiff format.
-#' @author Olga Viedma.
+#' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
 #' ## Not run:

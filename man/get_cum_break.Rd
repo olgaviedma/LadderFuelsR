@@ -110,5 +110,5 @@ write.table(cum_LAD_metrics_order, file = cum_LAD_metrics_path, sep = "\t", row.
 
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

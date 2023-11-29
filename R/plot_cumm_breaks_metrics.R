@@ -6,7 +6,7 @@
 #' @param cum_LAD_metrics tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).
 #' An object of the class text
 #' @return A plot of the CBH and LAD percentage below and above the CBH
-#' @author Olga Viedma.
+#' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
 #' ## Not run:

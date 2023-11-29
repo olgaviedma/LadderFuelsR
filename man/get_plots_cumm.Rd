@@ -48,5 +48,5 @@ for (name in names(plots_trees_cumlad)) {
 
 }
 \author{
-Olga Viedma.
+Olga Viedma, Carlos Silva and JM Moreno
 }

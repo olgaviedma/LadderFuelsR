@@ -21,7 +21,7 @@
 #' and the percentage of LAD values below and above the identified CBH or breaking point.
 #'
 #' @author
-#' Olga Viedma.
+#' Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @details
 #' \itemize{

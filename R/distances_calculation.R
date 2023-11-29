@@ -7,7 +7,7 @@
 #' @param gaps_fbhs_metrics data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
 #' An object of the class text
 #' @return A data frame giving distances (and their heights) between fuel layers in meters.
-#' @author Olga Viedma.
+#' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @details
 #' # List of tree metrics:
