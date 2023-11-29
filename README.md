@@ -20,7 +20,7 @@ install.packages("LadderFuelsR")
 library(remotes)
 install_github("https://github.com/olgaviedma/LadderFuelsR", dependencies = TRUE)
 
-# loading rGEDI package
+# loading LadderFuelsR package
 library(LadderFuelsR)
 ```
 
@@ -724,7 +724,7 @@ Please report any issue regarding the LadderFuelsR package to Dr. Olga Viedma ([
 
 # Citing LadderFuelsR
 
-Viedma,O.M;C.LadderFuelsR: LadderFuelsR: An R Package for vertical fuel continuity analysis using LiDAR data.version 0.0.1, accessed on November. 22 2023, available at: <https://CRAN.R-project.org/package=LadderFuelsR>
+Viedma,O.;C.LadderFuelsR: LadderFuelsR: An R Package for vertical fuel continuity analysis using LiDAR data.version 0.0.1, accessed on November. 22 2023, available at: <https://CRAN.R-project.org/package=LadderFuelsR>
 
 # Disclaimer
 
