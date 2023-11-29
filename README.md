@@ -76,12 +76,7 @@ col <- height.colors(25)
 plot(chm_pitfree1,col=col)
 
 ```
-<<<<<<< HEAD
-<img align="center" src="https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/CHM pitfree 0.5 m-1.png" width=400>
-=======
-
 ![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/CHM%20pitfree%200.5%20m-1.png)
->>>>>>> 28cc787464e01eba887ae125c0a49710b18ab9b2
 
 ## 2.Detecting individual tree top from the lidar-derived CHM
 ```{r Tree tops detection, echo=TRUE, message=FALSE, warning=FALSE}
