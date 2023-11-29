@@ -72,6 +72,8 @@ pacman::p_load(plyr,
 col <- height.colors(25)
 plot(chm_pitfree1,col=col)
 
+![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/CHM pitfree 0.5 m-1.png)<br/>
+
 ```
 ## 2.Detecting individual tree top from the lidar-derived CHM
 ```{r Tree tops detection, echo=TRUE, message=FALSE, warning=FALSE}
