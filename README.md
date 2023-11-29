@@ -1,4 +1,4 @@
-![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/cover.png)<br/>
+![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/LadderFuels_image.png)<br/>
 
 [![CRAN](https://www.r-pkg.org/badges/version/LadderFuelsR)](https://cran.r-project.org/package=LadderFuelsR)
 ![Github](https://img.shields.io/badge/Github-0.0.1-green.svg)
