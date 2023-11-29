@@ -1,4 +1,5 @@
 ![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/LadderFuels_image.png)<br/>
+![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/CHM pitfree 0.5 m-1.png)<br/>
 
 [![CRAN](https://www.r-pkg.org/badges/version/LadderFuelsR)](https://cran.r-project.org/package=LadderFuelsR) ![Github](https://img.shields.io/badge/Github-0.0.1-green.svg) ![licence](https://img.shields.io/badge/Licence-GPL--3-blue.svg) ![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/LadderFuelsR) [![Build Status](https://travis-ci.com/olgaviedma/LadderFuelsR.svg?token=Jqizwyc6gBxNafNccTdU&branch=master)](https://travis-ci.com/olgaviedma/LadderFuelsR)
 
@@ -73,8 +74,6 @@ col <- height.colors(25)
 plot(chm_pitfree1,col=col)
 
 ```
-![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/CHM pitfree 0.5 m-1.png)<br/>
-
 ## 2.Detecting individual tree top from the lidar-derived CHM
 ```{r Tree tops detection, echo=TRUE, message=FALSE, warning=FALSE}
 
