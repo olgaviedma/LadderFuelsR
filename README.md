@@ -112,8 +112,8 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 10, zoom = 0.75)
 rglwidget(elementId = "x1", width = 800, height = 600)
 
 ```
-<p align="center">
-  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig3.png" alt="crown polygons with tree tops">
+<p align="center" style="margin: 0;">
+  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig3.png" alt="Your Plot Description" style="margin: 0;">
 </p>
 
 ## 4. Defining function for computing crown-level metrics
