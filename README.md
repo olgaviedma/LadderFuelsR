@@ -189,7 +189,9 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 60, zoom = 0.75)
 # Convert the rgl scene to an HTML widget
 rglwidget(elementId = "x2", width = 400, height = 600)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig6.png)
+<p align="center">
+  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig6.png" width="600" height="600" alt="Your Plot Description">
+</p>
 
 ## 7.LAI-LAD metrics by Trees
 ```{r LAI and LAD tree metrics, echo=TRUE, message=FALSE, warning=FALSE}
@@ -649,16 +651,16 @@ plot(plots_trees_LAD[[4]])
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_1.png" width="300" height="200" alt="Plot 1">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_1.png" width="400" height="300" alt="Plot 1">
     </td>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_2.png" width="300" height="200" alt="Plot 2">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_2.png" width="400" height="300" alt="Plot 2">
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
       <!-- Centered content in a cell that spans two columns -->
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_3.png" width="300" height="200" alt="Plot 3">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_3.png" width="400" height="300" alt="Plot 3">
     </td>
   </tr>
 </table>
@@ -751,16 +753,16 @@ plot(plots_trees_cumlad[[4]])
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_1.png" width="300" height="200" alt="Plot 1">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_1.png" width="400" height="300" alt="Plot 1">
     </td>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_2.png" width="300" height="200" alt="Plot 2">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_2.png" width="400" height="300" alt="Plot 2">
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
       <!-- Centered content in a cell that spans two columns -->
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_3.png" width="300" height="200" alt="Plot 3">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_3.png" width="400" height="300" alt="Plot 3">
     </td>
   </tr>
 </table>
@@ -791,7 +793,7 @@ ggplot() +
 
 ```
 <p align="center">
-  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20.png" width="400" height="300" alt="Your Plot Description">
+  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20.png" width="600" height="600" alt="Your Plot Description">
 </p>
 
 # Acknowledgements
