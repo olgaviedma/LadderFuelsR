@@ -113,7 +113,7 @@ rglwidget(elementId = "x1", width = 800, height = 600)
 
 ```
 <p align="center">
-  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig3.png" width="400" height="400" alt="crown polygons with tree tops">
+  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig3.png" alt="crown polygons with tree tops">
 </p>
 
 ## 4. Defining function for computing crown-level metrics
