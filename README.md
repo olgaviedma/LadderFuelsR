@@ -110,9 +110,7 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 10, zoom = 0.75)
 rglwidget(elementId = "x1", width = 800, height = 600)
 
 ```
-
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/tree%20and%20crown%20standard%20and%20own%20metrics-1.png)
-
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig13.png)
 
 ## 4. Defining function for computing crown-level metrics
 ```{r tree metrics function, echo=TRUE}
@@ -379,7 +377,8 @@ plot(plots_gaps_fbhs[[4]])
 ```
 
 ![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_1.png)
-
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_2.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_3.png)
 
 ## 13.Fuel Layers Base Height (FBH) after removing distances = 1
 ```{r Fuels base height after removing distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
@@ -614,6 +613,10 @@ plot(plots_trees_LAD[[2]])
 plot(plots_trees_LAD[[3]])
 plot(plots_trees_LAD[[4]])
 ```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_1.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_2.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_3.png)
+
 ## 18.CBH based on the Breaking Point method and LAD percentage
 ```{r CBH and the LAD percentage below and above the CBH using the breaking point method, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -696,8 +699,11 @@ plot(plots_trees_cumlad[[1]])
 plot(plots_trees_cumlad[[2]])
 plot(plots_trees_cumlad[[3]])
 plot(plots_trees_cumlad[[4]])
-
 ```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_1.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_2.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_3.png)
+
 ## 20. Joinning Fuel ladder properties with Crown polygons
 ```{r Joining crown polygons and ladder fuels metrics, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -723,6 +729,7 @@ ggplot() +
   labs(title = "Tree Crowns", fill = "maxlad_Hcbh")
 
 ```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20.png)
 
 # Acknowledgements
 
