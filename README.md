@@ -190,7 +190,7 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 60, zoom = 0.75)
 rglwidget(elementId = "x2", width = 400, height = 600)
 ```
 <p align="center">
-  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig6.png" width="600" height="600" alt="Las file cropped by crown polygons">
+  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig6.png" width="400" height="400" alt="Las file cropped by crown polygons">
 </p>
 
 ## 7.LAI-LAD metrics by Trees
@@ -394,16 +394,16 @@ plot(plots_gaps_fbhs[[4]])
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_1.png" width="300" height="200" alt="Plot 1">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_1.png" width="400" height="300" alt="Plot 1">
     </td>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_2.png" width="300" height="200" alt="Plot 2">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_2.png" width="400" height="300" alt="Plot 2">
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
       <!-- Centered content in a cell that spans two columns -->
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_3.png" width="300" height="200" alt="Plot 3">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_3.png" width="400" height="300" alt="Plot 3">
     </td>
   </tr>
 </table>
