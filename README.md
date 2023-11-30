@@ -377,6 +377,10 @@ plot(plots_gaps_fbhs[[2]])
 plot(plots_gaps_fbhs[[3]])
 plot(plots_gaps_fbhs[[4]])
 ```
+
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_1.png)
+
+
 ## 13.Fuel Layers Base Height (FBH) after removing distances = 1
 ```{r Fuels base height after removing distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
 
