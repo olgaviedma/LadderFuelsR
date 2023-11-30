@@ -608,9 +608,10 @@ for (i in seq_along(LAD_metrics_list)) {
 rownames(fuels_LAD_metrics[[1]]) <- NULL
 rownames(fuels_LAD_metrics[[2]]) <- NULL
 
-head(fuels_LAD_metrics[[1]])
 head(fuels_LAD_metrics[[2]])
 ```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table16.PNG)
+
 ## 17.Plot Fuel Layers with LAD percentage greater than 25 percent and CBH based on MAX LAD percentage
 ```{r Plots of fuel layers with LAD percentage greater than 25 and the canopy base height (CBH) based on the maximum LAD percentage, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -700,6 +701,8 @@ cum_LAD_metrics <- cum_LAD_metrics[, new_order]
 rownames(cum_LAD_metrics) <- NULL
 head(cum_LAD_metrics)
 ```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table18.PNG)
+
 ## 19.Plot CBH based on the Breaking Point method and LAD percentage
 ```{r Plots of the CBH and the LAD percentage below and above the CBH using the breaking point method, echo=TRUE, message=FALSE, warning=FALSE}
 
