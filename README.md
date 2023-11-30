@@ -389,10 +389,23 @@ plot(plots_gaps_fbhs[[2]])
 plot(plots_gaps_fbhs[[3]])
 plot(plots_gaps_fbhs[[4]])
 ```
-
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_1.png)
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_2.png)
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_3.png)
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_1.png" width="300" height="200" alt="Plot 1">
+    </td>
+    <td align="center">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_2.png" width="300" height="200" alt="Plot 2">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_3.png" width="300" height="200" alt="Plot 3">
+    </td>
+    <!-- You can leave this cell empty if you want only two plots in the second row -->
+    <td></td>
+  </tr>
+</table>
 
 ## 13.Fuel Layers Base Height (FBH) after removing distances = 1
 ```{r Fuels base height after removing distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
