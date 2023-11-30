@@ -790,7 +790,9 @@ ggplot() +
   labs(title = "Tree Crowns", fill = "maxlad_Hcbh")
 
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20.png)
+<p align="center">
+  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20.png" width="400" height="300" alt="Your Plot Description">
+</p>
 
 # Acknowledgements
 
