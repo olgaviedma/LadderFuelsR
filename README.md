@@ -110,7 +110,7 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 10, zoom = 0.75)
 rglwidget(elementId = "x1", width = 800, height = 600)
 
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig13.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig3.png)
 
 ## 4. Defining function for computing crown-level metrics
 ```{r tree metrics function, echo=TRUE}
