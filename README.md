@@ -195,7 +195,7 @@ rglwidget(elementId = "x2", width = 400, height = 600)
 ```{r LAI and LAD tree metrics, echo=TRUE, message=FALSE, warning=FALSE}
 
 LIDAR_dir <- file.path(system.file("extdata", package = "LadderFuelsR"))
-las_list1 <- list.files(LIDAR_dir, pattern = "*_CROWN.laz", full.names = TRUE, ignore.case = TRUE)
+las_list1 <- list.files(LIDAR_dir, pattern = "*_CROWN.las", full.names = TRUE, ignore.case = TRUE)
 
 # create a vector to hold the file names of .las files with more than 10 points
 files_with_more_than_10_points <- c()
