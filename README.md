@@ -93,6 +93,8 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 60, zoom = 0.75)
 rglwidget(elementId = "x", width = 800, height = 600)
 
 ```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig2.png)
+
 ## 3. Individual tree crown deliniation (Silva et al. 2016)
 ```{r Crowns Silva, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -159,6 +161,8 @@ par(mfrow = c(1, 1), mar = c(1, 1, 1, 1), pin = c(5, 4))
 plot(st_geometry(crowns1), pch = 16, col = "green")
 plot(ttops_within_crowns, add = TRUE, pch= 16, col = "darkblue", main = "Tree tops over the crowns")
 ```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig5.png)
+
 ## 6.Crop las files with crown polygons
 ```{r cropLAS files with no overlapping crowns, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -185,6 +189,8 @@ rgl.viewpoint(theta = 0, phi = 0, fov = 60, zoom = 0.75)
 # Convert the rgl scene to an HTML widget
 rglwidget(elementId = "x2", width = 400, height = 600)
 ```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig6.png)
+
 ## 7.LAI-LAD metrics by Trees
 ```{r LAI and LAD tree metrics, echo=TRUE, message=FALSE, warning=FALSE}
 
