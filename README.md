@@ -793,7 +793,7 @@ ggplot() +
 
 ```
 <p align="center">
-  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20.png" width="600" height="600" alt="Your Plot Description">
+  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20.png">
 </p>
 
 # Acknowledgements
