@@ -301,7 +301,7 @@ if (length(row_index) > 0) {
 rownames(gaps_fbhs_metrics) <- NULL
 head(gaps_fbhs_metrics)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table9.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table9.PNG)
 
 ## 10.Distance between Fuel Layers
 ```{r Distances (and their heights) between fuel layers, echo=TRUE, message=FALSE, warning=FALSE}
