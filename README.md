@@ -333,7 +333,7 @@ distance_metrics <- distance_metrics[, order(names(distance_metrics))]
 rownames(distance_metrics) <- NULL
 head(distance_metrics)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table10.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table10.PNG)
 
 ## 11.Fuel Layers Depth
 ```{r Distane between fuel layers, echo=TRUE, message=FALSE, warning=FALSE}
@@ -365,7 +365,7 @@ depth_metrics <- depth_metrics[, order(names(depth_metrics))]
 rownames(depth_metrics) <- NULL
 head(depth_metrics)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table11.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table11.PNG)
 
 ## 12.Plot Gaps and Fuel Layers Base Height (FBH)
 ```{r Plots Gaps and Fuel layers Base Height (fbh), echo=TRUE, message=FALSE, warning=FALSE}
@@ -448,7 +448,7 @@ fbh_metrics_corr <- fbh_metrics_corr[, new_order]
 rownames(fbh_metrics_corr) <- NULL
 head(fbh_metrics_corr)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table13.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table13.PNG)
 
 ## 14.Fuel Layers Depth after removing distances = 1
 ```{r Fuel layers depth after removinG distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
@@ -475,7 +475,7 @@ depth_metrics_corr <- dplyr::bind_rows(depth_metrics_corr_list)
 rownames(depth_metrics_corr) <- NULL
 head(depth_metrics_corr)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table14.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table14.PNG)
 
 ## 15.Distance between Fuel Layers after removing distances = 1 and CBH based ON MAX- AND LAST- Distance
 ```{r Fuel layers distances after removing distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
@@ -532,7 +532,7 @@ distances_metrics_corr2 <- as.data.frame(lapply(distances_metrics_corr1, functio
 rownames(distances_metrics_corr2) <- NULL
 head(distances_metrics_corr2)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table15.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table15.PNG)
 
 ## 16.Fuels LAD percentage (greater than 25 percent) and CBH based on MAX LAD percentage
 ```{r Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m), echo=TRUE, message=FALSE, warning=FALSE}
