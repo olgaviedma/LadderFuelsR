@@ -168,8 +168,6 @@ plot(ttops_within_crowns, add = TRUE, pch= 16, col = "darkblue", main = "Tree to
 ## 6.Crop las files with crown polygons
 ```{r cropLAS files with no overlapping crowns, echo=TRUE, message=FALSE, warning=FALSE}
 
-dir_out<-file.path(system.file("extdata", package = "leafR"))
-
   trees_ID <- tree_crowns %>% dplyr::select(treeID)
   n <- nrow(trees_ID)
   
@@ -178,8 +176,6 @@ dir_out<-file.path(system.file("extdata", package = "leafR"))
   for (i in 1:n) {
     kk <- trees_ID[i,]
     crown_cort[[i]] = clip_roi(crowns_silva_las2, kk)
-  
-    lidR::writeLAS(crown_cort[[i]], paste0(dir_out,"/", i, "_CROWN.las"))
   }
 
 my_palette <- colorRampPalette(col)
@@ -198,8 +194,8 @@ rglwidget(elementId = "x2", width = 400, height = 600)
 ## 7.LAI-LAD metrics by Trees
 ```{r LAI and LAD tree metrics, echo=TRUE, message=FALSE, warning=FALSE}
 
-las_dir1 <- file.path(system.file("extdata", package = "leafR"))
-las_list1 <- list.files(las_dir1, pattern = "*_CROWN.las", full.names = TRUE, ignore.case = TRUE)
+LIDAR_dir <- file.path(system.file("extdata", package = "LadderFuelsR"))
+las_list1 <- list.files(LIDAR_dir, pattern = "*_CROWN.laz", full.names = TRUE, ignore.case = TRUE)
 
 # create a vector to hold the file names of .las files with more than 10 points
 files_with_more_than_10_points <- c()
