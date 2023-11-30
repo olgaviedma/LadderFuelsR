@@ -248,7 +248,7 @@ for (j in seq_along(files_with_more_than_10_points)){
 
 head(profile_list,10)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table7.png)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table7.PNG)
 
 ## 8.Depurating Tree LAD profiles
 ```{r depurating LAD databases, echo=TRUE, message=FALSE, warning=FALSE}
