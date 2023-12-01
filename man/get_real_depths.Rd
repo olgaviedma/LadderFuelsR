@@ -2,12 +2,12 @@
 % Please edit documentation in R/corrected_depth.R
 \name{get_real_depths}
 \alias{get_real_depths}
-\title{Fuel layers depth after removing distances = 1 m}
+\title{Effective fuel layers depth}
 \usage{
-get_real_depths (fbh_metrics_corr)
+get_real_depths (effective_fbh)
 }
 \arguments{
-\item{fbh_metrics_corr}{tree metrics with the recalculated base height of fuel layers after considering distances > 1 m  (output of [get_real_fbh()] function).
+\item{effective_fbh}{tree metrics with the recalculated base height of fuel layers after considering distances > 1 m  (output of [get_real_fbh()] function).
 An object of the class text}
 }
 \value{
@@ -34,25 +34,25 @@ This function recalculates fuel layers depth after removing distances = 1 m
 library(dplyr)
 library(magrittr)
 library(tidyr)
-# Tree metrics derived from get_real_fbh() function
-fbhcor_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "4_fbh_metrics_corr.txt")
-fbh_metrics_corr <- read.table(fbhcor_path, sep = "\t", header = TRUE)
-fbh_metrics_corr$treeID <- factor(fbh_metrics_corr$treeID)
 
-trees_name1 <- as.character(fbh_metrics_corr$treeID)
+# Tree metrics derived from get_real_fbh() function
+effective_fbh$treeID <- factor(effective_fbh$treeID)
+
+trees_name1 <- as.character(effective_fbh$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
-depth_metrics_corr <- lapply(levels(trees_name2), function(i) {
+depth_metrics_corr_list <- list()
+
+for (i in levels(trees_name2)){
   # Filter data for each tree
-  tree2 <- fbh_metrics_corr |> dplyr::filter(treeID == i)
+  tree3 <- effective_fbh |> dplyr::filter(treeID == i)
   # Get real depths for each tree
-  get_real_depths(tree2)
-})
+  depth_metrics_corr <- get_real_depths(tree3)
+  depth_metrics_corr_list[[i]] <- depth_metrics_corr
+}
 
 # Combine depth values for all trees
-depth_corr_all <- dplyr::bind_rows(depth_metrics_corr)
-depth_corr_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "5_tree_depth_metrics_corr.txt")
-write.table(depth_corr_all, file = depth_corr_path, sep = "\t", row.names = FALSE)
+effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
 ## End(Not run)
 
 }

@@ -4,13 +4,13 @@
 \alias{get_plots_cbh_LAD}
 \title{Plots of fuel layers with LAD percentage > 5 and the canopy base height (CBH) based on the maximum LAD percentage}
 \usage{
-get_plots_cbh_LAD(LAD_profiles, fuels_LAD_metrics)
+get_plots_cbh_LAD(LAD_profiles, effective_LAD)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 An object of the class text.}
 
-\item{fuels_LAD_metrics}{Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than 5
+\item{effective_LAD}{Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than 5
 (output of [get_layers_lad()] function).
 An object of the class text.}
 }
@@ -25,29 +25,17 @@ This function plots the CBH of the fuel layer with the maximum LAD percentage an
 library(ggplot2)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
-LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 # Tree metrics derived from get_layers_lad() function
-LAD_gt5p_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "7_fuels_lad_gt5perc.txt")
-fuels_LAD_metrics <- read.table(LAD_gt5p_path, sep = "\t", header = TRUE)
-fuels_LAD_metrics$treeID <- factor(fuels_LAD_metrics$treeID)
+effective_LAD$treeID <- factor(effective_LAD$treeID)
 
-trees_name1 <- as.character(fuels_LAD_metrics$treeID)
+trees_name1 <- as.character(effective_LAD$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
 # Generate plots for fuels LAD metrics
-plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, fuels_LAD_metrics)
+plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
 
-# Save plots for each tree
-for (name in names(plots_trees_LAD)) {
-  plots <- plots_trees_LAD[[name]]
-
-  if (!is.null(plots)) {
-    print(paste("Saving plot for tree:", name))
-    ggsave(file.path(system.file("extdata", package = "LadderFuelsR"),  paste0( name, "_LAD_5perc", ".tiff")), plot = plots)
-  }}
 ## End(Not run)
 
 }

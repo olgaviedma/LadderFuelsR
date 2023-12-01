@@ -39,8 +39,6 @@
 #' library(magrittr)
 #'
 #' # Tree metrics derived from get_depths() function
-#' depth_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "3_depth_metrics.txt")
-#' depth_metrics <- read.table(depth_path, sep = "\t", header = TRUE)
 #' depth_metrics$treeID <- factor(depth_metrics$treeID)
 #'
 #' trees_name1 <- as.character(depth_metrics$treeID)
@@ -49,46 +47,17 @@
 #' fbh_corr_list <- list()
 #'
 #' for (i in levels(trees_name2)){
-#'
 #'   # Filter data for each tree
 #'   tree3 <- depth_metrics |> dplyr::filter(treeID == i)
-#'
 #'   # Get real fbh for each tree
 #'   fbh_corr <- get_real_fbh(tree3)
-#'
 #'   # Store fbh values in a list
 #'   fbh_corr_list[[i]] <- fbh_corr
 #' }
 #'
 #' # Combine fbh values for all trees
-#' fbh_corr_all <- dplyr::bind_rows(fbh_corr_list)
-#' fbh_corr_all$treeID <- factor(fbh_corr_all$treeID)
-#'
-#' # Reorder columns
-#' # Get original column names
-#' original_column_names <- colnames(fbh_corr_all)
-#'
-#' # Specify prefixes
-#' prefixes <- c("treeID", "Hdist", "Hcbh", "Hdepth", "dist", "depth", "max_height")
-#'
-#' # Initialize vector to store new order
-#' new_order <- c()
-#'
-#' # Loop over prefixes
-#' for (prefix in prefixes) {
-#'   # Find column names matching the current prefix
-#'   matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
-#'   # Append to the new order
-#'   new_order <- c(new_order, matching_columns)
-#' }
-#'
-#' # Reorder values
-#' fbh_corr_all <- fbh_corr_all[, new_order]
-#'
-#' # Save the reordered data
-#' fbh_corr_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "4_fbh_metrics_corr.txt")
-#' write.table(fbh_corr_all, file = fbh_corr_path, sep = "\t", row.names = FALSE)
-#'
+#' effective_fbh <- dplyr::bind_rows(fbh_corr_list)
+#' effective_fbh$treeID <- factor(effective_fbh$treeID)
 #' ## End(Not run)
 #'
 #' @export get_real_fbh
@@ -106,7 +75,7 @@ get_real_fbh <- function (depth_metrics) {
 
        for (i in 1:nrow(df)) {
 
-    df2a <- NULL  # Initialize to NULL for each row
+    effective_fbh <- NULL  # Initialize to NULL for each row
     current_row <- df[i, ]
 
     hgap_cols <- grep("^gap\\d+$", colnames(current_row))
@@ -122,7 +91,7 @@ get_real_fbh <- function (depth_metrics) {
 
     df2 <- df
 
-    #print(paste("Unique treeIDs:", paste(unique(df2$treeID), collapse = ", ")))
+    print(paste("Unique treeIDs:", paste(unique(df2$treeID), collapse = ", ")))
 
     ###################  rename columns
 
@@ -297,102 +266,100 @@ get_real_fbh <- function (depth_metrics) {
       dplyr::select(matches(paste0("^", paste(prefixes, collapse = "|"))))
 
     if (exists("new_Hcbh_df")) {
-      df2a <- cbind.data.frame(df_subset, new_Hcbh_df)
+      effective_fbh <- cbind.data.frame(df_subset, new_Hcbh_df)
     } else {
-      df2a <- df_subset
+      effective_fbh <- df_subset
     }
 
-    df2a <- df2a[, colSums(!is.na(df2a)) > 0]
+    effective_fbh <- effective_fbh[, colSums(!is.na(effective_fbh)) > 0]
 
     # Extract columns that start with 'Hcbh'
-    Hcbh_cols <- grep("^Hcbh", names(df2a), value = TRUE)
+    Hcbh_cols <- grep("^Hcbh", names(effective_fbh), value = TRUE)
 
     # Check the conditions
-    first_value <- df2a[1, Hcbh_cols[1]]
-    subsequent_values <- df2a[1, Hcbh_cols[-1]]
+    first_value <- effective_fbh[1, Hcbh_cols[1]]
+    subsequent_values <- effective_fbh[1, Hcbh_cols[-1]]
 
     condition1 <- any(first_value == subsequent_values + 1)
     condition2 <- length(unique(as.numeric(subsequent_values))) == 1
 
     if(condition1 && condition2) {
       # Set all Hcbh column values to the first Hcbh column value
-      df2a[1, Hcbh_cols] <- first_value
+      effective_fbh[1, Hcbh_cols] <- first_value
     }
 
-    if ("Hdepth0" %in% colnames (df2a) && "depth0" %in% colnames (df2a)) {
-      if(any(df2a$Hdepth0 == 0.5) && any(df2a$depth0 == 0)) {
-        df2a$Hdepth0 <-NULL
-        df2a$depth0 <-NULL
+    if ("Hdepth0" %in% colnames (effective_fbh) && "depth0" %in% colnames (effective_fbh)) {
+      if(any(effective_fbh$Hdepth0 == 0.5) && any(effective_fbh$depth0 == 0)) {
+        effective_fbh$Hdepth0 <-NULL
+        effective_fbh$depth0 <-NULL
       }}
 
-    df2a <- df2a[, apply(df2a, 2, function(x) x != 0)]
+    effective_fbh <- effective_fbh[, apply(effective_fbh, 2, function(x) x != 0)]
 
     ##################  rename columns
 
     # Exclude columns with prefixes: last_, max_, treeID
-    cols_to_exclude <- grep("^(sum_dist_|treeID)", names(df2a), value = TRUE)
+    cols_to_exclude <- grep("^(sum_dist_|treeID)", names(effective_fbh), value = TRUE)
 
-    df2a <- df2a[ , !(names(df2a) %in% cols_to_exclude)]
+    effective_fbh <- effective_fbh[ , !(names(effective_fbh) %in% cols_to_exclude)]
 
     # Extract unique prefixes
-    prefixes <- unique(gsub("([a-zA-Z]+).*", "\\1", names(df2a)))
+    prefixes <- unique(gsub("([a-zA-Z]+).*", "\\1", names(effective_fbh)))
 
     # Rename the columns based on the extracted prefixes
     for (prefix in prefixes) {
       # Identify columns with the current prefix
-      cols <- grep(paste0("^", prefix), names(df2a))
+      cols <- grep(paste0("^", prefix), names(effective_fbh))
 
       # Generate new column names with consecutive suffixes
       new_names <- paste0(prefix, 1:length(cols))
 
       # Assign new names to the columns
-      names(df2a)[cols] <- new_names
+      names(effective_fbh)[cols] <- new_names
     }
 
 
     treeID<-unique(factor(df$treeID))
-    if(!"treeID" %in% colnames(df2a)) {
-      df2a <- cbind(df[c("treeID","treeID1")],df2a )
+    if(!"treeID" %in% colnames(effective_fbh)) {
+      effective_fbh <- cbind(df[c("treeID","treeID1")],effective_fbh )
     }
 
     max_height<-data.frame(df$max_height)
     names(max_height)<-"max_height"
 
-    if(!"max_height" %in% colnames(df2a)) {
-      df2a <- cbind(df2a, df[c("max_height")])
+    if(!"max_height" %in% colnames(effective_fbh)) {
+      effective_fbh <- cbind(effective_fbh, df[c("max_height")])
     }
 
 
-    hdist_cols <- (grep("^Hdist", names(df2a), value = TRUE))
-    hcbh_cols <- grep("^Hcbh", names(df2a), value = TRUE)
-    dist_cols <- grep("^dist", names(df2a), value = TRUE)
-    hdepth_cols <- grep("^Hdepth", names(df2a), value = TRUE)
-    depth_cols <- grep("^depth", names(df2a), value = TRUE)
+    hdist_cols <- (grep("^Hdist", names(effective_fbh), value = TRUE))
+    hcbh_cols <- grep("^Hcbh", names(effective_fbh), value = TRUE)
+    dist_cols <- grep("^dist", names(effective_fbh), value = TRUE)
+    hdepth_cols <- grep("^Hdepth", names(effective_fbh), value = TRUE)
+    depth_cols <- grep("^depth", names(effective_fbh), value = TRUE)
 
 
     # Convert all relevant columns into numeric vectors
-    df2a[hcbh_cols] <- lapply(df2a[hcbh_cols], as.numeric)
-    df2a[hdist_cols] <- lapply(df2a[hdist_cols], as.numeric)
-    df2a[hdepth_cols] <- lapply(df2a[hdepth_cols], as.numeric)
-    df2a[depth_cols] <- lapply(df2a[depth_cols], as.numeric)
+    effective_fbh[hcbh_cols] <- lapply(effective_fbh[hcbh_cols], as.numeric)
+    effective_fbh[hdist_cols] <- lapply(effective_fbh[hdist_cols], as.numeric)
+    effective_fbh[hdepth_cols] <- lapply(effective_fbh[hdepth_cols], as.numeric)
+    effective_fbh[depth_cols] <- lapply(effective_fbh[depth_cols], as.numeric)
 
     # Iterate over Hcbh columns
     for (hcbh_col in hcbh_cols) {
       # Iterate over Hdist columns
       for (hdist_col in hdist_cols) {
         # Check if the Hcbh value is equal to any Hdist value
-        if (df2a[[hcbh_col]] == df2a[[hdist_col]]) {
-          df2a[[hcbh_col]] <- df2a[[hcbh_col]] + 1
+        if (effective_fbh[[hcbh_col]] == effective_fbh[[hdist_col]]) {
+          effective_fbh[[hcbh_col]] <- effective_fbh[[hcbh_col]] + 1
         }
       }
     }
 
-    if(!exists("df2a")) {
-      next  # skip the current iteration if df2a is not generated
+    if(!exists("effective_fbh")) {
+      next  # skip the current iteration if effective_fbh is not generated
     }
   }
 
-
-  return(df2a)
-
+  return(effective_fbh)
 }

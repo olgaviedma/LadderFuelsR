@@ -30,13 +30,9 @@
 #' library(magrittr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
-#' LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Tree metrics derived from get_distance() function
-#' distance_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "2_distance_metrics.txt")
-#' distance_metrics <- read.table(distance_path, sep = "\t", header = TRUE)
 #' distance_metrics$treeID <- factor(distance_metrics$treeID)
 #'
 #' metrics_depth_list <- list()
@@ -52,12 +48,9 @@
 #' }
 #'
 #' # Combine the individual data frames
-#' metrics_all_depth <- dplyr::bind_rows(metrics_depth_list)
-#'
-#' depth_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "3_depth_metrics.txt")
-#' write.table(metrics_all_depth, file = depth_path, sep = "\t", row.names = FALSE)
+#' depth_metrics <- dplyr::bind_rows(metrics_depth_list)
 #' ## End(Not run)
-
+#'
 #' @export get_depths
 #' @importFrom dplyr group_by summarise mutate arrange
 #' @importFrom magrittr %>%
@@ -98,19 +91,7 @@ get_depths <- function (LAD_profiles,distance_metrics) {
     x <- x1[!missing_x & !missing_y]
     y <- y1[!missing_x & !missing_y]
 
-
-    fit <- smooth.spline(x, y) # Fit a smoothing spline
-    y_second_deriv <- predict(fit, fit$x, deriv = 2) # Calculate the second derivative
-
-    #plot(y_second_deriv$x, y_second_deriv$y, type = "l", lwd = 2, col = "red", xlab = "X", ylab = "f''(x)", main = "Plot of second derivative of f(x)")
-
-    base_2drivative<-data.frame(do.call(cbind , y_second_deriv)) # convert the list into a dataframe
-    base_2drivative$y<-round(base_2drivative$y, digits=10)
-
-    critical_points<-base_2drivative[,2]# Extract the values of the second derivative
-    base_2drivative2<-cbind.data.frame(df1[,c(1:3)],critical_points)
-
-    gaps_perc<- with(base_2drivative2,
+    gaps_perc<- with(df1,
                      ifelse(lad <= PERCENTIL_Z$P5 , "5",
                             ifelse(lad > PERCENTIL_Z$P5 & lad <= PERCENTIL_Z$P25, "25",
                                    ifelse(lad > PERCENTIL_Z$P25 & lad <= PERCENTIL_Z$P50, "50",
@@ -121,7 +102,7 @@ get_depths <- function (LAD_profiles,distance_metrics) {
                                                                       ifelse(lad >  PERCENTIL_Z$P99, "100",NA)) )))))))
 
     gaps_perc1 <- data.frame(percentil = as.numeric(gaps_perc))
-    gaps_perc2<-cbind.data.frame(base_2drivative2,gaps_perc1)
+    gaps_perc2<-cbind.data.frame(df1,gaps_perc1)
 
   df <- distance_metrics
 

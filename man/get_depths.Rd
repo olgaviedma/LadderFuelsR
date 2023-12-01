@@ -39,13 +39,9 @@ library(dplyr)
 library(magrittr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
-LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 # Tree metrics derived from get_distance() function
-distance_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "2_distance_metrics.txt")
-distance_metrics <- read.table(distance_path, sep = "\t", header = TRUE)
 distance_metrics$treeID <- factor(distance_metrics$treeID)
 
 metrics_depth_list <- list()
@@ -61,11 +57,9 @@ for (i in levels(LAD_profiles$treeID)){
 }
 
 # Combine the individual data frames
-metrics_all_depth <- dplyr::bind_rows(metrics_depth_list)
-
-depth_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "3_depth_metrics.txt")
-write.table(metrics_all_depth, file = depth_path, sep = "\t", row.names = FALSE)
+depth_metrics <- dplyr::bind_rows(metrics_depth_list)
 ## End(Not run)
+
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

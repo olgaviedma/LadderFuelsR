@@ -2,12 +2,12 @@
 % Please edit documentation in R/corrected_distances.R
 \name{get_effective_gap}
 \alias{get_effective_gap}
-\title{Distances (> 1m) and CBHs (maximum and last distance)}
+\title{Effective Distances and CBHs based on maximum and last distance}
 \usage{
-get_effective_gap(depth_metrics_corr)
+get_effective_gap(effective_depth)
 }
 \arguments{
-\item{depth_metrics_corr}{Tree metrics with the recalculated depth values considering distances > 1 m (output of [get_real_depths()] function).
+\item{effective_depth}{Tree metrics with the recalculated depth values considering distances > 1 m (output of [get_real_depths()] function).
 An object of the class data frame.}
 }
 \value{
@@ -43,53 +43,21 @@ library(magrittr)
 library(stringr)
 
 # Tree metrics derived from get_real_depths() function
-depth_corr_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "5_tree_depth_metrics_corr.txt")
-depth_metrics_corr <- read.table(depth_corr_path, sep = "\t", header = TRUE)
-depth_metrics_corr$treeID <- factor(depth_metrics_corr$treeID)
+effective_depth$treeID <- factor(effective_depth$treeID)
 
-trees_name1 <- as.character(depth_metrics_corr$treeID)
+trees_name1 <- as.character(effective_depth$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
-distance_metrics_corr <- lapply(levels(trees_name2), function(i) {
-  # Filter data for each tree
-  tree2 <- depth_metrics_corr |> dplyr::filter(treeID == i)
-  # Get effective gap for each tree
-  get_effective_gap(tree2)
-})
+corr_distance_metrics_list <- list()
 
-# Combine the individual data frames
-distances_corr_all <- dplyr::bind_rows(distance_metrics_corr)
-
-# =======================================================================#
-# REORDER COLUMNS:
-# =======================================================================#
-# Get original column names
-original_column_names <- colnames(distances_corr_all)
-
-# Specify prefixes
-prefixes <- c("treeID", "Hcbh", "dptf", "Hdptf", "effdist", "dist", "Hdist", "max_Hcbh", "max_dptf", "max_Hdptf", "last_Hcbh",
-              "last_dptf", "last_Hdptf", "max_height")
-
-# Initialize vector to store new order
-new_order <- c()
-
-# Loop over prefixes
-for (prefix in prefixes) {
-  # Find column names matching the current prefix
-  matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
-
-  # Extract numeric suffixes and order the columns based on these suffixes
-  numeric_suffixes <- as.numeric(gsub(paste0("^", prefix), "", matching_columns))
-  matching_columns <- matching_columns[order(numeric_suffixes)]
-
-  # Append to new order
-  new_order <- c(new_order, matching_columns)
+for (i in levels(trees_name2)) {
+  tree1 <- effective_depth |> dplyr::filter(treeID == i)
+  corr_distance_metrics <- get_effective_gap(tree1)
+  corr_distance_metrics_list[[i]] <- corr_distance_metrics
 }
 
-# Reorder values
-distances_corr_all <- distances_corr_all[, new_order]
-distance_corr_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "6_tree_distances_metrics_corr.txt")
-write.table(distances_corr_all, file = distance_corr_path, sep = "\t", row.names = FALSE)
+# Combine the individual data frames
+effective_distances <- dplyr::bind_rows(corr_distance_metrics_list)
 ## End(Not run)
 
 }

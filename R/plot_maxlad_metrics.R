@@ -4,13 +4,13 @@
 #' This function plots the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
 #'
 #' @usage
-#' get_plots_cbh_LAD(LAD_profiles, fuels_LAD_metrics)
+#' get_plots_cbh_LAD(LAD_profiles, effective_LAD)
 #'
 #' @param LAD_profiles
 #' Original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class text.
 #'
-#' @param fuels_LAD_metrics
+#' @param effective_LAD
 #' Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than 5
 #' (output of [get_layers_lad()] function).
 #' An object of the class text.
@@ -26,32 +26,20 @@
 #' library(ggplot2)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
-#' LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Tree metrics derived from get_layers_lad() function
-#' LAD_gt5p_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "7_fuels_lad_gt5perc.txt")
-#' fuels_LAD_metrics <- read.table(LAD_gt5p_path, sep = "\t", header = TRUE)
-#' fuels_LAD_metrics$treeID <- factor(fuels_LAD_metrics$treeID)
+#' effective_LAD$treeID <- factor(effective_LAD$treeID)
 #'
-#' trees_name1 <- as.character(fuels_LAD_metrics$treeID)
+#' trees_name1 <- as.character(effective_LAD$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
 #'
 #' # Generate plots for fuels LAD metrics
-#' plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, fuels_LAD_metrics)
+#' plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
 #'
-#' # Save plots for each tree
-#' for (name in names(plots_trees_LAD)) {
-#'   plots <- plots_trees_LAD[[name]]
-#'
-#'   if (!is.null(plots)) {
-#'     print(paste("Saving plot for tree:", name))
-#'     ggsave(file.path(system.file("extdata", package = "LadderFuelsR"),  paste0( name, "_LAD_5perc", ".tiff")), plot = plots)
-#'   }}
 #' ## End(Not run)
 #'
-#' @export
+#' @export get_plots_cbh_LAD
 #' @importFrom ggplot2 ggplot
 #' @importFrom dplyr group_by summarise mutate arrange
 #' @importFrom magrittr %>%
@@ -64,7 +52,7 @@
 #' @include corrected_depth.R
 #' @include corrected_distances.R
 #' @include maxlad_metrics_25perc.R
-get_plots_cbh_LAD <- function (LAD_profiles, fuels_LAD_metrics) {
+get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
   df_orig <- LAD_profiles
 
@@ -85,7 +73,7 @@ get_plots_cbh_LAD <- function (LAD_profiles, fuels_LAD_metrics) {
     height <- tree_data$height
     lad <- tree_data$lad
 
-    df_effective1 <- fuels_LAD_metrics %>% filter(treeID == i)
+    df_effective1 <- effective_LAD %>% filter(treeID == i)
 
     CBH_1 <- round(as.numeric(as.character(df_effective1$Hcbh1)), 1)
     CBH_2 <- round(as.numeric(as.character(df_effective1$Hcbh2)), 1)

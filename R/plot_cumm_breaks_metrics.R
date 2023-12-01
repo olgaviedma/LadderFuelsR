@@ -1,9 +1,9 @@
 #' Plot of tree profiles with the canopy base height (CBH) based on the breaking point method
 #' @description This function plots the canopy base height (CBH) based on breaking point over the cummulative LAD values and gives the LAD percentage below and above that breaking point
-#' @usage get_plots_cumm(LAD_profiles, cum_LAD_metrics)
+#' @usage get_plots_cumm(LAD_profiles, cummulative_LAD)
 #' @param LAD_profiles original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function from leafR package).
 #' An object of the class text
-#' @param cum_LAD_metrics tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).
+#' @param cummulative_LAD tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).
 #' An object of the class text
 #' @return A plot of the CBH and LAD percentage below and above the CBH
 #' @author Olga Viedma, Carlos Silva and JM Moreno
@@ -12,26 +12,13 @@
 #' ## Not run:
 #' library(ggplot2)
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
-#' LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Tree metrics derived from get_cum_break() function
-#' cum_LAD_metrics_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "8_cbh_breaking_point_lad.txt")
-#' cum_LAD_metrics <- read.table(cum_LAD_metrics_path, sep = "\t", header = TRUE)
-#' cum_LAD_metrics$treeID <- factor(cum_LAD_metrics$treeID)
+#' cummulative_LAD$treeID <- factor(cummulative_LAD$treeID)
 #'
 #' # Generate cumulative LAD plots
-#' plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cum_LAD_metrics)
-#'
-#' # Save plots for each tree
-#' for (name in names(plots_trees_cumlad)) {
-#'   plots <- plots_trees_cumlad[[name]]
-#'
-#'   if (!is.null(plots)) {
-#'     print(paste("Saving plot for tree:", name))
-#'     ggsave(file.path(system.file("extdata", package = "LadderFuelsR"),  paste0( name, "_cumm_Hcbh", ".tiff")), plot = plots)
-#'   }}
+#' plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
 #'
 #' ## End(Not run)
 #'
@@ -48,10 +35,10 @@
 #' @include corrected_depth.R
 #' @include corrected_distances.R
 #' @include cummLAD_breaks_metrics.R
-get_plots_cumm <- function(LAD_profiles, cum_LAD_metrics) {
+get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
 
   df_orig<- LAD_profiles
-  df_effective1 <- cum_LAD_metrics
+  df_effective1 <- cummulative_LAD
 
   #  Ensure treeID columns are factors
   df_orig$treeID <- factor(df_orig$treeID)

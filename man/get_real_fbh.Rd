@@ -38,8 +38,6 @@ library(dplyr)
 library(magrittr)
 
 # Tree metrics derived from get_depths() function
-depth_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "3_depth_metrics.txt")
-depth_metrics <- read.table(depth_path, sep = "\t", header = TRUE)
 depth_metrics$treeID <- factor(depth_metrics$treeID)
 
 trees_name1 <- as.character(depth_metrics$treeID)
@@ -48,46 +46,17 @@ trees_name2 <- factor(unique(trees_name1))
 fbh_corr_list <- list()
 
 for (i in levels(trees_name2)){
-
   # Filter data for each tree
   tree3 <- depth_metrics |> dplyr::filter(treeID == i)
-
   # Get real fbh for each tree
   fbh_corr <- get_real_fbh(tree3)
-
   # Store fbh values in a list
   fbh_corr_list[[i]] <- fbh_corr
 }
 
 # Combine fbh values for all trees
-fbh_corr_all <- dplyr::bind_rows(fbh_corr_list)
-fbh_corr_all$treeID <- factor(fbh_corr_all$treeID)
-
-# Reorder columns
-# Get original column names
-original_column_names <- colnames(fbh_corr_all)
-
-# Specify prefixes
-prefixes <- c("treeID", "Hdist", "Hcbh", "Hdepth", "dist", "depth", "max_height")
-
-# Initialize vector to store new order
-new_order <- c()
-
-# Loop over prefixes
-for (prefix in prefixes) {
-  # Find column names matching the current prefix
-  matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
-  # Append to the new order
-  new_order <- c(new_order, matching_columns)
-}
-
-# Reorder values
-fbh_corr_all <- fbh_corr_all[, new_order]
-
-# Save the reordered data
-fbh_corr_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "4_fbh_metrics_corr.txt")
-write.table(fbh_corr_all, file = fbh_corr_path, sep = "\t", row.names = FALSE)
-
+effective_fbh <- dplyr::bind_rows(fbh_corr_list)
+effective_fbh$treeID <- factor(effective_fbh$treeID)
 ## End(Not run)
 
 }

@@ -24,23 +24,16 @@ This function plots gaps and fuel layers base height (fbh) in the vertical tree 
 library(ggplot2)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
-LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
+data(LAD_profiles)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 # Tree metrics derived from get_depths() function
-depth_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "3_depth_metrics.txt")
-depth_metrics <- read.table(depth_path, sep = "\t", header = TRUE)
+data(depth_metrics)
 depth_metrics$treeID <- factor(depth_metrics$treeID)
 
 # Generate plots for gaps and fbhs
 plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
 
-# Save plots for each tree
-for (name in names(plots_gaps_fbhs)) {
-  print(plots_gaps_fbhs[[name]])  # print the plot
-  ggsave(file.path(system.file("extdata", package = "LadderFuelsR"),  paste0( name, "_gap_fbh", ".tiff")), plot = plots_gaps_fbhs[[name]])
-}
 ## End(Not run)
 
 }

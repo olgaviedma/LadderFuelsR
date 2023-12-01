@@ -11,14 +11,15 @@ LazyData: true
 Imports: SSBtools, dplyr, gdata, ggplot2, magrittr, segmented, stringr, tidyr
 RoxygenNote: 7.2.3
 Collate: 
+    'LAD_profiles.R'
     'gap_fbh.R'
     'distances_calculation.R'
     'depths_calculation.R'
     'corrected_base_heights.R'
     'corrected_depth.R'
     'corrected_distances.R'
-    'maxlad_metrics_25perc.R'
     'cummLAD_breaks_metrics.R'
+    'maxlad_metrics_25perc.R'
     'plot_cumm_breaks_metrics.R'
     'plot_gaps_fbhs.R'
     'plot_maxlad_metrics.R'

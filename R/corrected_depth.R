@@ -1,9 +1,9 @@
 #'
-#' Fuel layers depth after removing distances = 1 m
+#' Effective fuel layers depth
 #'
 #' @description This function recalculates fuel layers depth after removing distances = 1 m
-#' @usage get_real_depths (fbh_metrics_corr)
-#' @param fbh_metrics_corr tree metrics with the recalculated base height of fuel layers after considering distances > 1 m  (output of [get_real_fbh()] function).
+#' @usage get_real_depths (effective_fbh)
+#' @param effective_fbh tree metrics with the recalculated base height of fuel layers after considering distances > 1 m  (output of [get_real_fbh()] function).
 #' An object of the class text
 #' @return A data frame giving the fuel layers depth after removing distances = 1 m.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
@@ -25,25 +25,25 @@
 #' library(dplyr)
 #' library(magrittr)
 #' library(tidyr)
-#' # Tree metrics derived from get_real_fbh() function
-#' fbhcor_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "4_fbh_metrics_corr.txt")
-#' fbh_metrics_corr <- read.table(fbhcor_path, sep = "\t", header = TRUE)
-#' fbh_metrics_corr$treeID <- factor(fbh_metrics_corr$treeID)
 #'
-#' trees_name1 <- as.character(fbh_metrics_corr$treeID)
+#' # Tree metrics derived from get_real_fbh() function
+#' effective_fbh$treeID <- factor(effective_fbh$treeID)
+#'
+#' trees_name1 <- as.character(effective_fbh$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
 #'
-#' depth_metrics_corr <- lapply(levels(trees_name2), function(i) {
+#' depth_metrics_corr_list <- list()
+#'
+#' for (i in levels(trees_name2)){
 #'   # Filter data for each tree
-#'   tree2 <- fbh_metrics_corr |> dplyr::filter(treeID == i)
+#'   tree3 <- effective_fbh |> dplyr::filter(treeID == i)
 #'   # Get real depths for each tree
-#'   get_real_depths(tree2)
-#' })
+#'   depth_metrics_corr <- get_real_depths(tree3)
+#'   depth_metrics_corr_list[[i]] <- depth_metrics_corr
+#' }
 #'
 #' # Combine depth values for all trees
-#' depth_corr_all <- dplyr::bind_rows(depth_metrics_corr)
-#' depth_corr_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "5_tree_depth_metrics_corr.txt")
-#' write.table(depth_corr_all, file = depth_corr_path, sep = "\t", row.names = FALSE)
+#' effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
 #' ## End(Not run)
 #'
 #' @export get_real_depths
@@ -57,14 +57,14 @@
 #' @include depths_calculation.R
 #' @include corrected_base_heights.R
 #' @seealso \code{\link{get_renamed0_df}}
-get_real_depths <- function (fbh_metrics_corr) {
+get_real_depths <- function (effective_fbh) {
 
   #remove the columns from the dataframe df2a which contain only NA values.
-  df<- fbh_metrics_corr
+  df<- effective_fbh
   df2a <- df[, colSums(!is.na(df)) > 0]
   df2a <- df2a[, !(names(df2a) %in% "depth01")]
 
-  #print(paste("Unique treeIDs:", paste(unique(df2a$treeID), collapse = ", ")))
+  print(paste("Unique treeIDs:", paste(unique(df2a$treeID), collapse = ", ")))
 
   ##check if the first "dist" column has a value greater than 1. If this is true, then it will remove depth0 in computation
 
@@ -935,7 +935,8 @@ get_real_depths <- function (fbh_metrics_corr) {
 
   # Reorder values by treeID
   df5b <- df5b[, new_order]
+  effective_depth<-df5b
 
-    return (df5b)
+  return (effective_depth)
 
 }

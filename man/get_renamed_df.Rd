@@ -15,6 +15,6 @@ Don´t run it. It is an internal function.
 }
 \examples{
 ## Not run:
-# get_renamed_df function deals with concatenated column names, reorders columns and appends numeric suffixes
+# get_renamed_df concatenates column names, reorders columns and appends numeric suffixes
 ## End(Not run)
 }

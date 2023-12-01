@@ -1,10 +1,10 @@
 #'
-#' Distances (and their heights) between fuel layers
-#' @description This function calculates distances between fuel layers as the difference between consecutive gaps and fuel bases
+#' Distances between fuel layers
+#' @description This function calculates distances (and their heights) between fuel layers as the difference between consecutive gaps and fuel bases
 #' (the gap height always must be lower than the fuel base height).
-#' @usage get_distance (gaps_fbhs_metrics)
+#' @usage get_distance (gap_cbh_metrics)
 #'
-#' @param gaps_fbhs_metrics data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
+#' @param gap_cbh_metrics data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
 #' An object of the class text
 #' @return A data frame giving distances (and their heights) between fuel layers in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
@@ -27,11 +27,9 @@
 #' library(gdata)
 #'
 #' # Tree metrics derived from get_gaps_fbhs() function
-#' gaps_fbhs_metrics_path <- system.file("extdata", "1_gaps_fbhs_metrics.txt", package = "LadderFuelsR")
-#' gaps_fbhs_metrics <- read.table(gaps_fbhs_metrics_path, sep="\t", header=TRUE)
 #'
-#' gaps_fbhs_metrics$treeID <- factor(gaps_fbhs_metrics$treeID)
-#' trees_name1 <- as.character(gaps_fbhs_metrics$treeID)
+#' gap_cbh_metrics$treeID <- factor(gap_cbh_metrics$treeID)
+#' trees_name1 <- as.character(gap_cbh_metrics$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
 #'
 #' metrics_distance_list <- list()
@@ -39,7 +37,7 @@
 #' for (i in levels(trees_name2)) {
 #'
 #'   # Filter data for each tree
-#'   tree2 <- gaps_fbhs_metrics |> dplyr::filter(treeID == i)
+#'   tree2 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
 #'
 #'   # Get distance metrics for each tree
 #'   metrics_distance <- get_distance(tree2)
@@ -47,20 +45,21 @@
 #' }
 #'
 #' # Combine the individual data frames
-#' metrics_all_distance <- dplyr::bind_rows(metrics_distance_list)
+#' distance_metrics <- dplyr::bind_rows(metrics_distance_list)
 #'
-#' distance_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "2_distance_metrics.txt")
-#' write.table(metrics_all_distance, file=distance_path, sep="\t", row.names=FALSE)
 #' ## End(Not run)
-
 #' @export get_distance
 #' @importFrom dplyr group_by summarise mutate arrange
 #' @importFrom magrittr %>%
 #' @importFrom gdata startsWith
 #' @include gap_fbh.R
-get_distance <- function (gaps_fbhs_metrics) {
+get_distance <- function (gap_cbh_metrics) {
 
-  df<- gaps_fbhs_metrics
+  df <- gap_cbh_metrics %>%
+    mutate_at(
+      vars(-treeID),  # Exclude the 'treeID' column
+      as.numeric
+    )
 
   df1 <- df[, !colSums(is.na(df)) > 0]
   # Select only numeric columns

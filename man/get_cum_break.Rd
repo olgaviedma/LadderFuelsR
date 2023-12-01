@@ -4,13 +4,13 @@
 \alias{get_cum_break}
 \title{CBH and the LAD percentage below and above the CBH using the breaking point method}
 \usage{
-get_cum_break(LAD_profiles, distances_metrics_corr)
+get_cum_break(LAD_profiles, effective_distances)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 An object of the class data frame.}
 
-\item{distances_metrics_corr}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
+\item{effective_distances}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 An object of the class data frame.}
 }
 \value{
@@ -47,18 +47,16 @@ the cumulative LAD values as a function of height.The function also calculates t
 ## Not run:
 library(dplyr)
 library(magrittr)
+library(segmented)
+library(gdata)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
-LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 # Tree metrics derived from get_effective_gap() function
-distcorr_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "6_tree_distances_metrics_corr.txt")
-distances_metrics_corr <- read.table(distcorr_path, sep = "\t", header = TRUE)
-distances_metrics_corr$treeID <- factor(distances_metrics_corr$treeID)
+effective_distances$treeID <- factor(effective_distances$treeID)
 
-trees_name1 <- as.character(distances_metrics_corr$treeID)
+trees_name1 <- as.character(effective_distances$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
 cum_LAD_metrics_list <- list()
@@ -66,7 +64,7 @@ cum_LAD_metrics_list <- list()
 for (i in levels(trees_name2)) {
   # Filter data for each tree
   tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-  tree2 <- distances_metrics_corr |> dplyr::filter(treeID == i)
+  tree2 <- effective_distances |> dplyr::filter(treeID == i)
 
   # Get cumulative LAD metrics for each tree
   cum_LAD_metrics <- get_cum_break(tree1, tree2)
@@ -74,38 +72,7 @@ for (i in levels(trees_name2)) {
 }
 
 # Combine the individual data frames
-cum_LAD_metrics_all <- dplyr::bind_rows(cum_LAD_metrics_list)
-
-# =======================================================================#
-# REORDER COLUMNS
-# =======================================================================#
-
-# Get original column names
-original_column_names <- colnames(cum_LAD_metrics_all)
-
-# Specify prefixes (adjust accordingly)
-prefixes <- c("treeID", "Hcbh", "below", "above", "depth", "Hdepth", "dptf", "Hdptf", "Hdist", "effdist", "max", "last", "cumlad")
-
-# Initialize vector to store new order
-new_order <- c()
-
-# Loop over prefixes
-for (prefix in prefixes) {
-  # Find column names matching the current prefix
-  matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
-
-  # Extract numeric suffixes and order the columns based on these suffixes
-  numeric_suffixes <- as.numeric(gsub(paste0("^", prefix), "", matching_columns))
-  matching_columns <- matching_columns[order(numeric_suffixes)]
-
-  # Append to new order
-  new_order <- c(new_order, matching_columns)
-}
-
-# Reorder columns
-cum_LAD_metrics_order <- cum_LAD_metrics_all[, new_order]
-cum_LAD_metrics_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "8_cbh_breaking_point_lad.txt")
-write.table(cum_LAD_metrics_order, file = cum_LAD_metrics_path, sep = "\t", row.names = FALSE)
+cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
 ## End(Not run)
 
 }

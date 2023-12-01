@@ -4,13 +4,13 @@
 \alias{get_layers_lad}
 \title{Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances > 1 m)}
 \usage{
-get_layers_lad(LAD_profiles, distances_metrics_corr)
+get_layers_lad(LAD_profiles, effective_distances)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 An object of the class text.}
 
-\item{distances_metrics_corr}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
+\item{effective_distances}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 An object of the class text.}
 }
 \value{
@@ -45,18 +45,15 @@ It determines the canopy base height (CBH) as the fuel layer with the highest LA
 ## Not run:
 library(dplyr)
 library(magrittr)
+library(gdata)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-data_path <- system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR")
-LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 # Tree metrics derived from get_effective_gap() function
-distcorr_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "6_tree_distances_metrics_corr.txt")
-distances_metrics_corr <- read.table(distcorr_path, sep = "\t", header = TRUE)
-distances_metrics_corr$treeID <- factor(distances_metrics_corr$treeID)
+effective_distances$treeID <- factor(effective_distances$treeID)
 
-trees_name1 <- as.character(distances_metrics_corr$treeID)
+trees_name1 <- as.character(effective_distances$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
 LAD_metrics1 <- list()
@@ -65,7 +62,7 @@ LAD_metrics2 <- list()
 for (i in levels(trees_name2)) {
   # Filter data for each tree
   tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-  tree2 <- distances_metrics_corr |> dplyr::filter(treeID == i)
+  tree2 <- effective_distances |> dplyr::filter(treeID == i)
 
   # Get LAD metrics for each tree
   LAD_metrics <- get_layers_lad(tree1, tree2)
@@ -73,51 +70,9 @@ for (i in levels(trees_name2)) {
   LAD_metrics2[[i]] <- LAD_metrics$df2
 }
 
-LAD_metrics_all1 <- dplyr::bind_rows(LAD_metrics1)
-LAD_metrics_all2 <- dplyr::bind_rows(LAD_metrics2)
+all_LAD <- dplyr::bind_rows(LAD_metrics1)
+effective_LAD <- dplyr::bind_rows(LAD_metrics2)
 
-# List of data frames
-LAD_metrics_list <- list(LAD_metrics_all1, LAD_metrics_all2)
-
-# Initialize an empty list to store reordered data frames
-reordered_list <- list()
-
-# Specify prefixes (adjust accordingly)
-prefixes <- c("treeID", "Hdist", "Hcbh", "effdist", "dptf", "Hdptf", "max", "last")
-
-# Loop over each data frame
-for (i in seq_along(LAD_metrics_list)) {
-
-  LAD_metrics_all <- LAD_metrics_list[[i]]
-
-  # Get original column names
-  original_column_names <- colnames(LAD_metrics_all)
-
-  # Initialize vector to store new order
-  new_order <- c()
-
-  # Loop over prefixes
-  for (prefix in prefixes) {
-    # Find column names matching the current prefix
-    matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
-
-    # Extract numeric suffixes and order the columns based on these suffixes
-    numeric_suffixes <- as.numeric(gsub(paste0("^", prefix), "", matching_columns))
-    matching_columns <- matching_columns[order(numeric_suffixes)]
-
-    # Append to new order
-    new_order <- c(new_order, matching_columns)
-  }
-  # Reorder columns
-  LAD_metrics_all <- LAD_metrics_all[, new_order]
-  # Store the reordered data frame in the list
-  reordered_list[[i]] <- LAD_metrics_all
- }
-  # Write the reordered data frame to a file
- fuels_lad_all_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "7_fuels_lad_all.txt")
- write.table(reordered_list[[1]], file = fuels_lad_all_path, sep = "\t", row.names = FALSE)
- fuels_lad_gt25_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "7_fuels_lad_gt25perc.txt")
- write.table(reordered_list[[2]], file = fuels_lad_gt25_path, sep = "\t", row.names = FALSE)
 ## End(Not run)
 
 }

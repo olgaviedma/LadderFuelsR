@@ -2,7 +2,7 @@
 % Please edit documentation in R/gap_fbh.R
 \name{get_gaps_fbhs}
 \alias{get_gaps_fbhs}
-\title{Gaps and Fuel layers Base Height (fbh)}
+\title{Gaps and Fuel layers Base Height (FBH)}
 \usage{
 get_gaps_fbhs (LAD_profiles)
 }
@@ -14,7 +14,7 @@ An object of the class text}
 A data frame giving the height of gaps and fuel layers bases in meters.
 }
 \description{
-This function calculates gaps and fuel layers base height (fbh) as the difference in percentiles between consecutive LAD values along the vertical tree profile (VTP).
+This function calculates gaps and fuel layers base height (FBH) as the difference in percentiles between consecutive LAD values along the vertical tree profile (VTP).
 Negative differences are linked to gaps and positive differences to fuel base height.
 }
 \details{
@@ -37,7 +37,7 @@ library(dplyr)
 library(magrittr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-data_path <- file.path(system.file("extdata", package = "LadderFuelsR"), "LAD_profiles.txt")
+data_path <- file.path("D:/OLGA/R_library/LadderFuelsR/extdata/LAD_profiles.txt")
 LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
@@ -66,12 +66,10 @@ row_index <- which(rows_with_all_NA_or_zero)
 
 # Remove the row with all NA values from the original data frame
 if (length(row_index) > 0) {
-  tree_metrics_filtered <- metrics_all_percentil[-row_index, ]
+  gap_cbh_metrics <- metrics_all_percentil[-row_index, ]
 } else {
-  tree_metrics_filtered <- metrics_all_percentil
+  gap_cbh_metrics <- metrics_all_percentil
 }
-write.table(tree_metrics_filtered, file= file.path(system.file("extdata", package = "LadderFuelsR"), "1_gaps_fbhs_metrics.txt"),
-sep = "\t",row.names = FALSE)
 ## End(Not run)
 }
 \author{
