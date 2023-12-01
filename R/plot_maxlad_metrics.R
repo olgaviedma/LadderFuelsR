@@ -28,15 +28,18 @@
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' # Tree metrics derived from get_layers_lad() function
-#' effective_LAD$treeID <- factor(effective_LAD$treeID)
+#' ## Not run:
+#' # Load or create the effective_LAD object
+#' if (interactive()) {
+#'   effective_LAD <- get_layers_lad()
+#'   LadderFuelsR::effective_LAD$treeID <- factor(LadderFuelsR::effective_LAD$treeID)
 #'
 #' trees_name1 <- as.character(effective_LAD$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
 #'
 #' # Generate plots for fuels LAD metrics
 #' plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
-#'
+#'}
 #' ## End(Not run)
 #'
 #' @export get_plots_cbh_LAD

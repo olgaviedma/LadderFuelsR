@@ -26,6 +26,17 @@
 #' library(magrittr)
 #' library(tidyr)
 #'
+#'
+#' # Tree metrics derived from get_real_fbh() function
+#' if (interactive()) {
+#'   effective_fbh$treeID <- factor(effective_fbh$treeID)
+#' }
+#'
+#' # Load or create the effective_fbh object
+#' if (interactive()) {
+#'   effective_fbh <- get_real_fbh()
+#'   LadderFuelsR::effective_fbh$treeID <- factor(LadderFuelsR::effective_fbh$treeID)
+#'
 #' # Tree metrics derived from get_real_fbh() function
 #' effective_fbh$treeID <- factor(effective_fbh$treeID)
 #'
@@ -44,6 +55,7 @@
 #'
 #' # Combine depth values for all trees
 #' effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
+#' }
 #' ## End(Not run)
 #'
 #' @export get_real_depths

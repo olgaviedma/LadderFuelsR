@@ -44,7 +44,14 @@
 #' library(stringr)
 #'
 #' # Tree metrics derived from get_real_depths() function
-#' effective_depth$treeID <- factor(effective_depth$treeID)
+#' if (interactive()) {
+#'   effective_depth$treeID <- factor(effective_depth$treeID)
+#' }
+#'
+#' # Load or create the effective_depth object
+#' if (interactive()) {
+#'   effective_depth <- get_real_depths()
+#'   LadderFuelsR::effective_depth$treeID <- factor(LadderFuelsR::effective_depth$treeID)
 #'
 #' trees_name1 <- as.character(effective_depth$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
@@ -59,6 +66,7 @@
 #'
 #' # Combine the individual data frames
 #' effective_distances <- dplyr::bind_rows(corr_distance_metrics_list)
+#' }
 #' ## End(Not run)
 #'
 #' @export get_effective_gap

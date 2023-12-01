@@ -25,12 +25,18 @@ library(ggplot2)
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
+## Not run:
+# Load or create the cummulative_LAD object
+if (interactive()) {
+  cummulative_LAD <- get_cum_break()
+  LadderFuelsR::cummulative_LAD$treeID <- factor(LadderFuelsR::cummulative_LAD$treeID)
+
 # Tree metrics derived from get_cum_break() function
 cummulative_LAD$treeID <- factor(cummulative_LAD$treeID)
 
 # Generate cumulative LAD plots
 plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
-
+}
 ## End(Not run)
 
 }

@@ -32,8 +32,16 @@
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' # Tree metrics derived from get_distance() function
-#' distance_metrics$treeID <- factor(distance_metrics$treeID)
+#' #' # Distance metrics derived from get_distance() function
+#' if (interactive()) {
+#'   distance_metrics$treeID <- factor(distance_metrics$treeID)
+#' }
+#'
+#' # Load or create the effective_distances object
+#' if (interactive()) {
+#'   distance_metrics <- get_distance()
+#'   LadderFuelsR::distance_metrics$treeID <- factor(LadderFuelsR::distance_metrics$treeID)
+#'
 #'
 #' metrics_depth_list <- list()
 #'
@@ -49,6 +57,7 @@
 #'
 #' # Combine the individual data frames
 #' depth_metrics <- dplyr::bind_rows(metrics_depth_list)
+#' }
 #' ## End(Not run)
 #'
 #' @export get_depths

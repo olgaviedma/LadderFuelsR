@@ -35,11 +35,15 @@ library(dplyr)
 library(magrittr)
 library(gdata)
 
-# Tree metrics derived from get_gaps_fbhs() function
+#' # Tree metrics derived from get_gaps_fbhs() function
+if (interactive()) {
+  gap_cbh_metrics$treeID <- factor(gap_cbh_metrics$treeID)
+}
 
-gap_cbh_metrics$treeID <- factor(gap_cbh_metrics$treeID)
-trees_name1 <- as.character(gap_cbh_metrics$treeID)
-trees_name2 <- factor(unique(trees_name1))
+# Load or create the effective_distances object
+if (interactive()) {
+  gap_cbh_metrics <- get_gaps_fbhs()
+  LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
 
 metrics_distance_list <- list()
 
@@ -55,7 +59,7 @@ for (i in levels(trees_name2)) {
 
 # Combine the individual data frames
 distance_metrics <- dplyr::bind_rows(metrics_distance_list)
-
+}
 ## End(Not run)
 }
 \author{

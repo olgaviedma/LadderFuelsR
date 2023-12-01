@@ -38,7 +38,14 @@ library(dplyr)
 library(magrittr)
 
 # Tree metrics derived from get_depths() function
-depth_metrics$treeID <- factor(depth_metrics$treeID)
+if (interactive()) {
+  depth_metrics$treeID <- factor(depth_metrics$treeID)
+}
+
+# Load or create the effective_depth object
+if (interactive()) {
+  depth_metrics <- get_depths()
+  LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
 
 trees_name1 <- as.character(depth_metrics$treeID)
 trees_name2 <- factor(unique(trees_name1))
@@ -57,6 +64,7 @@ for (i in levels(trees_name2)){
 # Combine fbh values for all trees
 effective_fbh <- dplyr::bind_rows(fbh_corr_list)
 effective_fbh$treeID <- factor(effective_fbh$treeID)
+}
 ## End(Not run)
 
 }
