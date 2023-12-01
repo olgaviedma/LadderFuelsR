@@ -217,7 +217,6 @@ if (length(gap_cols) > 1 && length(cbh_cols) != 0 && nrow(new_depth_file) == 0 &
 
 
 # Depurating output format
-library(dplyr)
 
 if (exists("new_depth_file") && !is.null(new_depth_file) && nrow(new_depth_file) > 1 && ncol(new_depth_file) != 0) {
 
