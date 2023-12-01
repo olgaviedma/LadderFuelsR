@@ -30,7 +30,7 @@
 #'
 #' @export get_plots_cumm
 #' @importFrom ggplot2 ggplot
-#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup distinct
 #' @importFrom magrittr %>%
 #' @importFrom SSBtools RbindAll
 #' @importFrom gdata startsWith
@@ -51,7 +51,7 @@ get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
   df_effective1$treeID <- factor(df_effective1$treeID)
 
   #Remove duplicates and columns with all NA values
-  df_effective1 <- df_effective1 %>% distinct(treeID, .keep_all = TRUE)
+  df_effective1 <- df_effective1 %>% dplyr::distinct(treeID, .keep_all = TRUE)
 
   df_effective1 <- df_effective1[, !apply(is.na(df_effective1), 2, all)]
 

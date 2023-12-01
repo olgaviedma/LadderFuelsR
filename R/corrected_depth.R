@@ -53,11 +53,12 @@
 #' ## End(Not run)
 #'
 #' @export get_real_depths
-#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup distinct
 #' @importFrom magrittr %>%
 #' @importFrom tidyr pivot_longer
 #' @importFrom SSBtools RbindAll
 #' @importFrom gdata startsWith
+#' @importFrom tidylog slice_tail
 #' @include gap_fbh.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
@@ -529,7 +530,7 @@ get_real_depths <- function (effective_fbh) {
     df_transposed4 <- df_transposed4 %>%
       dplyr::mutate(original_order = row_number()) %>%
       dplyr::group_by(dist,dptf, Hdepth) %>%
-      dplyr::slice_tail(n = 1) %>%
+      tidylog::slice_tail(n = 1) %>%
       dplyr::ungroup() %>%
       dplyr::arrange(original_order) %>%
       dplyr::select(-original_order)

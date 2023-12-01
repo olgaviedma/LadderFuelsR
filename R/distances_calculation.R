@@ -53,7 +53,7 @@
 #'}
 #' ## End(Not run)
 #' @export get_distance
-#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup distinct
 #' @importFrom magrittr %>%
 #' @importFrom gdata startsWith
 #' @include gap_fbh.R
@@ -67,7 +67,7 @@ get_distance <- function (gap_cbh_metrics) {
 
   df1 <- df[, !colSums(is.na(df)) > 0]
   # Select only numeric columns
-  df1_numeric <- df1 %>% select_if(is.numeric)
+  df1_numeric <- df1 %>% dplyr::select_if(is.numeric)
 
   #print(paste("treeID:", df1_numeric$treeID))
 

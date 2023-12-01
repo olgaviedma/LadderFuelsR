@@ -61,7 +61,7 @@
 #' ## End(Not run)
 #'
 #' @export get_depths
-#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup distinct
 #' @importFrom magrittr %>%
 #' @importFrom gdata startsWith
 #' @include gap_fbh.R
@@ -117,7 +117,7 @@ get_depths <- function (LAD_profiles,distance_metrics) {
 
   df <- df[, !colSums(is.na(df)) > 0]
   # Select only numeric columns
-  df1_numeric <- df %>% select_if(is.numeric)
+  df1_numeric <- df %>% dplyr::select_if(is.numeric)
 
   #print(paste("treeID1:", df1_numeric$treeID1))
 
