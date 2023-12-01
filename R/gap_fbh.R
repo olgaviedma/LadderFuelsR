@@ -62,7 +62,7 @@
 #' }
 #' ## End(Not run)
 #' @export get_gaps_fbhs
-#' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice ungroup distinct
+#' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' @importFrom magrittr %>%
 get_gaps_fbhs<- function (LAD_profiles) {
 

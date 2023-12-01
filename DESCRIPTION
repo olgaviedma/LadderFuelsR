@@ -8,7 +8,7 @@ Description: Automated tool for vertical fuel continuity analysis using LiDAR da
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports: SSBtools, dplyr, gdata, ggplot2, magrittr, segmented, stringr, tidyr, tidylog
+Imports: SSBtools, dplyr, gdata, ggplot2, magrittr, segmented, stringr, tidyr
 RoxygenNote: 7.2.3
 Collate: 
     'LAD_profiles.R'

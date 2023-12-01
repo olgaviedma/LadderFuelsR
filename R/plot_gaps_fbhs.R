@@ -34,7 +34,7 @@
 #'
 #' @export get_plots_gap_fbh
 #' @importFrom ggplot2 ggplot
-#' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice ungroup distinct
+#' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' @importFrom magrittr %>%
 #' @include gap_fbh.R
 #' @include distances_calculation.R
