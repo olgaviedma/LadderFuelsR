@@ -60,25 +60,25 @@
 #' if (interactive()) {
 #'   effective_distances <- get_effective_gap()
 #'   LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
+#'
+#'   trees_name1 <- as.character(effective_distances$treeID)
+#'   trees_name2 <- factor(unique(trees_name1))
+#'
+#'   cum_LAD_metrics_list <- list()
+#'
+#'   for (i in levels(trees_name2)) {
+#'     # Filter data for each tree
+#'     tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+#'     tree2 <- effective_distances |> dplyr::filter(treeID == i)
+#'
+#'     # Get cumulative LAD metrics for each tree
+#'     cum_LAD_metrics <- get_cum_break(tree1, tree2)
+#'     cum_LAD_metrics_list[[i]] <- cum_LAD_metrics
+#'   }
+#'
+#'   # Combine the individual data frames
+#'   cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
 #' }
-#'
-#' trees_name1 <- as.character(effective_distances$treeID)
-#' trees_name2 <- factor(unique(trees_name1))
-#'
-#' cum_LAD_metrics_list <- list()
-#'
-#' for (i in levels(trees_name2)) {
-#'   # Filter data for each tree
-#'   tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#'   tree2 <- effective_distances |> dplyr::filter(treeID == i)
-#'
-#'   # Get cumulative LAD metrics for each tree
-#'   cum_LAD_metrics <- get_cum_break(tree1, tree2)
-#'   cum_LAD_metrics_list[[i]] <- cum_LAD_metrics
-#' }
-#'
-#' # Combine the individual data frames
-#' cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
 #' ## End(Not run)
 #'
 #' @export get_cum_break
