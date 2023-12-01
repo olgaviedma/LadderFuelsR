@@ -70,7 +70,7 @@
 #' ## End(Not run)
 #'
 #' @export get_effective_gap
-#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom dplyr group_by summarise mutate arrange rename rename_with
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_detect
 #' @importFrom SSBtools RbindAll
@@ -335,7 +335,7 @@ get_effective_gap <- function (effective_depth) {
       if (df6a$effdist1 == 1 && all(sapply(df6a[effdist_cols], function(x) x[1] == df6a$effdist1[1]))) {
 
         max_df <- df6a %>%
-          rename_with(~ ifelse(. %in% c("Hcbh1", "dptf1", "Hdist1", "Hdptf1", "effdist1"), paste0("max_", str_remove(., "\\d+$")), .))
+          deplyr::rename_with(~ ifelse(. %in% c("Hcbh1", "dptf1", "Hdist1", "Hdptf1", "effdist1"), paste0("max_", str_remove(., "\\d+$")), .))
 
       }
 
@@ -370,7 +370,7 @@ get_effective_gap <- function (effective_depth) {
         # Create a new dataframe with the required columns
         df6ab <- df6a[,c( hcbh_cols[2], hdist_cols[2], dptf_cols[2], hdptf_cols[2], effdist_cols[1])]
         # Rename columns with prefix "max_" and remove suffix
-        max_df <- df6ab %>% rename_with(.fn = ~ paste0("max_", str_remove(., "\\d+$")))
+        max_df <- df6ab %>% dplyr::rename_with(.fn = ~ paste0("max_", str_remove(., "\\d+$")))
       }
 
       if (length(effdist_cols) > 1 & df6a[[hcbh_cols[1]]][1] == 1.5 && length(hdist_cols) >= 1 && !exists("max_df")) {
@@ -397,7 +397,7 @@ get_effective_gap <- function (effective_depth) {
         df6ab <- df6a[,c(hcbh_col, hdist_col, dptf_col, hdptf_col,effdist_col)]
 
         # Rename columns with prefix "max_" and remove suffix
-        max_df <- df6ab %>% rename_with(.fn = ~ paste0("max_", str_remove(., "\\d+$")))
+        max_df <- df6ab %>% dplyr::rename_with(.fn = ~ paste0("max_", str_remove(., "\\d+$")))
 
       }
 
@@ -424,7 +424,7 @@ get_effective_gap <- function (effective_depth) {
         df6ab <- df6a[,c(hcbh_col, hdist_col, dptf_col, hdptf_col,effdist_col)]
 
         # Rename columns with prefix "max_" and remove suffix
-        max_df <- df6ab %>% rename_with(.fn = ~ paste0("max_", str_remove(., "\\d+$")))
+        max_df <- df6ab %>% dplyr::rename_with(.fn = ~ paste0("max_", str_remove(., "\\d+$")))
       }
 
       if (length(effdist_cols) > 1 & df6a[[hcbh_cols[1]]][1] > 1.5 && length(hdist_cols) >= 1 && df6a[[dist_cols[1]]][1] == 1 && !exists("max_df")) {
@@ -450,7 +450,7 @@ get_effective_gap <- function (effective_depth) {
         df6ab <- df6a[,c(hcbh_col, hdist_col, dptf_col, hdptf_col,effdist_col)]
 
         # Rename columns with prefix "max_" and remove suffix
-        max_df <- df6ab %>% rename_with(.fn = ~ paste0("max_", str_remove(., "\\d+$")))
+        max_df <- df6ab %>% dplyr::rename_with(.fn = ~ paste0("max_", str_remove(., "\\d+$")))
       }
 
 
@@ -623,14 +623,14 @@ get_effective_gap <- function (effective_depth) {
         if (df6a$effdist1 == 1 && all(sapply(df6a[effdist_cols], function(x) x[1] == df6a$effdist1[1]))) {
 
           last_df <- df6a %>%
-            rename_with(~ ifelse(. %in% c("Hcbh", "dptf", "Hdist", "Hdptf", "effdist"), paste0("last_", str_remove(., "\\d+$")), .))
+            dplyr::rename_with(~ ifelse(. %in% c("Hcbh", "dptf", "Hdist", "Hdptf", "effdist"), paste0("last_", str_remove(., "\\d+$")), .))
         }
 
         if (length(effdist_cols) == 1 & df6a[[hcbh_cols[1]]][1] == 1.5 && length(hdist_cols) >= 1) {
           # Create a new dataframe with the required columns
           last1 <- df6a[,c( hcbh_cols[2], hdist_cols[2], dptf_cols[2], hdptf_cols[2], effdist_cols [1])]
           # Rename columns with prefix "last_" and remove suffix
-          last_df <- last1 %>% rename_with(.fn = ~ paste0("last_", str_remove(., "\\d+$")))
+          last_df <- last1 %>% dplyr::rename_with(.fn = ~ paste0("last_", str_remove(., "\\d+$")))
 
         }
 
@@ -671,7 +671,7 @@ get_effective_gap <- function (effective_depth) {
           # Create a new dataframe with the required columns
           last1 <- df6a[, c(hcbh_col, hdist_col, dptf_col, hdptf_col, effdist_col)]
           # Rename columns with prefix "last_" and remove suffix
-          last_df <- last1 %>% rename_with(.fn = ~ paste0("last_", str_remove(., "\\d+$")))
+          last_df <- last1 %>% dplyr::rename_with(.fn = ~ paste0("last_", str_remove(., "\\d+$")))
         }
 
         if (length(effdist_cols) > 1 & df6a[[hcbh_cols[1]]][1] > 1.5 && length(hdist_cols) >= 1) {
@@ -712,7 +712,7 @@ get_effective_gap <- function (effective_depth) {
           # Create a new dataframe with the required columns
           last1 <- df6a[,c(hcbh_col, hdist_col, dptf_col, hdptf_col,effdist_col)]
           # Rename columns with prefix "last_" and remove suffix
-          last_df <- last1 %>% rename_with(.fn = ~ paste0("last_", str_remove(., "\\d+$")))
+          last_df <- last1 %>% dplyr::rename_with(.fn = ~ paste0("last_", str_remove(., "\\d+$")))
 
 
           if(!hcbh_col %in% colnames(df6a) && !dptf_col %in% colnames(df6a) && !hdptf_col %in% colnames(df6a) ) {
@@ -724,7 +724,7 @@ get_effective_gap <- function (effective_depth) {
             # Create a new dataframe with the required columns
             last1 <- df6a[,c(hcbh_col, dptf_col, hdptf_col)]
             # Rename columns with prefix "last_" and remove suffix
-            last_df <- last1 %>% rename_with(.fn = ~ paste0("last_", str_remove(., "\\d+$")))
+            last_df <- last1 %>% dplyr::rename_with(.fn = ~ paste0("last_", str_remove(., "\\d+$")))
           }
 
         } }

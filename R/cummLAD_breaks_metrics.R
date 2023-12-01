@@ -82,7 +82,7 @@
 #' ## End(Not run)
 #'
 #' @export get_cum_break
-#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom dplyr group_by summarise mutate arrange rename
 #' @importFrom magrittr %>%
 #' @importFrom segmented segmented seg.control
 #' @importFrom SSBtools RbindAll

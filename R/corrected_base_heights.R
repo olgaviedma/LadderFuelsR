@@ -69,7 +69,7 @@
 #' ## End(Not run)
 #'
 #' @export get_real_fbh
-#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom dplyr group_by summarise mutate arrange rename
 #' @importFrom magrittr %>%
 #' @importFrom SSBtools RbindAll
 #' @importFrom gdata startsWith

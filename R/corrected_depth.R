@@ -53,7 +53,7 @@
 #' ## End(Not run)
 #'
 #' @export get_real_depths
-#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom dplyr group_by summarise mutate arrange rename
 #' @importFrom magrittr %>%
 #' @importFrom tidyr pivot_longer
 #' @importFrom SSBtools RbindAll

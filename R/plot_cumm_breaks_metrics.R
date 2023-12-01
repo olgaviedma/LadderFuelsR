@@ -30,7 +30,7 @@
 #'
 #' @export get_plots_cumm
 #' @importFrom ggplot2 ggplot
-#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom dplyr group_by summarise mutate arrange rename
 #' @importFrom magrittr %>%
 #' @importFrom SSBtools RbindAll
 #' @importFrom gdata startsWith

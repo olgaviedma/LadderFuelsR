@@ -61,7 +61,7 @@
 #' ## End(Not run)
 #'
 #' @export get_depths
-#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom dplyr group_by summarise mutate arrange rename
 #' @importFrom magrittr %>%
 #' @importFrom gdata startsWith
 #' @include gap_fbh.R
