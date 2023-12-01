@@ -35,12 +35,6 @@ library(dplyr)
 library(magrittr)
 library(tidyr)
 
-
-# Tree metrics derived from get_real_fbh() function
-if (interactive()) {
-  effective_fbh$treeID <- factor(effective_fbh$treeID)
-}
-
 # Load or create the effective_fbh object
 if (interactive()) {
   effective_fbh <- get_real_fbh()

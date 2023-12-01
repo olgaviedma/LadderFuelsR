@@ -60,7 +60,7 @@
 get_distance <- function (gap_cbh_metrics) {
 
   df <- gap_cbh_metrics %>%
-    mutate_at(
+    dplyr::mutate_at(
       vars(-treeID),  # Exclude the 'treeID' column
       as.numeric
     )

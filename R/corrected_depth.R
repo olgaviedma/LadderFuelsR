@@ -26,12 +26,6 @@
 #' library(magrittr)
 #' library(tidyr)
 #'
-#'
-#' # Tree metrics derived from get_real_fbh() function
-#' if (interactive()) {
-#'   effective_fbh$treeID <- factor(effective_fbh$treeID)
-#' }
-#'
 #' # Load or create the effective_fbh object
 #' if (interactive()) {
 #'   effective_fbh <- get_real_fbh()
@@ -376,7 +370,7 @@ get_real_depths <- function (effective_fbh) {
     #################################################
 
     df_transposed1 <- df_transposed1 %>%
-      group_by(Hdepth, dptf) %>%
+      dplyr::group_by(Hdepth, dptf) %>%
       filter(dist == max(dist)) %>%
       slice(n()) %>%  # This will select the last row if there are multiple rows with the max dist.
       ungroup()
@@ -549,7 +543,7 @@ get_real_depths <- function (effective_fbh) {
     ##Check if there are still any duplicated Hdepth values
 
     df_transposed4 <- df_transposed4 %>%
-      group_by(Hdepth, dptf) %>%
+      dplyr::group_by(Hdepth, dptf) %>%
       filter(dist == max(dist)) %>%
       slice(n()) %>%  # This will select the last row if there are multiple rows with the max dist.
       ungroup()
@@ -624,10 +618,10 @@ get_real_depths <- function (effective_fbh) {
 
 
     df_transposed5 <- df_transposed5 %>%
-      group_by(Hcbh) %>%
-      mutate(is_duplicated = duplicated(Hcbh) | duplicated(Hcbh, fromLast = TRUE)) %>%
+      dplyr::group_by(Hcbh) %>%
+      dplyr::mutate(is_duplicated = duplicated(Hcbh) | duplicated(Hcbh, fromLast = TRUE)) %>%
       # For duplicated Hcbh values, compute the max dptf and max dist
-      mutate(dptf = ifelse(is_duplicated, max(dptf, na.rm = TRUE), dptf),
+      dplyr::mutate(dptf = ifelse(is_duplicated, max(dptf, na.rm = TRUE), dptf),
              dist = ifelse(is_duplicated, max(dist, na.rm = TRUE), dist),
              Hdist = ifelse(is_duplicated,
                             min(Hdist[is_duplicated], na.rm = TRUE),
@@ -668,10 +662,10 @@ get_real_depths <- function (effective_fbh) {
 
   ###############################################
   df_transposed5 <- df_transposed5 %>%
-    group_by(Hdepth) %>%
-    mutate(is_duplicated = duplicated(Hdepth) | duplicated(Hdepth, fromLast = TRUE)) %>%
+    dplyr::group_by(Hdepth) %>%
+    dplyr::mutate(is_duplicated = duplicated(Hdepth) | duplicated(Hdepth, fromLast = TRUE)) %>%
     # For duplicated Hcbh values, compute the max dptf and max dist
-    mutate(dptf = ifelse(is_duplicated, max(dptf, na.rm = TRUE), dptf),
+    dplyr::mutate(dptf = ifelse(is_duplicated, max(dptf, na.rm = TRUE), dptf),
            dist = ifelse(is_duplicated, max(dist, na.rm = TRUE), dist),
            Hdist = ifelse(is_duplicated,max(Hdist, na.rm = TRUE), Hdist) ) %>%
     # If Hcbh is duplicated, keep only the last row. Otherwise, keep all rows.

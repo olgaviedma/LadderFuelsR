@@ -100,8 +100,8 @@ if(all_equal) {
 } else {
 
   PERCENTIL_Z <- df %>%
-    group_by(treeID) %>%
-    summarise(
+    dplyr::group_by(treeID) %>%
+    dplyr::summarise(
       P5 = quantile(lad, probs = 0.05, na.rm = TRUE),
       P25 = quantile(lad, probs = 0.25, na.rm = TRUE),
       P50 = quantile(lad, probs = 0.50, na.rm = TRUE),
@@ -325,7 +325,7 @@ merged_gaps1$type<-rep(c("gap"), nrow(merged_gaps1))
 
 # Add a numeric suffix to each 'gap' value
 merged_gaps1 <- merged_gaps1 %>%
-  mutate(type = ifelse(type == "gap", paste0("gap", seq_along(type[type == "gap"])), type))
+  dplyr::mutate(type = ifelse(type == "gap", paste0("gap", seq_along(type[type == "gap"])), type))
 merged_gaps2<-data.frame(t(merged_gaps1))
 
 gaps_lad <- data.frame(merged_gaps2[3,])
@@ -342,7 +342,7 @@ crown4a$type<-rep(c("cbh"), nrow(crown4a))
 
 # Add a numeric suffix to each 'cbh' value
 merged_crown1 <- crown4a %>%
-  mutate(type = ifelse(type == "cbh", paste0("cbh", seq_along(type[type == "cbh"])), type))
+  dplyr::mutate(type = ifelse(type == "cbh", paste0("cbh", seq_along(type[type == "cbh"])), type))
 merged_crown2<-data.frame(t(merged_crown1))
 
 crown_lad <- data.frame(merged_crown2[2,])
@@ -418,7 +418,7 @@ names(max_height)="max_height"
 
     gap_cbh_metrics$treeID1 <- sub("_.*", "", gap_cbh_metrics$treeID)
     gap_cbh_metrics$treeID1 <- as.numeric(gap_cbh_metrics$treeID1)
-    gap_cbh_metrics <- arrange(gap_cbh_metrics, treeID1)
+    gap_cbh_metrics <- dplyr::arrange(gap_cbh_metrics, treeID1)
    }
 
 return(gap_cbh_metrics)
