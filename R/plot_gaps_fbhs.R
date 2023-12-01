@@ -12,6 +12,7 @@
 #' @examples
 #' ## Not run:
 #' library(ggplot2)
+#' library(dplyr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 #' data(LAD_profiles)

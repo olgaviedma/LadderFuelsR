@@ -23,6 +23,7 @@ This function plots the CBH of the fuel layer with the maximum LAD percentage an
 \examples{
 ## Not run:
 library(ggplot2)
+library(dplyr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
