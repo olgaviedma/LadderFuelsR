@@ -7,7 +7,7 @@
 get_plots_cumm(LAD_profiles, cummulative_LAD)
 }
 \arguments{
-\item{LAD_profiles}{original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function from leafR package).
+\item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function from leafR package).
 An object of the class text}
 
 \item{cummulative_LAD}{tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).

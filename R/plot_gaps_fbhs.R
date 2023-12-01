@@ -2,7 +2,7 @@
 #' Plots of tree profiles with gaps and fuel layers base height (fbh)
 #' @description This function plots gaps and fuel layers base height (fbh) in the vertical tree profile (VTP).
 #' @usage get_plots_gap_fbh (LAD_profiles,depth_metrics)
-#' @param LAD_profiles original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
+#' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 #' An object of the class text
 #' @param depth_metrics tree metrics with gaps (distances), fuel base heights and depths (output of [get_depths()] function).
 #' An object of the class text

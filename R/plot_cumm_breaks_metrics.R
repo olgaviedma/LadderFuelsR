@@ -1,7 +1,7 @@
 #' Plot of tree profiles with the canopy base height (CBH) based on the breaking point method
 #' @description This function plots the canopy base height (CBH) based on breaking point over the cummulative LAD values and gives the LAD percentage below and above that breaking point
 #' @usage get_plots_cumm(LAD_profiles, cummulative_LAD)
-#' @param LAD_profiles original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function from leafR package).
+#' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function from leafR package).
 #' An object of the class text
 #' @param cummulative_LAD tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).
 #' An object of the class text

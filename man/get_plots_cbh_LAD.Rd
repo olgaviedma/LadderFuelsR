@@ -7,7 +7,7 @@
 get_plots_cbh_LAD(LAD_profiles, effective_LAD)
 }
 \arguments{
-\item{LAD_profiles}{Original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
+\item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 An object of the class text.}
 
 \item{effective_LAD}{Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than 5

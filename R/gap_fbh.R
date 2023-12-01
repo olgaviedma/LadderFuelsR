@@ -3,7 +3,7 @@
 #' Negative differences are linked to gaps and positive differences to fuel base height.
 #' @usage get_gaps_fbhs (LAD_profiles)
 #'
-#' @param LAD_profiles original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
+#' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 #' An object of the class text
 #' @return A data frame giving the height of gaps and fuel layers bases in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno

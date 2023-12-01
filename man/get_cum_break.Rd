@@ -7,7 +7,7 @@
 get_cum_break(LAD_profiles, effective_distances)
 }
 \arguments{
-\item{LAD_profiles}{Original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
+\item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 An object of the class data frame.}
 
 \item{effective_distances}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).

@@ -7,7 +7,7 @@
 get_plots_gap_fbh (LAD_profiles,depth_metrics)
 }
 \arguments{
-\item{LAD_profiles}{original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
+\item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 An object of the class text}
 
 \item{depth_metrics}{tree metrics with gaps (distances), fuel base heights and depths (output of [get_depths()] function).

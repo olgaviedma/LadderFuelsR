@@ -7,7 +7,7 @@
 get_gaps_fbhs (LAD_profiles)
 }
 \arguments{
-\item{LAD_profiles}{original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
+\item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 An object of the class text}
 }
 \value{

@@ -9,7 +9,7 @@
 #' get_layers_lad(LAD_profiles, effective_distances)
 #'
 #' @param LAD_profiles
-#' Original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
+#' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class text.
 #'
 #' @param effective_distances

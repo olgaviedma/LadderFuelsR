@@ -4,7 +4,7 @@
 #' @description This function calculates fuels depth as the difference between gaps interleaved between fuel layers minus 1 if the fuel depths are greater than 1.
 #' @usage get_depths (LAD_profiles, distance_metrics)
 #'
-#' @param LAD_profiles original tree Leaf Area Index (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
+#' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 #' An object of the class text
 #' @param distance_metrics tree metrics with gaps (distances) and fuel base heights (output of [get_distance()] function).
 #' An object of the class text

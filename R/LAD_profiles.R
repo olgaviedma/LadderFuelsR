@@ -4,7 +4,6 @@
 #'
 #' @format A data frame with columns: height, lad, treeID.
 #'
-#'
 #' @examples
 #' data(LAD_profiles)
 #'
