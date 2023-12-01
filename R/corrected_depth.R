@@ -22,11 +22,11 @@
 #' }
 #' @examples
 #' ## Not run:
-#' library(dplyr)
 #' library(magrittr)
 #' library(tidyr)
+#' library(dplyr)
 #'
-#' # Load or create the effective_fbh object
+#' # Load the effective_fbh object
 #' if (interactive()) {
 #'   effective_fbh <- get_real_fbh()
 #'   LadderFuelsR::effective_fbh$treeID <- factor(LadderFuelsR::effective_fbh$treeID)
@@ -55,7 +55,7 @@
 #' @export get_real_depths
 #' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup distinct
 #' @importFrom magrittr %>%
-#' @importFrom tidyr pivot_longer
+#' @importFrom tidyr pivot_longer fill
 #' @importFrom SSBtools RbindAll
 #' @importFrom gdata startsWith
 #' @importFrom tidylog slice_tail

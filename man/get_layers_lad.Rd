@@ -43,10 +43,9 @@ It determines the canopy base height (CBH) as the fuel layer with the highest LA
 }
 \examples{
 ## Not run:
-library(dplyr)
 library(magrittr)
 library(gdata)
-
+library(dplyr)
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 

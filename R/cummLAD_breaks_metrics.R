@@ -47,16 +47,15 @@
 #'
 #' @examples
 #' ## Not run:
-#' library(dplyr)
 #' library(magrittr)
 #' library(segmented)
 #' library(gdata)
+#' library(dplyr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' ## Not run:
-#' # Load or create the effective_distances object
+#' # Load the effective_distances object
 #' if (interactive()) {
 #'   effective_distances <- get_effective_gap()
 #'   LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)

@@ -14,6 +14,7 @@ This function reorders columns and appends numeric suffixes. Don´t run it. It i
 }
 \examples{
 ## Not run:
+library(dplyr)
 # get_renamed0_df function reorders columns and appends numeric suffixes
 ## End(Not run)
 }

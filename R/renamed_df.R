@@ -10,6 +10,7 @@
 #'
 #' @examples
 #' ## Not run:
+#' library(dplyr)
 #' # get_renamed_df concatenates column names, reorders columns and appends numeric suffixes
 #' ## End(Not run)
 #' @export get_renamed_df

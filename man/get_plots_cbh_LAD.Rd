@@ -28,8 +28,7 @@ library(dplyr)
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-## Not run:
-# Load or create the effective_LAD object
+# Load the effective_LAD object
 if (interactive()) {
   effective_LAD <- get_layers_lad()
   LadderFuelsR::effective_LAD$treeID <- factor(LadderFuelsR::effective_LAD$treeID)

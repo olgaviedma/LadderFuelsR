@@ -35,15 +35,10 @@
 #' @examples
 #' ## Not run:
 #' library(SSBtools)
-#' library(dplyr)
 #' library(magrittr)
+#' library(dplyr)
 #'
-#' # Tree metrics derived from get_depths() function
-#' if (interactive()) {
-#'   depth_metrics$treeID <- factor(depth_metrics$treeID)
-#' }
-#'
-#' # Load or create the effective_depth object
+#' # Load the effective_depth object
 #' if (interactive()) {
 #'   depth_metrics <- get_depths()
 #'   LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)

@@ -28,7 +28,7 @@ library(dplyr)
 data(LAD_profiles)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-# Load or create the depth_metrics object
+# Load the depth_metrics object
 if (interactive()) {
   depth_metrics <- get_depths()
   LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)

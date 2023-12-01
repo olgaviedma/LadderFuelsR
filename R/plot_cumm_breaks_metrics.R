@@ -16,8 +16,7 @@
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#'## Not run:
-#' # Load or create the cummulative_LAD object
+#' # Load the cummulative_LAD object
 #' if (interactive()) {
 #'   cummulative_LAD <- get_cum_break()
 #'   LadderFuelsR::cummulative_LAD$treeID <- factor(LadderFuelsR::cummulative_LAD$treeID)

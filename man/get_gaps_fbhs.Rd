@@ -33,8 +33,8 @@ Negative differences are linked to gaps and positive differences to fuel base he
 }
 \examples{
 ## Not run:
-library(dplyr)
 library(magrittr)
+library(dplyr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 data_path <- file.path("D:/OLGA/R_library/LadderFuelsR/extdata/LAD_profiles.txt")

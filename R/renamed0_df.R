@@ -9,6 +9,7 @@
 #'
 #' @examples
 #' ## Not run:
+#' library(dplyr)
 #' # get_renamed0_df function reorders columns and appends numeric suffixes
 #' ## End(Not run)
 #' @export get_renamed0_df

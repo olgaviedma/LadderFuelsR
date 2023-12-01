@@ -31,11 +31,11 @@ This function recalculates fuel layers depth after removing distances = 1 m
 }
 \examples{
 ## Not run:
-library(dplyr)
 library(magrittr)
 library(tidyr)
+library(dplyr)
 
-# Load or create the effective_fbh object
+# Load the effective_fbh object
 if (interactive()) {
   effective_fbh <- get_real_fbh()
   LadderFuelsR::effective_fbh$treeID <- factor(LadderFuelsR::effective_fbh$treeID)

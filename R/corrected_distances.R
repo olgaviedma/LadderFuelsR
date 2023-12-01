@@ -39,16 +39,11 @@
 #'
 #' @examples
 #' ## Not run:
-#' library(dplyr)
 #' library(magrittr)
 #' library(stringr)
+#' library(dplyr)
 #'
-#' # Tree metrics derived from get_real_depths() function
-#' if (interactive()) {
-#'   effective_depth$treeID <- factor(effective_depth$treeID)
-#' }
-#'
-#' # Load or create the effective_depth object
+#' # Load the effective_depth object
 #' if (interactive()) {
 #'   effective_depth <- get_real_depths()
 #'   LadderFuelsR::effective_depth$treeID <- factor(LadderFuelsR::effective_depth$treeID)

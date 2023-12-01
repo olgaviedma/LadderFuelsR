@@ -22,16 +22,11 @@
 #' }
 #' @examples
 #' ## Not run:
-#' library(dplyr)
 #' library(magrittr)
 #' library(gdata)
+#' library(dplyr)
 #'
-#' #' # Tree metrics derived from get_gaps_fbhs() function
-#' if (interactive()) {
-#'   gap_cbh_metrics$treeID <- factor(gap_cbh_metrics$treeID)
-#' }
-#'
-#' # Load or create the effective_distances object
+#' # Load the effective_distances object
 #' if (interactive()) {
 #'   gap_cbh_metrics <- get_gaps_fbhs()
 #'   LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
