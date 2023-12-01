@@ -53,8 +53,12 @@ library(gdata)
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-# Tree metrics derived from get_effective_gap() function
-effective_distances$treeID <- factor(effective_distances$treeID)
+## Not run:
+# Load or create the effective_distances object
+if (interactive()) {
+  effective_distances <- get_effective_gap()
+  LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
+}
 
 trees_name1 <- as.character(effective_distances$treeID)
 trees_name2 <- factor(unique(trees_name1))
