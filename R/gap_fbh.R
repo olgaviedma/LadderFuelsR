@@ -46,13 +46,13 @@
 #'
 #' # Remove the row with all NA values from the original data frame
 #' # First remove "treeID" and "treeID1" columns
-#' tree_metrics_no_treeID <- metrics_all_percentil[, -which(names(metrics_all_percentil) == c("treeID","treeID1"))]
+#' no_treeID <- metrics_all_percentil[, -which(names(metrics_all_percentil) == c("treeID","treeID1"))]
 #'
 #' # Check if any row has all NA values
-#' rows_with_all_NA_or_zero <- apply(tree_metrics_no_treeID, 1, function(row) all(is.na(row) | row == 0))
+#' NA_or_zero <- apply(no_treeID, 1, function(row) all(is.na(row) | row == 0))
 #'
 #' # Get the row index with all NA values
-#' row_index <- which(rows_with_all_NA_or_zero)
+#' row_index <- which(NA_or_zero)
 #'
 #' # Remove the row with all NA values from the original data frame
 #' if (length(row_index) > 0) {
