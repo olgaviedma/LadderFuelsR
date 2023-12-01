@@ -62,7 +62,7 @@
 #' }
 #' ## End(Not run)
 #' @export get_gaps_fbhs
-#' @importFrom dplyr group_by summarise mutate arrange rename
+#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 get_gaps_fbhs<- function (LAD_profiles) {
 
@@ -180,7 +180,7 @@ gaps5b<-dplyr::filter(gaps5, percentil <= 25)
 
 # filter only percentil == 5
   gaps_perc_5 <- gaps_perc2 %>%
-  filter(percentil == 5)
+    dplyr::filter(percentil == 5)
 
 # Create an empty list to store the subsetted data frames
 subset_list <- list()
@@ -206,7 +206,7 @@ result_unique <- unique(result)
 
 # filter only percentil <= 25
   gaps_perc_25 <- gaps_perc2 %>%
-  filter(percentil <= 25)
+  dplyr::filter(percentil <= 25)
 
 # Create an empty list to store the subsetted data frames
 subset_list1 <- list()
@@ -276,7 +276,7 @@ crown3c<-data.frame(t(crown3b))
 
 # filter only percentil > 5
 perc_5 <- gaps_perc2 %>%
-  filter(percentil > 5)
+  dplyr::filter(percentil > 5)
 
 
 if (any(diff(perc_5$height) == 1)) {

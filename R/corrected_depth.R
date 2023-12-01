@@ -53,7 +53,7 @@
 #' ## End(Not run)
 #'
 #' @export get_real_depths
-#' @importFrom dplyr group_by summarise mutate arrange rename
+#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 #' @importFrom tidyr pivot_longer
 #' @importFrom SSBtools RbindAll
@@ -139,7 +139,7 @@ get_real_depths <- function (effective_fbh) {
     dplyr::arrange(as.numeric(index))
 
   df_transposed0 <- df_transposed0 %>%
-    filter(!is.na(Hdepth))
+    dplyr::filter(!is.na(Hdepth))
 
   #df_transposed <- df_transposed %>%
   #fill(Hcbh, .direction = "down")
@@ -371,9 +371,9 @@ get_real_depths <- function (effective_fbh) {
 
     df_transposed1 <- df_transposed1 %>%
       dplyr::group_by(Hdepth, dptf) %>%
-      filter(dist == max(dist)) %>%
-      slice(n()) %>%  # This will select the last row if there are multiple rows with the max dist.
-      ungroup()
+      dplyr::filter(dist == max(dist)) %>%
+      dplyr::slice(n()) %>%  # This will select the last row if there are multiple rows with the max dist.
+      dplyr::ungroup()
 
 
     ###########################################################3
@@ -524,7 +524,7 @@ get_real_depths <- function (effective_fbh) {
     }
 
     ###############################################
-    df_transposed4 <- df_transposed3 %>% filter(!is.na(dptf))
+    df_transposed4 <- df_transposed3 %>% dplyr::filter(!is.na(dptf))
 
     df_transposed4 <- df_transposed4 %>%
       dplyr::mutate(original_order = row_number()) %>%
@@ -544,9 +544,9 @@ get_real_depths <- function (effective_fbh) {
 
     df_transposed4 <- df_transposed4 %>%
       dplyr::group_by(Hdepth, dptf) %>%
-      filter(dist == max(dist)) %>%
-      slice(n()) %>%  # This will select the last row if there are multiple rows with the max dist.
-      ungroup()
+      dplyr::filter(dist == max(dist)) %>%
+      dplyr::slice(n()) %>%  # This will select the last row if there are multiple rows with the max dist.
+      dplyr::ungroup()
 
     if(df_transposed4$Hcbh[1] > 1.5){
       df_transposed4$Hdist[1]<-df_transposed4$Hcbh [1] - 1
@@ -628,7 +628,7 @@ get_real_depths <- function (effective_fbh) {
                             Hdist)) %>%
       # If Hcbh is duplicated, keep only the last row. Otherwise, keep all rows.
       dplyr::filter(ifelse(is_duplicated, row_number() == n(), TRUE)) %>%
-      ungroup() %>%
+      dplyr::ungroup() %>%
       dplyr::select(-is_duplicated)  # Drop the helper column
 
 
@@ -670,7 +670,7 @@ get_real_depths <- function (effective_fbh) {
            Hdist = ifelse(is_duplicated,max(Hdist, na.rm = TRUE), Hdist) ) %>%
     # If Hcbh is duplicated, keep only the last row. Otherwise, keep all rows.
     dplyr::filter(ifelse(is_duplicated, row_number() == n(), TRUE)) %>%
-    ungroup() %>%
+    dplyr::ungroup() %>%
     dplyr::select(-is_duplicated)  # Drop the helper column
 
 

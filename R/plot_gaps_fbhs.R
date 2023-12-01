@@ -33,7 +33,7 @@
 #'
 #' @export get_plots_gap_fbh
 #' @importFrom ggplot2 ggplot
-#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 #' @include gap_fbh.R
 #' @include distances_calculation.R
@@ -54,14 +54,14 @@ get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
   for (i in levels(trees_name3)){
 
     tree_data <- df_orig %>%
-      filter(treeID == i ) %>%
-      mutate(lad = as.numeric(lad)) %>%
-      filter(!is.na(lad))
+      dplyr::filter(treeID == i ) %>%
+      dplyr::mutate(lad = as.numeric(lad)) %>%
+      dplyr::filter(!is.na(lad))
 
     height<-df_orig$height
     lad<-df_orig$lad
 
-    df_metrics11<-df_metrics %>% filter(treeID == i )
+    df_metrics11<-df_metrics %>% dplyr::filter(treeID == i )
 
     CBH_1<-as.numeric(as.character(df_metrics11$cbh1))
     CBH_2<-as.numeric(as.character(df_metrics11$cbh2))

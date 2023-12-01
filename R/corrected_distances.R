@@ -70,7 +70,7 @@
 #' ## End(Not run)
 #'
 #' @export get_effective_gap
-#' @importFrom dplyr group_by summarise mutate arrange rename rename_with
+#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_detect
 #' @importFrom SSBtools RbindAll

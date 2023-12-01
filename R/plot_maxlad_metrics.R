@@ -44,7 +44,7 @@
 #'
 #' @export get_plots_cbh_LAD
 #' @importFrom ggplot2 ggplot
-#' @importFrom dplyr group_by summarise mutate arrange
+#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 #' @importFrom SSBtools RbindAll
 #' @importFrom gdata startsWith
@@ -69,14 +69,14 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
   for (i in levels(trees_name3)) {
 
     tree_data <- df_orig %>%
-      filter(treeID == i) %>%
-      mutate(lad = as.numeric(lad)) %>%
-      filter(!is.na(lad))
+      dplyr::filter(treeID == i) %>%
+      dplyr::mutate(lad = as.numeric(lad)) %>%
+      dplyr::filter(!is.na(lad))
 
     height <- tree_data$height
     lad <- tree_data$lad
 
-    df_effective1 <- effective_LAD %>% filter(treeID == i)
+    df_effective1 <- effective_LAD %>% dplyr::filter(treeID == i)
 
     CBH_1 <- round(as.numeric(as.character(df_effective1$Hcbh1)), 1)
     CBH_2 <- round(as.numeric(as.character(df_effective1$Hcbh2)), 1)
