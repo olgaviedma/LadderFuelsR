@@ -70,7 +70,7 @@
 #' ## End(Not run)
 #'
 #' @export get_effective_gap
-#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 #' @importFrom stringr str_detect
 #' @importFrom SSBtools RbindAll
@@ -335,7 +335,7 @@ get_effective_gap <- function (effective_depth) {
       if (df6a$effdist1 == 1 && all(sapply(df6a[effdist_cols], function(x) x[1] == df6a$effdist1[1]))) {
 
         max_df <- df6a %>%
-          deplyr::rename_with(~ ifelse(. %in% c("Hcbh1", "dptf1", "Hdist1", "Hdptf1", "effdist1"), paste0("max_", str_remove(., "\\d+$")), .))
+          dplyr::rename_with(~ ifelse(. %in% c("Hcbh1", "dptf1", "Hdist1", "Hdptf1", "effdist1"), paste0("max_", str_remove(., "\\d+$")), .))
 
       }
 

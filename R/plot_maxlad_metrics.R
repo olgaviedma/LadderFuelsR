@@ -44,7 +44,7 @@
 #'
 #' @export get_plots_cbh_LAD
 #' @importFrom ggplot2 ggplot
-#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 #' @importFrom SSBtools RbindAll
 #' @importFrom gdata startsWith

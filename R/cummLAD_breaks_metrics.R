@@ -82,7 +82,7 @@
 #' ## End(Not run)
 #'
 #' @export get_cum_break
-#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 #' @importFrom segmented segmented seg.control
 #' @importFrom SSBtools RbindAll

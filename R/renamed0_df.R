@@ -12,7 +12,7 @@
 #' # get_renamed0_df function reorders columns and appends numeric suffixes
 #' ## End(Not run)
 #' @export get_renamed0_df
-#' @importFrom dplyr select_if
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom stringr str_match
 get_renamed0_df <- function(df) {
 

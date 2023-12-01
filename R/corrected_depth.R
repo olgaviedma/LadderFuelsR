@@ -53,7 +53,7 @@
 #' ## End(Not run)
 #'
 #' @export get_real_depths
-#' @importFrom dplyr group_by summarise mutate arrange rename rename_with filter slice ungroup
+#' @importFrom dplyr select_if group_by summarise mutate arrange rename rename_with filter slice ungroup
 #' @importFrom magrittr %>%
 #' @importFrom tidyr pivot_longer
 #' @importFrom SSBtools RbindAll
