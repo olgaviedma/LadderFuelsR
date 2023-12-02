@@ -25,6 +25,8 @@ library(ggplot2)
 library(dplyr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
+data_path <- file.path("D:/OLGA/R_library/LadderFuelsR/extdata/LAD_profiles.txt")
+LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 # Load the cummulative_LAD object
@@ -44,3 +46,4 @@ plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
+\keyword{internal}

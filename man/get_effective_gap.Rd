@@ -67,3 +67,4 @@ effective_distances <- dplyr::bind_rows(corr_distance_metrics_list)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
+\keyword{internal}

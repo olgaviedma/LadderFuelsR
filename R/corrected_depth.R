@@ -54,14 +54,23 @@
 #'
 #' @export get_real_depths
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars n
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
 #' @importFrom tidyr pivot_longer fill
-#' @importFrom SSBtools RbindAll
 #' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
 #' @include corrected_base_heights.R
+#' @keywords internal
 #' @seealso \code{\link{get_renamed0_df}}
 get_real_depths <- function (effective_fbh) {
 
@@ -134,29 +143,26 @@ get_real_depths <- function (effective_fbh) {
   df_transposed0 <- df4 %>%
     dplyr::select(all_of(cols_to_transpose)) %>%
     pivot_longer(cols = everything(), names_to = c(".value", "index"), names_pattern = "(\\D+)(\\d+)?")
+  index<-df_transposed0$index
 
   df_transposed0 <- df_transposed0 %>%
     dplyr::arrange(as.numeric(index))
 
+  Hdepth<- df_transposed0$Hdepth
   df_transposed0 <- df_transposed0 %>%
     dplyr::filter(!is.na(Hdepth))
 
-  #df_transposed <- df_transposed %>%
-  #fill(Hcbh, .direction = "down")
-
-  ############################################
   ############################################
   df_transposed <- df_transposed0
 
   # Special case for the last row if its dist is NA
   if (is.na(df_transposed$dist[nrow(df_transposed)])) {
-    #df_transposed$dptf[nrow(df_transposed)] <- df_transposed$depth[nrow(df_transposed)]
-    #df_transposed$Hdepth1[nrow(df_transposed)] <- df_transposed$Hdepth[nrow(df_transposed)]
     df_transposed$dist[nrow(df_transposed)] <- 1
   }
 
   if (nrow(df_transposed) > 1) {
-
+    dptf<-df_transposed$dptf
+    Hdepth1<-df_transposed$Hdepth1
     df_transposed$dptf <- NA
     df_transposed$Hdepth1 <- NA
 
@@ -377,6 +383,7 @@ get_real_depths <- function (effective_fbh) {
 
 
     ###########################################################3
+    Hcbh<-df_transposed1$Hcbh
     df_transposed2 <- df_transposed1 %>% dplyr::select(-Hcbh)
 
     # Extract Hcbh columns from df4
@@ -431,7 +438,7 @@ get_real_depths <- function (effective_fbh) {
 
     # Reorder columns to match the original dataframe
     df_transposed2 <- df_transposed2[, names(df_transposed1)]
-
+    Hdist<-df_transposed2$Hdist
     df_transposed2 <- df_transposed2 %>%
       fill(Hdist, .direction = "down")
   }
@@ -530,7 +537,11 @@ get_real_depths <- function (effective_fbh) {
       dplyr::mutate(original_order = row_number()) %>%
       dplyr::group_by(dist,dptf, Hdepth) %>%
       dplyr::slice_tail(n = 1) %>%
-      dplyr::ungroup() %>%
+      dplyr::ungroup()
+
+    original_order<-df_transposed4$original_order
+
+    df_transposed4 <- df_transposed4 %>%
       dplyr::arrange(original_order) %>%
       dplyr::select(-original_order)
 
@@ -619,7 +630,11 @@ get_real_depths <- function (effective_fbh) {
 
     df_transposed5 <- df_transposed5 %>%
       dplyr::group_by(Hcbh) %>%
-      dplyr::mutate(is_duplicated = duplicated(Hcbh) | duplicated(Hcbh, fromLast = TRUE)) %>%
+      dplyr::mutate(is_duplicated = duplicated(Hcbh) | duplicated(Hcbh, fromLast = TRUE))
+
+    is_duplicated<-df_transposed5$is_duplicated
+
+    df_transposed5 <- df_transposed5 %>%
       # For duplicated Hcbh values, compute the max dptf and max dist
       dplyr::mutate(dptf = ifelse(is_duplicated, max(dptf, na.rm = TRUE), dptf),
              dist = ifelse(is_duplicated, max(dist, na.rm = TRUE), dist),
@@ -631,8 +646,7 @@ get_real_depths <- function (effective_fbh) {
       dplyr::ungroup() %>%
       dplyr::select(-is_duplicated)  # Drop the helper column
 
-
-
+    Hdepth2<-df_transposed5$Hdepth2
     df_transposed5 <- df_transposed5 %>% dplyr::select(-Hdepth2)
 
   } else {
@@ -659,6 +673,7 @@ get_real_depths <- function (effective_fbh) {
   if (nrow(df_transposed5) == 1 && !"dptf" %in% colnames (df_transposed5)){
     df_transposed5$dptf <- df_transposed5$depth
   }
+  depth<-df_transposed5$depth
 
   ###############################################
   df_transposed5 <- df_transposed5 %>%

@@ -44,14 +44,15 @@ LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 trees_name1 <- as.character(LAD_profiles$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
-metrics_precentile_list<-list()
+metrics_precentile_list1<-list()
+
 for (i in levels(trees_name2)) {
-  tree2 <- LAD_profiles |> dplyr::filter(treeID == i)
-  metrics_precentil <- get_gaps_fbhs(tree2)
-  metrics_precentile_list[[i]] <- metrics_precentil
+  tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+  metrics_precentil <- get_gaps_fbhs(tree1)
+  metrics_precentile_list1[[i]] <- metrics_precentil
 }
 
-metrics_all_percentil <- dplyr::bind_rows(metrics_precentile_list)
+metrics_all_percentil <- dplyr::bind_rows(metrics_precentile_list1)
 metrics_all_percentil$treeID <- factor(metrics_all_percentil$treeID)
 
 # Remove the row with all NA values from the original data frame
@@ -75,3 +76,4 @@ if (length(row_index) > 0) {
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
+\keyword{internal}

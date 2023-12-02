@@ -68,3 +68,4 @@ effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
+\keyword{internal}

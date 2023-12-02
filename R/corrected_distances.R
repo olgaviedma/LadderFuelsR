@@ -66,15 +66,24 @@
 #'
 #' @export get_effective_gap
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars last
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
-#' @importFrom stringr str_detect
-#' @importFrom SSBtools RbindAll
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
 #' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
 #' @include corrected_base_heights.R
 #' @include corrected_depth.R
+#' @keywords internal
 get_effective_gap <- function (effective_depth) {
 
   df<- effective_depth
@@ -271,6 +280,7 @@ get_effective_gap <- function (effective_depth) {
 
       df6f<-cbind (df6f,max_df1,last_df1)
 
+      treeID1<-df6f$treeID1
 
       df6f <- df6f %>%
         dplyr::rename(
@@ -819,11 +829,13 @@ get_effective_gap <- function (effective_depth) {
   df6f <- data.frame (trees,df6f)
 
   if("treeID2" %in% colnames (df6f)){
+    treeID2 <-df6f$treeID2
     df6f <- df6f %>%
       dplyr::rename(
         treeID= treeID2,
         treeID1 = treeID1)
   }
+
   effective_distances<-df6f
 
   # Remove list attributes from columns

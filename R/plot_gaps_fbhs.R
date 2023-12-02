@@ -14,9 +14,10 @@
 #' library(ggplot2)
 #' library(dplyr)
 #'
-#' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' data(LAD_profiles)
-#' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
+#'# LAD profiles derived from normalized ALS data after applying [lad.profile()] function
+#'data_path <- file.path("D:/OLGA/R_library/LadderFuelsR/extdata/LAD_profiles.txt")
+#'LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
+#'LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Load the depth_metrics object
 #' if (interactive()) {
@@ -33,17 +34,30 @@
 #' ## End(Not run)
 #'
 #' @export get_plots_gap_fbh
-#' @importFrom ggplot2 ggplot
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
+#' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
+#' @keywords internal
 get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
 
   df_orig<-LAD_profiles
 
   df_orig$treeID<-factor(df_orig$treeID)
+  treeID<-factor(df_orig$treeID)
+
   trees_name1a<- as.character(df_orig$treeID)
   trees_name3<- factor(unique(trees_name1a))
 

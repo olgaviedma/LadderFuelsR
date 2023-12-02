@@ -13,8 +13,10 @@
 #' library(ggplot2)
 #' library(dplyr)
 #'
-#' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
+#'# LAD profiles derived from normalized ALS data after applying [lad.profile()] function
+#'data_path <- file.path("D:/OLGA/R_library/LadderFuelsR/extdata/LAD_profiles.txt")
+#'LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
+#'LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Load the cummulative_LAD object
 #' if (interactive()) {
@@ -30,11 +32,19 @@
 #' ## End(Not run)
 #'
 #' @export get_plots_cumm
-#' @importFrom ggplot2 ggplot
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
-#' @importFrom SSBtools RbindAll
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
 #' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
@@ -42,6 +52,7 @@
 #' @include corrected_depth.R
 #' @include corrected_distances.R
 #' @include cummLAD_breaks_metrics.R
+#' @keywords internal
 get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
 
   df_orig<- LAD_profiles
@@ -50,13 +61,13 @@ get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
   #  Ensure treeID columns are factors
   df_orig$treeID <- factor(df_orig$treeID)
   df_effective1$treeID <- factor(df_effective1$treeID)
+  treeID<-factor(df_orig$treeID)
 
   #Remove duplicates and columns with all NA values
   df_effective1 <- df_effective1 %>% dplyr::distinct(treeID, .keep_all = TRUE)
 
   df_effective1 <- df_effective1[, !apply(is.na(df_effective1), 2, all)]
 
-  df_effective1$treeID <-factor(df_effective1$treeID)
   trees_name1<- as.character(df_effective1$treeID)
   trees_name2<- factor(unique(trees_name1))
 
@@ -98,6 +109,8 @@ get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
         bp2a <- ggplot()  #  Initialize bp2 inside the loop
 
         tryCatch({
+          x = height
+          y = lad
           bp2a <- bp2a +
             geom_line(data = tree_data, aes(x = height, y = lad), color = "black", size = 0.5) +
             geom_point(data = tree_data, aes(x = height, y = lad), color = "black", size = 1.5)

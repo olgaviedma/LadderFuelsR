@@ -26,8 +26,10 @@
 #' library(ggplot2)
 #' library(dplyr)
 #'
-#' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
+#'# LAD profiles derived from normalized ALS data after applying [lad.profile()] function
+#'data_path <- file.path("D:/OLGA/R_library/LadderFuelsR/extdata/LAD_profiles.txt")
+#'LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
+#'LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Load the effective_LAD object
 #' if (interactive()) {
@@ -43,11 +45,19 @@
 #' ## End(Not run)
 #'
 #' @export get_plots_cbh_LAD
-#' @importFrom ggplot2 ggplot
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
-#' @importFrom SSBtools RbindAll
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
 #' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
@@ -55,6 +65,7 @@
 #' @include corrected_depth.R
 #' @include corrected_distances.R
 #' @include maxlad_metrics_25perc.R
+#' @keywords internal
 get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
   df_orig <- LAD_profiles
@@ -62,7 +73,7 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
   df_orig$treeID <- factor(df_orig$treeID)
   trees_name1a <- as.character(df_orig$treeID)
   trees_name3 <- factor(unique(trees_name1a))
-
+  treeID<-df_orig$treeID
 
   plot_with_annotations_list <- list()
 
@@ -100,6 +111,9 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
     #print(depth_0)
     #print(min_y)
     #print(max_y)
+
+    x<-tree_data$height
+    y<-tree_data$lad
 
     tryCatch({
       bp2 <- ggplot(tree_data, aes(x = height)) +
@@ -284,16 +298,15 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
         if (any(!is.na(CBH_1)) && any(!is.na(Hcbh1_Hdptf1a))) {
 
-          #print("first condition met")
-
+          y_1 = min_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_1 = CBH_1, y_1 = min_y , Hcbh1_Hdptf1a = Hcbh1_Hdptf1a),
                                                          aes(x = CBH_1,y = y_1, label = Hcbh1_Hdptf1a),
                                                          color = "black", hjust = -2.5, vjust = 0, size = 5)
-
+          y_1 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_1 = CBH_1, y_1 = max_y , CBH1_label = CBH1_label),
                                                          aes(x = CBH_1,y = y_1, label = CBH1_label),
                                                          color = "black", hjust = 1, vjust = 0, size = 5)
-
+          y_1 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(depth_1 = depth_1, y_1 = max_y , Depth1_label = Depth1_label),
                                                          aes(x = depth_1,y = y_1, label = Depth1_label),
                                                          color = "black", hjust = 2, vjust = 1, size = 5)
@@ -301,15 +314,16 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
         }
         if (any(!is.na(CBH_2)) && any(!is.na(Hcbh2_Hdptf2a))){
 
-          #print("second condition met")
+          y_2 = min_y
 
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_2 = CBH_2, y_2 = min_y , Hcbh2_Hdptf2a = Hcbh2_Hdptf2a),
                                                          aes(x = CBH_2,y = y_2, label = Hcbh2_Hdptf2a),
                                                          color = "black", hjust = -2.5, vjust = 0, size = 5)
+          y_2 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_2 = CBH_2, y_2 = max_y , CBH2_label = CBH2_label),
                                                          aes(x = CBH_2,y = y_2, label = CBH2_label),
                                                          color = "black", hjust = 1, vjust = 0, size = 5)
-
+          y_2 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(depth_2 = depth_2, y_2 = max_y , Depth2_label = Depth2_label),
                                                          aes(x = depth_2,y = y_2, label = Depth2_label),
                                                          color = "black", hjust = 2, vjust = 1, size = 5)
@@ -317,15 +331,15 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
         if (any(!is.na(CBH_3)) && any(!is.na(Hcbh3_Hdptf3a))) {
 
-          #print("third condition met")
-
+          y_3 = min_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_3 = CBH_3, y_3 = min_y , Hcbh3_Hdptf3a = Hcbh3_Hdptf3a),
                                                          aes(x = CBH_3,y = y_3, label = Hcbh3_Hdptf3a),
                                                          color = "black", hjust = -2.5, vjust = 0, size = 5)
+          y_3 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_3 = CBH_3, y_3 = max_y , CBH3_label = CBH3_label),
                                                          aes(x = CBH_3,y = y_3, label = CBH3_label),
                                                          color = "black", hjust = 1, vjust = 0, size = 5)
-
+          y_3 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(depth_3 = depth_3, y_3 = max_y , Depth3_label = Depth3_label),
                                                          aes(x = depth_3,y = y_3, label = Depth3_label),
                                                          color = "black", hjust =2, vjust = 1, size = 5)
@@ -334,17 +348,15 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
         if (any(!is.na(CBH_4)) && any(!is.na(Hcbh4_Hdptf4a))) {
 
-          #print("forth condition met")
-
-
+          y_4 = min_y
           bp2_annotations <- bp2_annotations +geom_text(data = data.frame(CBH_4 = CBH_4, y_4 = min_y , Hcbh4_Hdptf4a = Hcbh4_Hdptf4a),
                                                         aes(x = CBH_4,y = y_4, label = Hcbh4_Hdptf4a),
                                                         color = "black", hjust =-2.5, vjust = 0, size = 5)
-
+          y_4 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_4 = CBH_4, y_4 = max_y , CBH4_label = CBH4_label),
                                                          aes(x = CBH_4,y = y_4, label = CBH4_label),
                                                          color = "black", hjust = 1, vjust = 0, size = 5)
-
+          y_4 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(depth_4 = depth_4, y_4 = max_y , Depth4_label = Depth4_label),
                                                          aes(x = depth_4,y = y_4, label = Depth4_label),
                                                          color = "black", hjust = 2, vjust = 1, size = 5)
@@ -353,16 +365,15 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
         if (any(!is.na(CBH_5)) && any(!is.na(Hcbh5_Hdptf5a))) {
 
-          #print("fifth condition met")
-
+          y_5 = min_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_5 = CBH_5, y_5 = min_y, Hcbh5_Hdptf5a = Hcbh5_Hdptf5a),
                                                          aes(x = CBH_5,y = y_5, label = Hcbh5_Hdptf5a),
                                                          color = "black", hjust = -2.5, vjust = 0, size = 5)
-
+          y_5 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_5 = CBH_5, y_5 = max_y , CBH5_label = CBH5_label),
                                                          aes(x = CBH_5,y = y_5, label = CBH5_label),
                                                          color = "black", hjust = 1, vjust = 0, size = 5)
-
+          y_5 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(depth_5 = depth_5, y_5 = max_y , Depth5_label = Depth5_label),
                                                          aes(x = depth_5,y = y_5, label = Depth5_label),
                                                          color = "black", hjust = 2, vjust = 1, size = 5)
@@ -370,16 +381,15 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
         if (any(!is.na(CBH_6)) && any(!is.na(Hcbh6_Hdptf6a))) {
 
-          #print("sixth condition met")
-
+          y_6 = min_y
           bp2_annotations <- bp2_annotations +geom_text(data = data.frame(CBH_6 = CBH_6, y_6 = min_y, Hcbh6_Hdptf6a = Hcbh6_Hdptf6a),
                                                         aes(x = CBH_6,y = y_6, label = Hcbh6_Hdptf6a),
                                                         color = "black", hjust = -2, vjust = 0, size = 5)
-
+          y_6 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(CBH_6 = CBH_6, y_6 = max_y , CBH6_label = CBH6_label),
                                                          aes(x = CBH_6,y = y_6, label = CBH6_label),
                                                          color = "black", hjust = 1, vjust = 0, size = 5)
-
+          y_6 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(depth_6 = depth_6, y_6 = max_y , Depth6_label = Depth6_label),
                                                          aes(x = depth_6,y = y_6, label = Depth6_label),
                                                          color = "black", hjust = 2, vjust = 1, size = 5)

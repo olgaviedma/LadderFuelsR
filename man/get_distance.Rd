@@ -4,10 +4,13 @@
 \alias{get_distance}
 \title{Distances between fuel layers}
 \usage{
-get_distance (gap_cbh_metrics)
+get_distance (gap_cbh_metrics,gaps_perc2)
 }
 \arguments{
 \item{gap_cbh_metrics}{data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
+An object of the class text}
+
+\item{gaps_perc2}{data frame with LAD percentiles for each height values (output of [calculate_gaps_perc2()] function).
 An object of the class text}
 }
 \value{
@@ -35,20 +38,27 @@ library(magrittr)
 library(gdata)
 library(dplyr)
 
-# Load the effective_distances object
+# Load the gap-fbhs object
 if (interactive()) {
   gap_cbh_metrics <- get_gaps_fbhs()
   LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
+
+# Load the perecentiles object
+  gaps_perc2 <- calculate_gaps_perc2()
+  LadderFuelsR::gaps_perc2$treeID <- factor(LadderFuelsR::gaps_perc2$treeID)
+
+trees_name1 <- as.character(gaps_perc2$treeID)
+trees_name2 <- factor(unique(trees_name1))
 
 metrics_distance_list <- list()
 
 for (i in levels(trees_name2)) {
 
   # Filter data for each tree
-  tree2 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
-
+  tree1 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
+  tree2 <- gaps_perc2 |> dplyr::filter(treeID == i)
   # Get distance metrics for each tree
-  metrics_distance <- get_distance(tree2)
+  metrics_distance <- get_distance(tree1, tree2)
   metrics_distance_list[[i]] <- metrics_distance
 }
 
@@ -60,3 +70,4 @@ distance_metrics <- dplyr::bind_rows(metrics_distance_list)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
+\keyword{internal}

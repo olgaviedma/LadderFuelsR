@@ -14,7 +14,9 @@
 #' ## End(Not run)
 #' @export get_renamed0_df
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
-#' @importFrom stringr str_match
+#' across matches row_number all_of vars
+#' @importFrom stringr str_extract str_match str_detect
+#' @keywords internal
 get_renamed0_df <- function(df) {
 
   df1 <- df %>%

@@ -34,7 +34,6 @@
 #'
 #' @examples
 #' ## Not run:
-#' library(SSBtools)
 #' library(magrittr)
 #' library(dplyr)
 #'
@@ -65,12 +64,22 @@
 #'
 #' @export get_real_fbh
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
-#' @importFrom SSBtools RbindAll
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
 #' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
+#' @keywords internal
 get_real_fbh <- function (depth_metrics) {
 
   df<- depth_metrics

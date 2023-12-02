@@ -33,7 +33,6 @@ keeping the first "base height" from those consecutive ones separated by a dista
 }
 \examples{
 ## Not run:
-library(SSBtools)
 library(magrittr)
 library(dplyr)
 
@@ -66,3 +65,4 @@ effective_fbh$treeID <- factor(effective_fbh$treeID)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
+\keyword{internal}

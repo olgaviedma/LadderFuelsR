@@ -47,9 +47,11 @@
 #' library(magrittr)
 #' library(gdata)
 #' library(dplyr)
-
-#' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
+#'
+#'# LAD profiles derived from normalized ALS data after applying [lad.profile()] function
+#'data_path <- file.path("D:/OLGA/R_library/LadderFuelsR/extdata/LAD_profiles.txt")
+#'LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
+#'LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' ## Not run:
 #' # Load or create the effective_distances object
@@ -81,15 +83,25 @@
 #'
 #' @export get_layers_lad
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars first
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
-#' @importFrom SSBtools RbindAll
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
 #' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
 #' @include corrected_base_heights.R
 #' @include corrected_depth.R
 #' @include corrected_distances.R
+#' @keywords internal
 #' @seealso \code{\link{get_renamed_df}}
 get_layers_lad <- function(LAD_profiles, effective_distances) {
 

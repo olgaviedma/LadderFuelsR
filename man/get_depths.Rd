@@ -38,12 +38,10 @@ This function calculates fuels depth as the difference between gaps interleaved 
 library(magrittr)
 library(dplyr)
 
-# LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-LAD_profiles$treeID <- factor(LAD_profiles$treeID)
-
 # Load the effective_distances object
 if (interactive()) {
   distance_metrics <- get_distance()
+  LadderFuelsR::LAD_profiles$treeID <- factor(LadderFuelsR::LAD_profiles$treeID)
   LadderFuelsR::distance_metrics$treeID <- factor(LadderFuelsR::distance_metrics$treeID)
 
 metrics_depth_list <- list()
@@ -67,3 +65,4 @@ depth_metrics <- dplyr::bind_rows(metrics_depth_list)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
+\keyword{internal}

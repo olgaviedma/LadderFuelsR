@@ -29,12 +29,10 @@
 #' library(magrittr)
 #' library(dplyr)
 #'
-#' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
-#'
 #' # Load the effective_distances object
 #' if (interactive()) {
 #'   distance_metrics <- get_distance()
+#'   LadderFuelsR::LAD_profiles$treeID <- factor(LadderFuelsR::LAD_profiles$treeID)
 #'   LadderFuelsR::distance_metrics$treeID <- factor(LadderFuelsR::distance_metrics$treeID)
 #'
 #' metrics_depth_list <- list()
@@ -56,10 +54,21 @@
 #'
 #' @export get_depths
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
 #' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include distances_calculation.R
+#' @keywords internal
 get_depths <- function (LAD_profiles,distance_metrics) {
 
    df1 <- LAD_profiles
@@ -68,6 +77,8 @@ get_depths <- function (LAD_profiles,distance_metrics) {
   df1$treeID<-factor(df1$treeID)
   trees_name1a<- as.character(df1$treeID)
   trees_name3<- factor(unique(trees_name1a))
+
+  lad<-df1$lad
 
   df1_ord<-df1[with(df1, order(lad)), ]
 
@@ -686,6 +697,7 @@ if (nrow(kk_copy) != 0 && length(gap_cols) != 0 && length(cbh_cols) != 0 && (!ex
 
     if (any(min(kk_copy[, cbh_cols]) > 1.5) && any(min(kk_copy[, gap_cols]) > min(kk_copy[, cbh_cols]))) {
 
+       height<-gaps_perc2$height
       # percent1 <- gaps_perc2 %>% dplyr::filter(height < min(kk_copy[, cbh_cols]))
       percent2 <- gaps_perc2 %>% dplyr::filter(height < min(kk_copy[, gap_cols]))
 
@@ -696,6 +708,7 @@ if (nrow(kk_copy) != 0 && length(gap_cols) != 0 && length(cbh_cols) != 0 && (!ex
     }
     if(nrow(percent2) != 0 && any(!is.na(percent2)) && any(percent2$percentil <= 5) && (!exists("depth0") || nrow(depth0)==0)) {
 
+      percentil<-percent2$percentil
       height_percent1<-percent2|> dplyr::filter(percentil <= 5)
       runs <- rle(height_percent1$percentil)
 

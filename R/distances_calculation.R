@@ -2,9 +2,10 @@
 #' Distances between fuel layers
 #' @description This function calculates distances (and their heights) between fuel layers as the difference between consecutive gaps and fuel bases
 #' (the gap height always must be lower than the fuel base height).
-#' @usage get_distance (gap_cbh_metrics)
-#'
+#' @usage get_distance (gap_cbh_metrics,gaps_perc2)
 #' @param gap_cbh_metrics data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
+#' An object of the class text
+#' @param gaps_perc2 data frame with LAD percentiles for each height values (output of [calculate_gaps_perc2()] function).
 #' An object of the class text
 #' @return A data frame giving distances (and their heights) between fuel layers in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
@@ -26,35 +27,62 @@
 #' library(gdata)
 #' library(dplyr)
 #'
-#' # Load the effective_distances object
+#' # Load the gap-fbhs object
 #' if (interactive()) {
 #'   gap_cbh_metrics <- get_gaps_fbhs()
 #'   LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
+#'
+#' # Load the perecentiles object
+#'   gaps_perc2 <- calculate_gaps_perc2()
+#'   LadderFuelsR::gaps_perc2$treeID <- factor(LadderFuelsR::gaps_perc2$treeID)
+#'
+#' trees_name1 <- as.character(gaps_perc2$treeID)
+#' trees_name2 <- factor(unique(trees_name1))
 #'
 #' metrics_distance_list <- list()
 #'
 #' for (i in levels(trees_name2)) {
 #'
 #'   # Filter data for each tree
-#'   tree2 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
-#'
+#'   tree1 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
+#'   tree2 <- gaps_perc2 |> dplyr::filter(treeID == i)
 #'   # Get distance metrics for each tree
-#'   metrics_distance <- get_distance(tree2)
+#'   metrics_distance <- get_distance(tree1, tree2)
 #'   metrics_distance_list[[i]] <- metrics_distance
 #' }
 #'
 #' # Combine the individual data frames
 #' distance_metrics <- dplyr::bind_rows(metrics_distance_list)
-#'}
+#' }
 #' ## End(Not run)
 #' @export get_distance
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
 #' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
-get_distance <- function (gap_cbh_metrics) {
+#' @include calculate_gaps_perc2.R
+#' @keywords internal
+get_distance <- function (gap_cbh_metrics,gaps_perc2) {
 
-  df <- gap_cbh_metrics %>%
+    gaps_perc2<-gaps_perc2
+    df <- gap_cbh_metrics
+
+    gaps_perc2$treeID <- factor(gaps_perc2$treeID)
+    df$treeID <- factor(df$treeID)
+
+    treeID<-factor(df$treeID)
+
+    df <- df %>%
     dplyr::mutate_at(
       vars(-treeID),  # Exclude the 'treeID' column
       as.numeric
@@ -635,6 +663,7 @@ get_distance <- function (gap_cbh_metrics) {
 
   if (length(gap_cols) > 1 && length(cbh_cols) > 1 && ((exists("distance_data") || !is.null(distance_data) || (ncol(distance_data) != 0 && nrow(distance_data) != 0)) || !is.na(distance_data))) {
 
+    height<-gaps_perc2$height
     percent2a <- gaps_perc2 %>% dplyr::filter(height < min(kk_copy[, cbh_cols]))
 
     if (nrow(percent2a) != 0 && any(!is.na(percent2a)) && any(percent2a$percentil > 25)) {

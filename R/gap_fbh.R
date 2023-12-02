@@ -34,14 +34,15 @@
 #' trees_name1 <- as.character(LAD_profiles$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
 #'
-#' metrics_precentile_list<-list()
+#' metrics_precentile_list1<-list()
+#'
 #' for (i in levels(trees_name2)) {
-#'   tree2 <- LAD_profiles |> dplyr::filter(treeID == i)
-#'   metrics_precentil <- get_gaps_fbhs(tree2)
-#'   metrics_precentile_list[[i]] <- metrics_precentil
+#'   tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+#'   metrics_precentil <- get_gaps_fbhs(tree1)
+#'   metrics_precentile_list1[[i]] <- metrics_precentil
 #' }
 #'
-#' metrics_all_percentil <- dplyr::bind_rows(metrics_precentile_list)
+#' metrics_all_percentil <- dplyr::bind_rows(metrics_precentile_list1)
 #' metrics_all_percentil$treeID <- factor(metrics_all_percentil$treeID)
 #'
 #' # Remove the row with all NA values from the original data frame
@@ -63,39 +64,52 @@
 #' ## End(Not run)
 #' @export get_gaps_fbhs
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' across matches row_number all_of vars
+#' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
+#' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
+#' @importFrom utils tail
+#' @importFrom tidyselect starts_with everything one_of
+#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom tibble tibble
+#' @importFrom tidyr pivot_longer fill
+#' @importFrom gdata startsWith
+#' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
+#' theme element_text xlab ylab ggplot
+#' @keywords internal
 get_gaps_fbhs<- function (LAD_profiles) {
 
-  df<- LAD_profiles
+    df <- LAD_profiles
 
-  treeID<-"treeID"
-  print(paste("treeID:", df[[treeID]][1]))  # Debugging line
+    treeID <- "treeID"
+    print(paste("treeID:", df[[treeID]][1]))  # Debugging line
 
-    df$height<-as.numeric(df$height)
-     df$treeID<-factor(df$treeID)
-trees_name1a<- as.character(df$treeID)
-trees_name3<- factor(unique(trees_name1a))
+    df$height <- as.numeric(df$height)
+    df$treeID <- factor(df$treeID)
+    trees_name1a <- as.character(df$treeID)
+    trees_name3 <- factor(unique(trees_name1a))
 
-df_ord<-df[with(df, order(lad)), ]
+    lad<-df$lad
+    df_ord<-df[with(df, order(lad)), ]
 
-all_equal <- length(unique(df_ord$lad)) == 1
+    all_equal <- length(unique(df_ord$lad)) == 1
 
-if(all_equal) {
+    if(all_equal) {
 
-  treeID<-unique(factor(df$treeID))
+    treeID<-unique(factor(df$treeID))
 
-  crown_height_data <- data.frame(NA)
-  names(crown_height_data) <- "cbh0"
-  gaps_height_data <- data.frame(NA)
-  names(gaps_height_data) <- "gap0"
-  distance_data <- data.frame(NA)
-  names(distance_data) <- "dist0"
-  depth0 <- data.frame(NA)
-  names(depth0) <- "depth0"
-  depth_data <- data.frame(NA)
-  names(depth_data) <- "depth01"
+    crown_height_data <- data.frame(NA)
+    names(crown_height_data) <- "cbh0"
+    gaps_height_data <- data.frame(NA)
+    names(gaps_height_data) <- "gap0"
+    distance_data <- data.frame(NA)
+    names(distance_data) <- "dist0"
+    depth0 <- data.frame(NA)
+    names(depth0) <- "depth0"
+    depth_data <- data.frame(NA)
+    names(depth_data) <- "depth01"
 
-  metrics_tree<-cbind.data.frame(crown_height_data, gaps_height_data, distance_data, depth0,depth_data, treeID)
+    metrics_tree<-cbind.data.frame(crown_height_data, gaps_height_data, distance_data, depth0,depth_data, treeID)
 
 } else {
 
@@ -111,41 +125,39 @@ if(all_equal) {
       P99 = quantile(lad, probs = 0.99, na.rm = TRUE)
     )
 
-  x1<-df$height
-  y1<-df$lad
+  x1 <- df$height
+  y1 <- df$lad
 
-  # Identify missing and infinite values in x and y
-missing_x <- is.na(x1)
-missing_y <- is.na(y1) | is.infinite(y1)
+    # Identify missing and infinite values in x and y
+    missing_x <- is.na(x1)
+    missing_y <- is.na(y1) | is.infinite(y1)
 
-# Remove missing and infinite values from x and y
-x <- x1[!missing_x & !missing_y]
-y <- y1[!missing_x & !missing_y]
+    # Remove missing and infinite values from x and y
+    x <- x1[!missing_x & !missing_y]
+    y <- y1[!missing_x & !missing_y]
 
+    fit <- smooth.spline(x, y)  # Fit a smoothing spline
+    y_second_deriv <- predict(fit, fit$x, deriv = 2)  # Calculate the second derivative
 
-fit <- smooth.spline(x, y) # Fit a smoothing spline
-y_second_deriv <- predict(fit, fit$x, deriv = 2) # Calculate the second derivative
+    base_2drivative <- data.frame(do.call(cbind, y_second_deriv))  # convert the list into a dataframe
+    base_2drivative$y <- round(base_2drivative$y, digits = 10)
 
-#plot(y_second_deriv$x, y_second_deriv$y, type = "l", lwd = 2, col = "red", xlab = "X", ylab = "f''(x)", main = "Plot of second derivative of f(x)")
+    critical_points <- base_2drivative[, 2]  # Extract the values of the second derivative
+    base_2drivative2 <- cbind.data.frame(df[, c(1:3)], critical_points)
 
-base_2drivative<-data.frame(do.call(cbind , y_second_deriv)) # convert the list into a dataframe
-base_2drivative$y<-round(base_2drivative$y, digits=10)
+    gaps_perc <- with(base_2drivative2,
+                      ifelse(lad <= PERCENTIL_Z$P5 , "5",
+                             ifelse(lad > PERCENTIL_Z$P5 & lad <= PERCENTIL_Z$P25, "25",
+                                    ifelse(lad > PERCENTIL_Z$P25 & lad <= PERCENTIL_Z$P50, "50",
+                                           ifelse(lad > PERCENTIL_Z$P50 & lad <= PERCENTIL_Z$P75, "75",
+                                                  ifelse(lad > PERCENTIL_Z$P75 & lad <= PERCENTIL_Z$P90, "90",
+                                                         ifelse(lad > PERCENTIL_Z$P90 & lad <= PERCENTIL_Z$P95, "95",
+                                                                ifelse(lad > PERCENTIL_Z$P95 & lad <= PERCENTIL_Z$P99, "99",
+                                                                       ifelse(lad >  PERCENTIL_Z$P99, "100", NA)) )))))))
 
-critical_points<-base_2drivative[,2]# Extract the values of the second derivative
-base_2drivative2<-cbind.data.frame(df[,c(1:3)],critical_points)
+    gaps_perc1 <- data.frame(percentil = as.numeric(gaps_perc))
+    gaps_perc2 <- cbind.data.frame(base_2drivative2, gaps_perc1)
 
-gaps_perc<- with(base_2drivative2,
-          ifelse(lad <= PERCENTIL_Z$P5 , "5",
-          ifelse(lad > PERCENTIL_Z$P5 & lad <= PERCENTIL_Z$P25, "25",
-         ifelse(lad > PERCENTIL_Z$P25 & lad <= PERCENTIL_Z$P50, "50",
-         ifelse(lad > PERCENTIL_Z$P50 & lad <= PERCENTIL_Z$P75, "75",
-         ifelse(lad > PERCENTIL_Z$P75 & lad <= PERCENTIL_Z$P90, "90",
-          ifelse(lad > PERCENTIL_Z$P90 & lad <= PERCENTIL_Z$P95, "95",
-          ifelse(lad > PERCENTIL_Z$P95 & lad <= PERCENTIL_Z$P99, "99",
-          ifelse(lad >  PERCENTIL_Z$P99, "100",NA)) )))))))
-
-gaps_perc1 <- data.frame(percentil = as.numeric(gaps_perc))
-gaps_perc2<-cbind.data.frame(base_2drivative2,gaps_perc1)
 
 percentil<-gaps_perc2$percentil
 
@@ -164,11 +176,17 @@ gaps2<-do.call(rbind,gaps1)
 
 #####
 varname <- "lad"# define the variable to use for subsetting: minimum LAD
-minvals <- lapply(gaps1, function(df) min(df[[varname]])) #  the minimum value of the variable in each data frame
+minvals <- lapply(gaps1, function(df) {
+  if (length(df$lad) > 0 && any(!is.na(df$lad))) {
+    min(df$lad[is.finite(df$lad)])
+  } else {
+    NA
+  }
+})
 
 subsetlist <- lapply(gaps1, function(df) {
-  minval <- min(df[[varname]])
-  subset(df, df[[varname]] == minval)
+  minval <- min(df$lad[is.finite(df$lad)])
+  subset(df, df$lad == minval)
 }) # subset the list with the min LAD
 
 gaps5<-do.call(rbind,subsetlist)
@@ -263,13 +281,22 @@ crown3<-do.call(rbind,subset_crown2a)
 crown3a<-data.frame(t(crown3))
 
 varname <- "lad"# define the variable to use for subsetting: minimum LAD
-minvals1 <- lapply(subset_crown2a, function(df) min(df[[varname]])) #  the minimum value of the variable in each data frame
+minvals1 <- lapply(gaps1, function(df) {
+  if (length(df$lad) > 0 && any(!is.na(df$lad))) {
+    min(df$lad[is.finite(df$lad)])
+  } else {
+    NA
+  }
+})
 
 subsetlist1 <- lapply(subset_crown2a, function(df) {
-  minval1 <- min(df[[varname]])
-  subset(df, df[[varname]] == minval1)
+  if (any(is.finite(df$lad) & !is.na(df$lad))) {
+    minval1 <- min(df$lad[is.finite(df$lad)])
+    subset(df, df$lad == minval1)
+  } else {
+    NULL  # or any other value that indicates no valid subset
+  }
 }) # subset the list with the minimum LAD
-
 crown3b<-do.call(rbind,subsetlist1)
 crown3c<-data.frame(t(crown3b))
 
@@ -327,6 +354,7 @@ merged_gaps1$type<-rep(c("gap"), nrow(merged_gaps1))
 merged_gaps1 <- merged_gaps1 %>%
   dplyr::mutate(type = ifelse(type == "gap", paste0("gap", seq_along(type[type == "gap"])), type))
 merged_gaps2<-data.frame(t(merged_gaps1))
+type<-merged_gaps1$type
 
 gaps_lad <- data.frame(merged_gaps2[3,])
   gaps_lad1 <- as.data.frame(lapply(gaps_lad, as.numeric))
@@ -419,7 +447,9 @@ names(max_height)="max_height"
     gap_cbh_metrics$treeID1 <- sub("_.*", "", gap_cbh_metrics$treeID)
     gap_cbh_metrics$treeID1 <- as.numeric(gap_cbh_metrics$treeID1)
     gap_cbh_metrics <- dplyr::arrange(gap_cbh_metrics, treeID1)
-   }
+
+    treeID1<-unique(factor(df$treeID1))
+}
 
 return(gap_cbh_metrics)
 }
