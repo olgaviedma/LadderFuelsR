@@ -109,8 +109,8 @@ get_cum_break <- function(LAD_profiles, effective_distances) {
   # Initialize the result data frame
   closest_row <- data.frame()
 
-  df_effective<- effective_distances
-  df_orig<- LAD_profiles
+  df_effective<- effective_distances |> dplyr::filter(treeID == "1_Eglin_zone1_CROWN")
+  df_orig<- LAD_profiles |> dplyr::filter(treeID == "1_Eglin_zone1_CROWN")
 
   tryCatch({
     # Validate input data frames
@@ -225,7 +225,7 @@ get_cum_break <- function(LAD_profiles, effective_distances) {
 
 
     # Check the specified conditions
-    if(!is.na(output_df2$below_hcbhbp[1]) && output_df2$below_hcbhbp[1] < 75 && numeric_count == 1) {
+    if(!is.na(output_df2$below_hcbhbp[1]) && output_df2$below_hcbhbp[1] > 75 && numeric_count == 1) {
       output_df2$maxlad_Hcbh[1] <- 1.5
       output_df2$maxlad_Hdptf[1] <- round(output_df2$Hcbh_bp[1], 1)
       output_df2$maxlad_Hdist[1] <- 0.5
