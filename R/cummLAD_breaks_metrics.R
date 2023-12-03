@@ -109,8 +109,8 @@ get_cum_break <- function(LAD_profiles, effective_distances) {
   # Initialize the result data frame
   closest_row <- data.frame()
 
-  df_effective<- effective_distances |> dplyr::filter(treeID == "1_Eglin_zone1_CROWN")
-  df_orig<- LAD_profiles |> dplyr::filter(treeID == "1_Eglin_zone1_CROWN")
+  df_effective<- effective_distances
+  df_orig<- LAD_profiles
 
   tryCatch({
     # Validate input data frames
