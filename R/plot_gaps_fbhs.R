@@ -52,6 +52,7 @@
 #' @include distances_calculation.R
 #' @include depths_calculation.R
 #' @keywords internal
+#' @export
 get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
 
   df_orig<-LAD_profiles

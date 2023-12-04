@@ -54,6 +54,7 @@
 #' @include corrected_distances.R
 #' @include cummLAD_breaks_metrics.R
 #' @keywords internal
+#' @export
 get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
 
   df_orig<- LAD_profiles

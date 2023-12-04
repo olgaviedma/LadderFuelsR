@@ -70,6 +70,7 @@
 #' @include calculate_gaps_perc2.R
 #' @include distances_calculation.R
 #' @keywords internal
+#' @export
 get_depths <- function (LAD_profiles,distance_metrics) {
 
    df1 <- LAD_profiles

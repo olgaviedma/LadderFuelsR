@@ -81,6 +81,7 @@
 #' @include distances_calculation.R
 #' @include depths_calculation.R
 #' @keywords internal
+#' @export
 get_real_fbh <- function (depth_metrics) {
 
   df<- depth_metrics

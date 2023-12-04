@@ -77,6 +77,7 @@
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
 #' @keywords internal
+#' @export
 get_gaps_fbhs<- function (LAD_profiles) {
 
     df <- LAD_profiles

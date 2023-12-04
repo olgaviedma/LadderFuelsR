@@ -73,6 +73,7 @@
 #' @include corrected_base_heights.R
 #' @keywords internal
 #' @seealso \code{\link{get_renamed0_df}}
+#' @export
 get_real_depths <- function (effective_fbh) {
 
   #remove the columns from the dataframe df2a which contain only NA values.

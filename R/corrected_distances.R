@@ -85,6 +85,7 @@
 #' @include corrected_base_heights.R
 #' @include corrected_depth.R
 #' @keywords internal
+#' @export
 get_effective_gap <- function (effective_depth) {
 
   df<- effective_depth

@@ -67,6 +67,7 @@
 #' @include corrected_distances.R
 #' @include maxlad_metrics_25perc.R
 #' @keywords internal
+#' @export
 get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
   df_orig <- LAD_profiles

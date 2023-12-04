@@ -72,6 +72,7 @@
 #' @include gap_fbh.R
 #' @include calculate_gaps_perc2.R
 #' @keywords internal
+#' @export
 get_distance <- function (gap_cbh_metrics,gaps_perc2) {
 
     gaps_perc2<-gaps_perc2

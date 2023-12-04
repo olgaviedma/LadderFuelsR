@@ -104,6 +104,7 @@
 #' @include corrected_depth.R
 #' @include corrected_distances.R
 #' @keywords internal
+#' @export
 get_cum_break <- function(LAD_profiles, effective_distances) {
 
   # Initialize the result data frame

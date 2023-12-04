@@ -105,6 +105,7 @@
 #' @include corrected_distances.R
 #' @keywords internal
 #' @seealso \code{\link{get_renamed_df}}
+#' @export
 get_layers_lad <- function(LAD_profiles, effective_distances) {
 
   df_orig <- LAD_profiles

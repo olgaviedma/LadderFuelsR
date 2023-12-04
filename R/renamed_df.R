@@ -18,6 +18,7 @@
 #' across matches row_number all_of vars
 #' @importFrom stringr str_extract str_match str_detect
 #' @keywords internal
+#' @export
 get_renamed_df <- function(df) {
 
   df1 <- df %>%
