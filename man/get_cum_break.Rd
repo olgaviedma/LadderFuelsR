@@ -51,8 +51,7 @@ library(gdata)
 library(dplyr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-data_path <- file.path("D:/OLGA/R_library/LadderFuelsR/extdata/LAD_profiles.txt")
-LAD_profiles <- read.table(data_path, sep = "\t", header = TRUE)
+LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 # Load the effective_distances object
