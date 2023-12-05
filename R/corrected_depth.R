@@ -5,6 +5,7 @@
 #' An object of the class text
 #' @return A data frame giving the fuel layers depth after removing distances = 1 m.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
+#'
 #' @details
 #' # List of tree metrics:
 #' \itemize{
@@ -17,6 +18,7 @@
 #' \item Hdptf - Height of the depth of fuel layers (m) after removing distances equal 1 m
 #' \item max_height - Maximum height of the tree profile
 #' }
+#'
 #' @examples
 #' \dontrun{
 #' library(magrittr)

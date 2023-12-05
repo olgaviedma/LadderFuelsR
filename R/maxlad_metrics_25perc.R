@@ -16,7 +16,7 @@
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
-#' @details
+#'@details
 #' # List of tree metrics:
 #' \itemize{
 #'   \item treeID: tree ID with strings and numeric values

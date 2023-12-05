@@ -7,7 +7,7 @@
 #' @return A data frame giving the height of gaps and fuel layers bases in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
-#' @details
+#'@details
 #' # List of tree metrics:
 #' \itemize{
 #' \item treeID: tree ID with strings and numeric values
@@ -20,6 +20,7 @@
 #' \item cbh_perc - Percentage of LAD in the fuel base height
 #' \item max_height - Maximum height of the tree profile
 #' }
+#'
 #' @examples
 #' \dontrun{
 #' library(magrittr)

@@ -8,7 +8,7 @@
 #' @return A data frame giving fuel layers depth and the height of the depths in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
-#' @details
+#'@details
 #' # List of tree metrics:
 #' \itemize{
 #' \item treeID: tree ID with strings and numeric values
@@ -21,6 +21,7 @@
 #' \item Hdepth - Height of the depth of fuel layers (m)
 #' \item max_height - Maximum height of the tree profile
 #' }
+#'
 #' @examples
 #' \dontrun{
 #' library(magrittr)

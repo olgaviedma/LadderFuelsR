@@ -9,7 +9,7 @@
 #' @return A data frame giving distances (and their heights) between fuel layers in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
-#' @details
+#'@details
 #' # List of tree metrics:
 #' \itemize{
 #' \item treeID: tree ID with strings and numeric values
@@ -20,6 +20,7 @@
 #' \item Hdist - Height of the distance between consecutive fuel layers (m)
 #' \item max_height - Maximum height of the tree profile
 #' }
+#'
 #' @examples
 #' \dontrun{
 #' library(magrittr)

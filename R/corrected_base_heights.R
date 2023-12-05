@@ -12,6 +12,7 @@
 #' This value replaces the values of the next base heights if they are separated by a distance = 1.
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
+#'
 #' @details
 #' # List of tree metrics:
 #' \itemize{
@@ -24,6 +25,7 @@
 #'   \item Hdepth - Height of the depth of fuel layers (m)
 #'   \item max_height - Maximum height of the tree profile
 #' }
+#'
 #' @examples
 #' \dontrun{
 #' library(magrittr)

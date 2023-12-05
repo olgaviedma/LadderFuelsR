@@ -16,7 +16,7 @@
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
-#' @details
+#'@details
 #' \itemize{
 #'   \item treeID: tree ID with strings and numeric values
 #'   \item treeID1: tree ID with only numeric values
