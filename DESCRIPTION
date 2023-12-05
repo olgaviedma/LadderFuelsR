@@ -10,6 +10,7 @@ Encoding: UTF-8
 LazyData: true
 Imports: dplyr, gdata, ggplot2, magrittr, segmented, stringr, tidyr, tibble, tidyselect
 RoxygenNote: 7.2.3
+Roxygen: list(roclets = c("rd", "collate", "namespace", "vignette"))
 Collate: 
     'calculate_gaps_perc2.R'
     'gap_fbh.R'
