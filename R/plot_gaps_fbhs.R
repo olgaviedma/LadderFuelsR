@@ -10,18 +10,19 @@
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(ggplot2)
 #' library(dplyr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+#' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Load the depth_metrics object
 #' if (interactive()) {
-#'   depth_metrics <- get_depths()
-#'   LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
+#' depth_metrics <- get_depths()
+#' LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
 #'
 #' # Tree metrics derived from get_depths() function
 #' data(depth_metrics)
@@ -29,10 +30,8 @@
 #'
 #' # Generate plots for gaps and fbhs
 #' plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
-#'}
-#' ## End(Not run)
-#'
-#' @export get_plots_gap_fbh
+#' }
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control

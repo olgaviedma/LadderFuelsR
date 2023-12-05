@@ -14,9 +14,9 @@ This function deals with concatenated column names, reorders columns and appends
 Don´t run it. It is an internal function.
 }
 \examples{
-## Not run:
+\dontrun{
 library(dplyr)
 # get_renamed_df concatenates column names, reorders columns and appends numeric suffixes
-## End(Not run)
+}
 }
 \keyword{internal}

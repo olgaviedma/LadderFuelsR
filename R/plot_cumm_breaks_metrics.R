@@ -9,28 +9,27 @@
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(ggplot2)
 #' library(dplyr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+#' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Load the cummulative_LAD object
 #' if (interactive()) {
-#'   cummulative_LAD <- get_cum_break()
-#'   LadderFuelsR::cummulative_LAD$treeID <- factor(LadderFuelsR::cummulative_LAD$treeID)
+#' cummulative_LAD <- get_cum_break()
+#' LadderFuelsR::cummulative_LAD$treeID <- factor(LadderFuelsR::cummulative_LAD$treeID)
 #'
 #' # Tree metrics derived from get_cum_break() function
 #' cummulative_LAD$treeID <- factor(cummulative_LAD$treeID)
 #'
 #' # Generate cumulative LAD plots
 #' plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
-#'}
-#' ## End(Not run)
-#'
-#' @export get_plots_cumm
+#' }
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control

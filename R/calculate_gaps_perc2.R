@@ -7,12 +7,13 @@
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(magrittr)
 #' library(dplyr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+#' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' trees_name1 <- as.character(LAD_profiles$treeID)
@@ -21,16 +22,13 @@
 #' percentile_list1<-list()
 #'
 #' for (i in levels(trees_name2)) {
-#'   tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#'   percentiles <- calculate_gaps_perc2(tree1)
-#'   percentile_list1[[i]] <- percentiles
-#'}
+#' tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+#' percentiles <- calculate_gaps_perc2(tree1)
+#' percentile_list1[[i]] <- percentiles
+#' }
 #' gaps_perc2 <- dplyr::bind_rows(percentile_list1)
 #' gaps_perc2$treeID <- factor(gaps_perc2$treeID)
-#'
-#' ## End(Not run)
-#'
-#' @export calculate_gaps_perc2
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control

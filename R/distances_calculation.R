@@ -22,19 +22,19 @@
 #' \item max_height - Maximum height of the tree profile
 #' }
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(magrittr)
 #' library(gdata)
 #' library(dplyr)
 #'
 #' # Load the gap-fbhs object
 #' if (interactive()) {
-#'   gap_cbh_metrics <- get_gaps_fbhs()
-#'   LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
+#' gap_cbh_metrics <- get_gaps_fbhs()
+#' LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
 #'
 #' # Load the perecentiles object
-#'   gaps_perc2 <- calculate_gaps_perc2()
-#'   LadderFuelsR::gaps_perc2$treeID <- factor(LadderFuelsR::gaps_perc2$treeID)
+#' gaps_perc2 <- calculate_gaps_perc2()
+#' LadderFuelsR::gaps_perc2$treeID <- factor(LadderFuelsR::gaps_perc2$treeID)
 #'
 #' trees_name1 <- as.character(gaps_perc2$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
@@ -43,19 +43,18 @@
 #'
 #' for (i in levels(trees_name2)) {
 #'
-#'   # Filter data for each tree
-#'   tree1 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
-#'   tree2 <- gaps_perc2 |> dplyr::filter(treeID == i)
-#'   # Get distance metrics for each tree
-#'   metrics_distance <- get_distance(tree1, tree2)
-#'   metrics_distance_list[[i]] <- metrics_distance
+#' # Filter data for each tree
+#' tree1 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
+#' tree2 <- gaps_perc2 |> dplyr::filter(treeID == i)
+#' # Get distance metrics for each tree
+#' metrics_distance <- get_distance(tree1, tree2)
+#' metrics_distance_list[[i]] <- metrics_distance
 #' }
 #'
 #' # Combine the individual data frames
 #' distance_metrics <- dplyr::bind_rows(metrics_distance_list)
 #' }
-#' ## End(Not run)
-#' @export get_distance
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control

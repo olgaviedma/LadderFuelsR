@@ -34,33 +34,32 @@ This function calculates fuels depth as the difference between gaps interleaved 
 }
 }
 \examples{
-## Not run:
+\dontrun{
 library(magrittr)
 library(dplyr)
 
 # Load the effective_distances object
 if (interactive()) {
-  distance_metrics <- get_distance()
-  LadderFuelsR::LAD_profiles$treeID <- factor(LadderFuelsR::LAD_profiles$treeID)
-  LadderFuelsR::distance_metrics$treeID <- factor(LadderFuelsR::distance_metrics$treeID)
+distance_metrics <- get_distance()
+LadderFuelsR::LAD_profiles$treeID <- factor(LadderFuelsR::LAD_profiles$treeID)
+LadderFuelsR::distance_metrics$treeID <- factor(LadderFuelsR::distance_metrics$treeID)
 
 metrics_depth_list <- list()
 
 for (i in levels(LAD_profiles$treeID)){
 
-  tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-  tree2 <- distance_metrics |> dplyr::filter(treeID == i)
+tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+tree2 <- distance_metrics |> dplyr::filter(treeID == i)
 
-  # Get depths for each tree
-  metrics_depth <- get_depths(tree1, tree2)
-  metrics_depth_list[[i]] <- metrics_depth
+# Get depths for each tree
+metrics_depth <- get_depths(tree1, tree2)
+metrics_depth_list[[i]] <- metrics_depth
 }
 
 # Combine the individual data frames
 depth_metrics <- dplyr::bind_rows(metrics_depth_list)
 }
-## End(Not run)
-
+}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

@@ -43,21 +43,22 @@
 #' }
 #'
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(magrittr)
 #' library(gdata)
 #' library(dplyr)
 #' library(stringr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+#' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' ## Not run:
 #' # Load or create the effective_distances object
 #' if (interactive()) {
-#'   effective_distances <- get_effective_gap()
-#'   LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
+#' effective_distances <- get_effective_gap()
+#' LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
 #'
 #' trees_name1 <- as.character(effective_distances$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
@@ -66,22 +67,20 @@
 #' LAD_metrics2 <- list()
 #'
 #' for (i in levels(trees_name2)) {
-#'   # Filter data for each tree
-#'   tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#'   tree2 <- effective_distances |> dplyr::filter(treeID == i)
+#' # Filter data for each tree
+#' tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+#' tree2 <- effective_distances |> dplyr::filter(treeID == i)
 #'
-#'   # Get LAD metrics for each tree
-#'   LAD_metrics <- get_layers_lad(tree1, tree2)
-#'   LAD_metrics1[[i]] <- LAD_metrics$df1
-#'   LAD_metrics2[[i]] <- LAD_metrics$df2
+#' # Get LAD metrics for each tree
+#' LAD_metrics <- get_layers_lad(tree1, tree2)
+#' LAD_metrics1[[i]] <- LAD_metrics$df1
+#' LAD_metrics2[[i]] <- LAD_metrics$df2
 #' }
 #'
 #' all_LAD <- dplyr::bind_rows(LAD_metrics1)
 #' effective_LAD <- dplyr::bind_rows(LAD_metrics2)
-#'}
-#' ## End(Not run)
-#'
-#' @export get_layers_lad
+#' }
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars first
 #' @importFrom segmented segmented seg.control

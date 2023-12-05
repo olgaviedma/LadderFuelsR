@@ -20,18 +20,19 @@ A plot drawing by lines the height of gaps and fuel layers bases in tiff format.
 This function plots gaps and fuel layers base height (fbh) in the vertical tree profile (VTP).
 }
 \examples{
-## Not run:
+\dontrun{
 library(ggplot2)
 library(dplyr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 # Load the depth_metrics object
 if (interactive()) {
-  depth_metrics <- get_depths()
-  LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
+depth_metrics <- get_depths()
+LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
 
 # Tree metrics derived from get_depths() function
 data(depth_metrics)
@@ -40,8 +41,7 @@ depth_metrics$treeID <- factor(depth_metrics$treeID)
 # Generate plots for gaps and fbhs
 plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
 }
-## End(Not run)
-
+}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

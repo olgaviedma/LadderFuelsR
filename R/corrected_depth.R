@@ -21,15 +21,15 @@
 #' \item max_height - Maximum height of the tree profile
 #' }
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(magrittr)
 #' library(tidyr)
 #' library(dplyr)
 #'
 #' # Load the effective_fbh object
 #' if (interactive()) {
-#'   effective_fbh <- get_real_fbh()
-#'   LadderFuelsR::effective_fbh$treeID <- factor(LadderFuelsR::effective_fbh$treeID)
+#' effective_fbh <- get_real_fbh()
+#' LadderFuelsR::effective_fbh$treeID <- factor(LadderFuelsR::effective_fbh$treeID)
 #'
 #' # Tree metrics derived from get_real_fbh() function
 #' effective_fbh$treeID <- factor(effective_fbh$treeID)
@@ -40,19 +40,17 @@
 #' depth_metrics_corr_list <- list()
 #'
 #' for (i in levels(trees_name2)){
-#'   # Filter data for each tree
-#'   tree3 <- effective_fbh |> dplyr::filter(treeID == i)
-#'   # Get real depths for each tree
-#'   depth_metrics_corr <- get_real_depths(tree3)
-#'   depth_metrics_corr_list[[i]] <- depth_metrics_corr
+#' # Filter data for each tree
+#' tree3 <- effective_fbh |> dplyr::filter(treeID == i)
+#' # Get real depths for each tree
+#' depth_metrics_corr <- get_real_depths(tree3)
+#' depth_metrics_corr_list[[i]] <- depth_metrics_corr
 #' }
 #'
 #' # Combine depth values for all trees
 #' effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
 #' }
-#' ## End(Not run)
-#'
-#' @export get_real_depths
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars n
 #' @importFrom segmented segmented seg.control

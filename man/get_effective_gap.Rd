@@ -37,15 +37,15 @@ List of tree metrics:
 }
 }
 \examples{
-## Not run:
+\dontrun{
 library(magrittr)
 library(stringr)
 library(dplyr)
 
 # Load the effective_depth object
 if (interactive()) {
-  effective_depth <- get_real_depths()
-  LadderFuelsR::effective_depth$treeID <- factor(LadderFuelsR::effective_depth$treeID)
+effective_depth <- get_real_depths()
+LadderFuelsR::effective_depth$treeID <- factor(LadderFuelsR::effective_depth$treeID)
 
 trees_name1 <- as.character(effective_depth$treeID)
 trees_name2 <- factor(unique(trees_name1))
@@ -53,16 +53,15 @@ trees_name2 <- factor(unique(trees_name1))
 corr_distance_metrics_list <- list()
 
 for (i in levels(trees_name2)) {
-  tree1 <- effective_depth |> dplyr::filter(treeID == i)
-  corr_distance_metrics <- get_effective_gap(tree1)
-  corr_distance_metrics_list[[i]] <- corr_distance_metrics
+tree1 <- effective_depth |> dplyr::filter(treeID == i)
+corr_distance_metrics <- get_effective_gap(tree1)
+corr_distance_metrics_list[[i]] <- corr_distance_metrics
 }
 
 # Combine the individual data frames
 effective_distances <- dplyr::bind_rows(corr_distance_metrics_list)
 }
-## End(Not run)
-
+}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

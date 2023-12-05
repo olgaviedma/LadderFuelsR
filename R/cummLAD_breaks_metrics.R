@@ -46,42 +46,41 @@
 #' }
 #'
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(magrittr)
 #' library(segmented)
 #' library(gdata)
 #' library(dplyr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+#' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Load the effective_distances object
 #' if (interactive()) {
-#'   effective_distances <- get_effective_gap()
-#'   LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
+#' effective_distances <- get_effective_gap()
+#' LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
 #'
-#'   trees_name1 <- as.character(effective_distances$treeID)
-#'   trees_name2 <- factor(unique(trees_name1))
+#' trees_name1 <- as.character(effective_distances$treeID)
+#' trees_name2 <- factor(unique(trees_name1))
 #'
-#'   cum_LAD_metrics_list <- list()
+#' cum_LAD_metrics_list <- list()
 #'
-#'   for (i in levels(trees_name2)) {
-#'     # Filter data for each tree
-#'     tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#'     tree2 <- effective_distances |> dplyr::filter(treeID == i)
+#' for (i in levels(trees_name2)) {
+#' # Filter data for each tree
+#' tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+#' tree2 <- effective_distances |> dplyr::filter(treeID == i)
 #'
-#'     # Get cumulative LAD metrics for each tree
-#'     cum_LAD_metrics <- get_cum_break(tree1, tree2)
-#'     cum_LAD_metrics_list[[i]] <- cum_LAD_metrics
-#'   }
-#'
-#'   # Combine the individual data frames
-#'   cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
+#' # Get cumulative LAD metrics for each tree
+#' cum_LAD_metrics <- get_cum_break(tree1, tree2)
+#' cum_LAD_metrics_list[[i]] <- cum_LAD_metrics
 #' }
-#' ## End(Not run)
 #'
-#' @export get_cum_break
+#' # Combine the individual data frames
+#' cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
+#' }
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control

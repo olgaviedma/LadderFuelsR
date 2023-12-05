@@ -22,12 +22,13 @@
 #' \item max_height - Maximum height of the tree profile
 #' }
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(magrittr)
 #' library(dplyr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+#' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' trees_name1 <- as.character(LAD_profiles$treeID)
@@ -36,9 +37,9 @@
 #' metrics_precentile_list1<-list()
 #'
 #' for (i in levels(trees_name2)) {
-#'   tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#'   metrics_precentil <- get_gaps_fbhs(tree1)
-#'   metrics_precentile_list1[[i]] <- metrics_precentil
+#' tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+#' metrics_precentil <- get_gaps_fbhs(tree1)
+#' metrics_precentile_list1[[i]] <- metrics_precentil
 #' }
 #'
 #' metrics_all_percentil <- dplyr::bind_rows(metrics_precentile_list1)
@@ -56,12 +57,11 @@
 #'
 #' # Remove the row with all NA values from the original data frame
 #' if (length(row_index) > 0) {
-#'   gap_cbh_metrics <- metrics_all_percentil[-row_index, ]
+#' gap_cbh_metrics <- metrics_all_percentil[-row_index, ]
 #' } else {
-#'   gap_cbh_metrics <- metrics_all_percentil
+#' gap_cbh_metrics <- metrics_all_percentil
 #' }
-#' ## End(Not run)
-#' @export get_gaps_fbhs
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control

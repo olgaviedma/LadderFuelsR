@@ -33,14 +33,14 @@
 #' }
 #'
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(magrittr)
 #' library(dplyr)
 #'
 #' # Load the effective_depth object
 #' if (interactive()) {
-#'   depth_metrics <- get_depths()
-#'   LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
+#' depth_metrics <- get_depths()
+#' LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
 #'
 #' trees_name1 <- as.character(depth_metrics$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
@@ -48,21 +48,19 @@
 #' fbh_corr_list <- list()
 #'
 #' for (i in levels(trees_name2)){
-#'   # Filter data for each tree
-#'   tree3 <- depth_metrics |> dplyr::filter(treeID == i)
-#'   # Get real fbh for each tree
-#'   fbh_corr <- get_real_fbh(tree3)
-#'   # Store fbh values in a list
-#'   fbh_corr_list[[i]] <- fbh_corr
+#' # Filter data for each tree
+#' tree3 <- depth_metrics |> dplyr::filter(treeID == i)
+#' # Get real fbh for each tree
+#' fbh_corr <- get_real_fbh(tree3)
+#' # Store fbh values in a list
+#' fbh_corr_list[[i]] <- fbh_corr
 #' }
 #'
 #' # Combine fbh values for all trees
 #' effective_fbh <- dplyr::bind_rows(fbh_corr_list)
 #' effective_fbh$treeID <- factor(effective_fbh$treeID)
 #' }
-#' ## End(Not run)
-#'
-#' @export get_real_fbh
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control

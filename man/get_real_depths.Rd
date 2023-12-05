@@ -30,15 +30,15 @@ This function recalculates fuel layers depth after removing distances = 1 m
 }
 }
 \examples{
-## Not run:
+\dontrun{
 library(magrittr)
 library(tidyr)
 library(dplyr)
 
 # Load the effective_fbh object
 if (interactive()) {
-  effective_fbh <- get_real_fbh()
-  LadderFuelsR::effective_fbh$treeID <- factor(LadderFuelsR::effective_fbh$treeID)
+effective_fbh <- get_real_fbh()
+LadderFuelsR::effective_fbh$treeID <- factor(LadderFuelsR::effective_fbh$treeID)
 
 # Tree metrics derived from get_real_fbh() function
 effective_fbh$treeID <- factor(effective_fbh$treeID)
@@ -49,18 +49,17 @@ trees_name2 <- factor(unique(trees_name1))
 depth_metrics_corr_list <- list()
 
 for (i in levels(trees_name2)){
-  # Filter data for each tree
-  tree3 <- effective_fbh |> dplyr::filter(treeID == i)
-  # Get real depths for each tree
-  depth_metrics_corr <- get_real_depths(tree3)
-  depth_metrics_corr_list[[i]] <- depth_metrics_corr
+# Filter data for each tree
+tree3 <- effective_fbh |> dplyr::filter(treeID == i)
+# Get real depths for each tree
+depth_metrics_corr <- get_real_depths(tree3)
+depth_metrics_corr_list[[i]] <- depth_metrics_corr
 }
 
 # Combine depth values for all trees
 effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
 }
-## End(Not run)
-
+}
 }
 \seealso{
 \code{\link{get_renamed0_df}}

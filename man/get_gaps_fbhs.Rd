@@ -32,12 +32,13 @@ Negative differences are linked to gaps and positive differences to fuel base he
 }
 }
 \examples{
-## Not run:
+\dontrun{
 library(magrittr)
 library(dplyr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 trees_name1 <- as.character(LAD_profiles$treeID)
@@ -46,9 +47,9 @@ trees_name2 <- factor(unique(trees_name1))
 metrics_precentile_list1<-list()
 
 for (i in levels(trees_name2)) {
-  tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-  metrics_precentil <- get_gaps_fbhs(tree1)
-  metrics_precentile_list1[[i]] <- metrics_precentil
+tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+metrics_precentil <- get_gaps_fbhs(tree1)
+metrics_precentile_list1[[i]] <- metrics_precentil
 }
 
 metrics_all_percentil <- dplyr::bind_rows(metrics_precentile_list1)
@@ -66,11 +67,11 @@ row_index <- which(NA_or_zero)
 
 # Remove the row with all NA values from the original data frame
 if (length(row_index) > 0) {
-  gap_cbh_metrics <- metrics_all_percentil[-row_index, ]
+gap_cbh_metrics <- metrics_all_percentil[-row_index, ]
 } else {
-  gap_cbh_metrics <- metrics_all_percentil
+gap_cbh_metrics <- metrics_all_percentil
 }
-## End(Not run)
+}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

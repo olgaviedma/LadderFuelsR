@@ -17,12 +17,13 @@ A data frame giving the percentile value of each height.
 This function calculates the percentile value of each height
 }
 \examples{
-## Not run:
+\dontrun{
 library(magrittr)
 library(dplyr)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
 trees_name1 <- as.character(LAD_profiles$treeID)
@@ -31,15 +32,13 @@ trees_name2 <- factor(unique(trees_name1))
 percentile_list1<-list()
 
 for (i in levels(trees_name2)) {
-  tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-  percentiles <- calculate_gaps_perc2(tree1)
-  percentile_list1[[i]] <- percentiles
+tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
+percentiles <- calculate_gaps_perc2(tree1)
+percentile_list1[[i]] <- percentiles
 }
 gaps_perc2 <- dplyr::bind_rows(percentile_list1)
 gaps_perc2$treeID <- factor(gaps_perc2$treeID)
-
-## End(Not run)
-
+}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

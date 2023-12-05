@@ -22,28 +22,27 @@
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #' library(ggplot2)
 #' library(dplyr)
 #'
 #' # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
-#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"), header = TRUE)
+#' LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = "LadderFuelsR"),
+#' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
 #' # Load the effective_LAD object
 #' if (interactive()) {
-#'   effective_LAD <- get_layers_lad()
-#'   LadderFuelsR::effective_LAD$treeID <- factor(LadderFuelsR::effective_LAD$treeID)
+#' effective_LAD <- get_layers_lad()
+#' LadderFuelsR::effective_LAD$treeID <- factor(LadderFuelsR::effective_LAD$treeID)
 #'
 #' trees_name1 <- as.character(effective_LAD$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
 #'
 #' # Generate plots for fuels LAD metrics
 #' plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
-#'}
-#' ## End(Not run)
-#'
-#' @export get_plots_cbh_LAD
+#' }
+#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control
