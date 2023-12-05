@@ -88,13 +88,6 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
-#' @include gap_fbh.R
-#' @include calculate_gaps_perc2.R
-#' @include distances_calculation.R
-#' @include depths_calculation.R
-#' @include corrected_base_heights.R
-#' @include corrected_depth.R
-#' @include corrected_distances.R
 #' @seealso \code{\link{get_renamed_df}}
 #' @export
 get_layers_lad <- function(LAD_profiles, effective_distances) {
