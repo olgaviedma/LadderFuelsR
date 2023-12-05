@@ -1,4 +1,3 @@
-#'
 #' Distances between fuel layers
 #' @description This function calculates distances (and their heights) between fuel layers as the difference between consecutive gaps and fuel bases
 #' (the gap height always must be lower than the fuel base height).
@@ -70,7 +69,6 @@
 #' theme element_text xlab ylab ggplot
 #' @include gap_fbh.R
 #' @include calculate_gaps_perc2.R
-#' @keywords internal
 #' @export
 get_distance <- function (gap_cbh_metrics,gaps_perc2) {
 

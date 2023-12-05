@@ -64,4 +64,3 @@ effective_fbh$treeID <- factor(effective_fbh$treeID)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
-\keyword{internal}

@@ -83,4 +83,3 @@ cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
-\keyword{internal}

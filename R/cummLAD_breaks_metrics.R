@@ -1,25 +1,18 @@
-#'
 #' CBH and the LAD percentage below and above the CBH using the breaking point method
-#'
 #' @description
 #' This function calculates the canopy base height (CBH) of the vertical tree profile (VTP) using a segmented regression model fitted to
 #' the cumulative LAD values as a function of height.The function also calculates the percentage of LAD values below and above the identified CBH or breaking point.
-#'
 #' @usage
 #' get_cum_break(LAD_profiles, effective_distances)
-#'
 #' @param LAD_profiles
 #' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class data frame.
-#'
 #' @param effective_distances
 #' Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 #' An object of the class data frame.
-#'
 #' @return
 #' A data frame identifying the CBH of the vertical tree profile (VTP) based on the breaking point identified by the segmented regression model,
 #' and the percentage of LAD values below and above the identified CBH or breaking point.
-#'
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -101,7 +94,6 @@
 #' @include corrected_base_heights.R
 #' @include corrected_depth.R
 #' @include corrected_distances.R
-#' @keywords internal
 #' @export
 get_cum_break <- function(LAD_profiles, effective_distances) {
 

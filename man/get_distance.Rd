@@ -70,4 +70,3 @@ distance_metrics <- dplyr::bind_rows(metrics_distance_list)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
-\keyword{internal}

@@ -1,21 +1,15 @@
-#'
 #' Effective Distances and CBHs based on maximum and last distance
-#'
 #' @description
 #' This function recalculates the distance between fuel layers after removing distances = 1 m and determines the CBH based on the fuel layers
 #' with the highest and the last distance.
-#'
 #' @usage
 #' get_effective_gap(effective_depth)
-#'
 #' @param effective_depth
 #' Tree metrics with the recalculated depth values considering distances > 1 m (output of [get_real_depths()] function).
 #' An object of the class data frame.
-#'
 #' @return
 #' A data frame giving the effective distances (> 1 m) between consecutive fuel layers, identifying the CBH of the fuel layer
 #' at the maximum distance and at the last distance.
-#'
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -82,7 +76,6 @@
 #' @include depths_calculation.R
 #' @include corrected_base_heights.R
 #' @include corrected_depth.R
-#' @keywords internal
 #' @export
 get_effective_gap <- function (effective_depth) {
 

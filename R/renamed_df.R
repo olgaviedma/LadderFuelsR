@@ -1,11 +1,7 @@
-#'
 #' Rename and reorder columns (II)
-#'
 #' @description This function deals with concatenated column names, reorders columns and appends numeric suffixes.
 #' Don´t run it. It is an internal function.
-#'
 #' @usage get_renamed_df (df)
-#'
 #' @param df internal data frame derived from [get_layers_lad()] function
 #'
 #' @examples
@@ -16,7 +12,6 @@
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom stringr str_extract str_match str_detect
-#' @keywords internal
 #' @export
 get_renamed_df <- function(df) {
 

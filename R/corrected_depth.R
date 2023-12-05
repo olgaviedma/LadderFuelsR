@@ -1,13 +1,10 @@
-#'
 #' Effective fuel layers depth
-#'
 #' @description This function recalculates fuel layers depth after removing distances = 1 m
 #' @usage get_real_depths (effective_fbh)
 #' @param effective_fbh tree metrics with the recalculated base height of fuel layers after considering distances > 1 m  (output of [get_real_fbh()] function).
 #' An object of the class text
 #' @return A data frame giving the fuel layers depth after removing distances = 1 m.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
-#'
 #' @details
 #' # List of tree metrics:
 #' \itemize{
@@ -69,7 +66,6 @@
 #' @include distances_calculation.R
 #' @include depths_calculation.R
 #' @include corrected_base_heights.R
-#' @keywords internal
 #' @seealso \code{\link{get_renamed0_df}}
 #' @export
 get_real_depths <- function (effective_fbh) {

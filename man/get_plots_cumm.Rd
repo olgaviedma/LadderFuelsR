@@ -45,4 +45,3 @@ plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
-\keyword{internal}

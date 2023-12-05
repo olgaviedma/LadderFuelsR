@@ -2,7 +2,6 @@
 #' @description This function calculates gaps and fuel layers base height (FBH) as the difference in percentiles between consecutive LAD values along the vertical tree profile (VTP).
 #' Negative differences are linked to gaps and positive differences to fuel base height.
 #' @usage get_gaps_fbhs (LAD_profiles)
-#'
 #' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 #' An object of the class text
 #' @return A data frame giving the height of gaps and fuel layers bases in meters.
@@ -75,7 +74,6 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
-#' @keywords internal
 #' @export
 get_gaps_fbhs<- function (LAD_profiles) {
 

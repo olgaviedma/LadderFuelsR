@@ -1,23 +1,17 @@
 #' Plots of fuel layers with LAD percentage > 5 and the canopy base height (CBH) based on the maximum LAD percentage
-#'
 #' @description
 #' This function plots the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
-#'
 #' @usage
 #' get_plots_cbh_LAD(LAD_profiles, effective_LAD)
-#'
 #' @param LAD_profiles
 #' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class text.
-#'
 #' @param effective_LAD
 #' Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than 5
 #' (output of [get_layers_lad()] function).
 #' An object of the class text.
-#'
 #' @return
 #' A plot drawing the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
-#'
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -64,7 +58,6 @@
 #' @include corrected_depth.R
 #' @include corrected_distances.R
 #' @include maxlad_metrics_25perc.R
-#' @keywords internal
 #' @export
 get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 

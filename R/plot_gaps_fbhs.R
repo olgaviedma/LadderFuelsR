@@ -1,4 +1,3 @@
-#'
 #' Plots of tree profiles with gaps and fuel layers base height (fbh)
 #' @description This function plots gaps and fuel layers base height (fbh) in the vertical tree profile (VTP).
 #' @usage get_plots_gap_fbh (LAD_profiles,depth_metrics)
@@ -49,7 +48,6 @@
 #' @include calculate_gaps_perc2.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
-#' @keywords internal
 #' @export
 get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
 
@@ -135,10 +133,8 @@ get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
             axis.text.y = element_text(size = 14))
 
     plot_list[[i]] <- bp
-    #print(paste("Plot for tree ", i, " created successfully"))
+    print(paste("Plot for tree ", i, " created successfully"))
   }
-  #dev.off()
-
   return(plot_list)
 }
 

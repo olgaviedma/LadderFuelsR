@@ -1,24 +1,18 @@
-#' Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances > 1 m)
-#'
+#' Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m)
 #' @description
 #' This function calculates the percentage of leaf area density (LAD) within each fuel layer (first output),
 #' and removes those fuel layers with LAD percentage less than 25, recalculating the distances of the remaining ones.
 #' It determines the canopy base height (CBH) as the fuel layer with the highest LAD percentage (second output).
-#'
 #' @usage
 #' get_layers_lad(LAD_profiles, effective_distances)
-#'
 #' @param LAD_profiles
 #' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class text.
-#'
 #' @param effective_distances
 #' Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 #' An object of the class text.
-#'
 #' @return
 #' A data frame identifying the canopy base height (CBH) of the fuel layer with maximum LAD percentage and other fuel layers with their corresponding LAD percentage.
-#'
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -101,7 +95,6 @@
 #' @include corrected_base_heights.R
 #' @include corrected_depth.R
 #' @include corrected_distances.R
-#' @keywords internal
 #' @seealso \code{\link{get_renamed_df}}
 #' @export
 get_layers_lad <- function(LAD_profiles, effective_distances) {

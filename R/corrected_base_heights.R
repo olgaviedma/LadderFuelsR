@@ -1,24 +1,17 @@
-#'
 #' Fuels base height after removing distances = 1 m
-#'
 #' @description
 #' This function recalculates fuels base height after removing distances = 1 m,
 #' keeping the first "base height" from those consecutive ones separated by a distance = 1.
-#'
 #' @usage
 #' get_real_fbh(depth_metrics)
-#'
 #' @param depth_metrics
 #' Tree metrics with gaps (distances), fuel base heights, and depths
 #' (output of [get_depths()] function). An object of the class text.
-#'
 #' @return
 #' A data frame giving the first "base height" from those consecutive ones separated by a distance = 1.
 #' This value replaces the values of the next base heights if they are separated by a distance = 1.
-#'
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
-#'
 #' @details
 #' # List of tree metrics:
 #' \itemize{
@@ -31,7 +24,6 @@
 #'   \item Hdepth - Height of the depth of fuel layers (m)
 #'   \item max_height - Maximum height of the tree profile
 #' }
-#'
 #' @examples
 #' \dontrun{
 #' library(magrittr)
@@ -78,7 +70,6 @@
 #' @include calculate_gaps_perc2.R
 #' @include distances_calculation.R
 #' @include depths_calculation.R
-#' @keywords internal
 #' @export
 get_real_fbh <- function (depth_metrics) {
 

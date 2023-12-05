@@ -19,4 +19,3 @@ library(dplyr)
 # get_renamed_df concatenates column names, reorders columns and appends numeric suffixes
 }
 }
-\keyword{internal}

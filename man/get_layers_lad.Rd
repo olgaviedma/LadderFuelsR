@@ -2,7 +2,7 @@
 % Please edit documentation in R/maxlad_metrics_25perc.R
 \name{get_layers_lad}
 \alias{get_layers_lad}
-\title{Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances > 1 m)}
+\title{Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m)}
 \usage{
 get_layers_lad(LAD_profiles, effective_distances)
 }
@@ -87,4 +87,3 @@ effective_LAD <- dplyr::bind_rows(LAD_metrics2)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
-\keyword{internal}

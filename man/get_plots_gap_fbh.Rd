@@ -46,4 +46,3 @@ plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
-\keyword{internal}

@@ -76,4 +76,3 @@ gap_cbh_metrics <- metrics_all_percentil
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
-\keyword{internal}

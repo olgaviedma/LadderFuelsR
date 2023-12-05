@@ -46,4 +46,3 @@ plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
 }
-\keyword{internal}
