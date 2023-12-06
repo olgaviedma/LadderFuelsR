@@ -5,7 +5,7 @@ Version: 0.0.1
 Authors@R: c(person("Olga", "Viedma", email = "olga.viedma@uclm.es", role = c("aut", "cph", "cre")),
              person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph")))
 Maintainer: The package maintainer <olga.viedma@uclm.es>
-Description: Automated tool for vertical fuel continuity analysis using LiDAR data. This package uses Leaf Area Density (LAD) profiles of segmented tree for: 1) identifying gaps and fuel layers; 2) estimating the distance between fuel layers;  3) retrieving the fuel layers base height (FBH) and depth; and 4) the percentage of LAD comprised in each fuel layer. It applies different methods to calculate the Canopy Base Height (CBH) of the LAD profile. In addition, when the LAD profiles showed only one fuel layer, it identifies athe CBH performing a segmented linear regression (breaking points) on the cumulative sum of LAD as a function of height. Finally, a collection of plotting functions is developed.
+Description: Set of automated tools for vertical fuel continuity analysis at tree level from LiDAR data.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
