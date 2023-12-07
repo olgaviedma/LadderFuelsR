@@ -1,6 +1,6 @@
 Package: LadderFuelsR
 Type: Package
-Title: Automated tool for vertical fuel continuity analysis using LiDAR data
+Title: Automated tool for Vertical Fuel Continuity Analysis using LiDAR Data
 Version: 0.0.1
 Authors@R: c(person("Olga", "Viedma", email = "olga.viedma@uclm.es", role = c("aut", "cph", "cre")),
              person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph")),
