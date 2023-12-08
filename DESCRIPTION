@@ -6,7 +6,7 @@ Authors@R: c(person("Olga", "Viedma", email = "olga.viedma@uclm.es", role = c("a
               person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph")),
               person("Jose Manuel", "Moreno", email = "JoseM.Moreno@uclm.es", role = c("aut", "cph")))
 Description: This package provides a set of automated tools for analyzing vertical fuel continuity at the tree level using Lidar data. It includes functions for calculating gaps, distances, depths, and other metrics essential for understanding fuel structure. This package is designed to streamline the analysis process and enhance the efficiency of fuel continuity studies in forest ecosystems.
-URL: <https://github.com/olgaviedma/LadderFuelsR>
+URL: https://github.com/olgaviedma/LadderFuelsR
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
