@@ -5,8 +5,7 @@ Version: 0.0.1
 Authors@R: c(person("Olga", "Viedma", email = "olga.viedma@uclm.es", role = c("aut", "cph", "cre")),
               person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph")),
               person("Jose Manuel", "Moreno", email = "JoseM.Moreno@uclm.es", role = c("aut", "cph")))
-Description: Tools for analyzing vertical fuel continuity at the tree level using Airborne Laser Scanning data.y
-Maintainer: Olga Viedma <olga.viedma@uclm.es>
+Description: Tools for analyzing vertical fuel continuity at the tree level using Airborne Laser Scanning data.
 URL: https://github.com/olgaviedma/LadderFuelsR
 License: GPL-3
 Encoding: UTF-8
