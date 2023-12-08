@@ -5,8 +5,7 @@ Version: 0.0.1
 Authors@R: c(person("Olga", "Viedma", email = "olga.viedma@uclm.es", role = c("aut", "cph", "cre")),
               person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph")),
               person("Jose Manuel", "Moreno", email = "JoseM.Moreno@uclm.es", role = c("aut", "cph")))
-Description: Set of automated tools for vertical fuel continuity analysis at tree level from Lidar data.
-URL: https://github.com/olgaviedma/LadderFuelsR
+Description: Set of automated tools for vertical fuel continuity analysis at tree level from Lidar data
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -28,3 +27,5 @@ Collate:
     'plot_maxlad_metrics.R'
     'renamed0_df.R'
     'renamed_df.R'
+BugReports: https://github.com/olgaviedma/LadderFuelsR/issues
+URL: https://github.com/olgaviedma/LadderFuelsR
