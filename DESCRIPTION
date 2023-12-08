@@ -5,7 +5,9 @@ Version: 0.0.1
 Authors@R: c(person("Olga", "Viedma", email = "olga.viedma@uclm.es", role = c("aut", "cph", "cre")),
               person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph")),
               person("Jose Manuel", "Moreno", email = "JoseM.Moreno@uclm.es", role = c("aut", "cph")))
-Description: Set of automated tools for vertical fuel continuity analysis at tree level from LiDAR data.
+Maintainer: Olga Viedma <olga.viedma@uclm.es>              
+Description: Set of automated tools for vertical fuel continuity analysis at tree level from Lidar data.
+URL: https://www.travis-ci.com/olgaviedma/LadderFuelsR
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
