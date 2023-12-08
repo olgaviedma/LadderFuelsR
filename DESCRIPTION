@@ -28,3 +28,4 @@ Collate:
     'plot_maxlad_metrics.R'
     'renamed0_df.R'
     'renamed_df.R'
+BugReports: https://github.com/olgaviedma/LadderFuelsR/issues
