@@ -20,7 +20,6 @@ A plot of the CBH and LAD percentage below and above the CBH
 This function plots the canopy base height (CBH) based on breaking point over the cummulative LAD values and gives the LAD percentage below and above that breaking point
 }
 \examples{
-\dontrun{
 library(ggplot2)
 library(dplyr)
 
@@ -39,7 +38,6 @@ cummulative_LAD$treeID <- factor(cummulative_LAD$treeID)
 
 # Generate cumulative LAD plots
 plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
-}
 }
 }
 \author{

@@ -2,12 +2,10 @@
 #' @description This function reorders columns and appends numeric suffixes. Don´t run it. It is an internal function.
 #' @usage get_renamed0_df (df)
 #' @param df internal data frame derived from [get_real_depths()] function
-#'
+#' @return No return value. The function is called for side effects.
 #' @examples
-#' \dontrun{
 #' library(dplyr)
 #' # get_renamed0_df function reorders columns and appends numeric suffixes
-#' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom stringr str_extract str_match str_detect

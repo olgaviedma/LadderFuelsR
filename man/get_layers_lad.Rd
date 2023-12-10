@@ -42,7 +42,6 @@ It determines the canopy base height (CBH) as the fuel layer with the highest LA
 }
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(gdata)
 library(dplyr)
@@ -78,7 +77,6 @@ LAD_metrics2[[i]] <- LAD_metrics$df2
 
 all_LAD <- dplyr::bind_rows(LAD_metrics1)
 effective_LAD <- dplyr::bind_rows(LAD_metrics2)
-}
 }
 }
 \seealso{

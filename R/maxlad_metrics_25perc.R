@@ -37,7 +37,6 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(gdata)
 #' library(dplyr)
@@ -73,7 +72,6 @@
 #'
 #' all_LAD <- dplyr::bind_rows(LAD_metrics1)
 #' effective_LAD <- dplyr::bind_rows(LAD_metrics2)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars first

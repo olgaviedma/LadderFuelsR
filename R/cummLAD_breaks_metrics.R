@@ -39,7 +39,6 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(segmented)
 #' library(gdata)
@@ -72,7 +71,6 @@
 #'
 #' # Combine the individual data frames
 #' cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars

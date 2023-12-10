@@ -9,7 +9,6 @@
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
-#' \dontrun{
 #' library(ggplot2)
 #' library(dplyr)
 #'
@@ -29,7 +28,6 @@
 #'
 #' # Generate plots for gaps and fbhs
 #' plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars

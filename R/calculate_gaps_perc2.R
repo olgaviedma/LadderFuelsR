@@ -7,7 +7,6 @@
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(dplyr)
 #'
@@ -28,7 +27,7 @@
 #' }
 #' gaps_perc2 <- dplyr::bind_rows(percentile_list1)
 #' gaps_perc2$treeID <- factor(gaps_perc2$treeID)
-#' }
+#'
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
 #' @importFrom segmented segmented seg.control

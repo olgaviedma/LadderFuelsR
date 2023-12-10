@@ -34,7 +34,6 @@ This function calculates fuels depth as the difference between gaps interleaved 
 }
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(dplyr)
 
@@ -58,7 +57,6 @@ metrics_depth_list[[i]] <- metrics_depth
 
 # Combine the individual data frames
 depth_metrics <- dplyr::bind_rows(metrics_depth_list)
-}
 }
 }
 \author{

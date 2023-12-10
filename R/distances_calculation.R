@@ -22,7 +22,6 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(gdata)
 #' library(dplyr)
@@ -53,7 +52,6 @@
 #'
 #' # Combine the individual data frames
 #' distance_metrics <- dplyr::bind_rows(metrics_distance_list)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars

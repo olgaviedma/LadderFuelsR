@@ -21,7 +21,6 @@ A plot drawing the CBH of the fuel layer with the maximum LAD percentage and oth
 This function plots the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
 }
 \examples{
-\dontrun{
 library(ggplot2)
 library(dplyr)
 
@@ -40,7 +39,6 @@ trees_name2 <- factor(unique(trees_name1))
 
 # Generate plots for fuels LAD metrics
 plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
-}
 }
 }
 \author{

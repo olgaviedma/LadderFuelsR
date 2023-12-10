@@ -23,7 +23,6 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(dplyr)
 #'
@@ -47,7 +46,6 @@
 #'
 #' # Combine the individual data frames
 #' depth_metrics <- dplyr::bind_rows(metrics_depth_list)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars

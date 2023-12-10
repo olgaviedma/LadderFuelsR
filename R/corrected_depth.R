@@ -20,7 +20,6 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(tidyr)
 #' library(dplyr)
@@ -48,7 +47,6 @@
 #'
 #' # Combine depth values for all trees
 #' effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars n

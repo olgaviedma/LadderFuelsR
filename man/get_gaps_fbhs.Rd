@@ -32,7 +32,6 @@ Negative differences are linked to gaps and positive differences to fuel base he
 }
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(dplyr)
 
@@ -70,7 +69,6 @@ if (length(row_index) > 0) {
 gap_cbh_metrics <- metrics_all_percentil[-row_index, ]
 } else {
 gap_cbh_metrics <- metrics_all_percentil
-}
 }
 }
 \author{

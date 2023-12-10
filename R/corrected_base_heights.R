@@ -27,7 +27,6 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(dplyr)
 #'
@@ -53,7 +52,6 @@
 #' # Combine fbh values for all trees
 #' effective_fbh <- dplyr::bind_rows(fbh_corr_list)
 #' effective_fbh$treeID <- factor(effective_fbh$treeID)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars

@@ -30,7 +30,6 @@ This function recalculates fuel layers depth after removing distances = 1 m
 }
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(tidyr)
 library(dplyr)
@@ -58,7 +57,6 @@ depth_metrics_corr_list[[i]] <- depth_metrics_corr
 
 # Combine depth values for all trees
 effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
-}
 }
 }
 \seealso{

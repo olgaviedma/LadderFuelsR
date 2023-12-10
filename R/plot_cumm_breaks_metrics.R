@@ -9,7 +9,6 @@
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
-#' \dontrun{
 #' library(ggplot2)
 #' library(dplyr)
 #'
@@ -28,7 +27,6 @@
 #'
 #' # Generate cumulative LAD plots
 #' plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars

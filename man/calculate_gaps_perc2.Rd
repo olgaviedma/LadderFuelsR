@@ -17,7 +17,6 @@ A data frame giving the percentile value of each height.
 This function calculates the percentile value of each height
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(dplyr)
 
@@ -38,7 +37,7 @@ percentile_list1[[i]] <- percentiles
 }
 gaps_perc2 <- dplyr::bind_rows(percentile_list1)
 gaps_perc2$treeID <- factor(gaps_perc2$treeID)
-}
+
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

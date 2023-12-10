@@ -20,7 +20,6 @@ A plot drawing by lines the height of gaps and fuel layers bases in tiff format.
 This function plots gaps and fuel layers base height (fbh) in the vertical tree profile (VTP).
 }
 \examples{
-\dontrun{
 library(ggplot2)
 library(dplyr)
 
@@ -40,7 +39,6 @@ depth_metrics$treeID <- factor(depth_metrics$treeID)
 
 # Generate plots for gaps and fbhs
 plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
-}
 }
 }
 \author{

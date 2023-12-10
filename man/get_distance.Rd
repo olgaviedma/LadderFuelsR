@@ -33,7 +33,6 @@ This function calculates distances (and their heights) between fuel layers as th
 }
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(gdata)
 library(dplyr)
@@ -64,7 +63,6 @@ metrics_distance_list[[i]] <- metrics_distance
 
 # Combine the individual data frames
 distance_metrics <- dplyr::bind_rows(metrics_distance_list)
-}
 }
 }
 \author{

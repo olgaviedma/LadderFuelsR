@@ -22,7 +22,6 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(dplyr)
 #'
@@ -60,7 +59,6 @@
 #' gap_cbh_metrics <- metrics_all_percentil[-row_index, ]
 #' } else {
 #' gap_cbh_metrics <- metrics_all_percentil
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars

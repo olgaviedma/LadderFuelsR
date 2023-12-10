@@ -16,7 +16,6 @@
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
-#' \dontrun{
 #' library(ggplot2)
 #' library(dplyr)
 #'
@@ -35,7 +34,6 @@
 #'
 #' # Generate plots for fuels LAD metrics
 #' plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars

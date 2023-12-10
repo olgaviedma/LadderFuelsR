@@ -9,13 +9,14 @@ get_renamed_df (df)
 \arguments{
 \item{df}{internal data frame derived from [get_layers_lad()] function}
 }
+\value{
+No return value. The function is called for side effects.
+}
 \description{
 This function deals with concatenated column names, reorders columns and appends numeric suffixes.
 Don´t run it. It is an internal function.
 }
 \examples{
-\dontrun{
 library(dplyr)
 # get_renamed_df concatenates column names, reorders columns and appends numeric suffixes
-}
 }

@@ -44,7 +44,6 @@ the cumulative LAD values as a function of height.The function also calculates t
 }
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(segmented)
 library(gdata)
@@ -77,7 +76,6 @@ cum_LAD_metrics_list[[i]] <- cum_LAD_metrics
 
 # Combine the individual data frames
 cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
-}
 }
 }
 \author{

@@ -32,7 +32,6 @@ keeping the first "base height" from those consecutive ones separated by a dista
 }
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(dplyr)
 
@@ -58,7 +57,6 @@ fbh_corr_list[[i]] <- fbh_corr
 # Combine fbh values for all trees
 effective_fbh <- dplyr::bind_rows(fbh_corr_list)
 effective_fbh$treeID <- factor(effective_fbh$treeID)
-}
 }
 }
 \author{
