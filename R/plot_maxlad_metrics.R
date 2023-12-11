@@ -11,7 +11,7 @@
 #' (output of [get_layers_lad()] function).
 #' An object of the class text.
 #' @return
-#' A plot drawing the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
+#' A plot drawing the Canopy Base Height (CBH) of the fuel layer with the maximum Leaf Area Density (LAD) percentage and other fuel layers with LAD percentage greater than 25.
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -24,7 +24,7 @@
 #' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' # Load the effective_LAD object
+#' # Before running this example, make sure to run get_layers_lad().
 #' if (interactive()) {
 #' effective_LAD <- get_layers_lad()
 #' LadderFuelsR::effective_LAD$treeID <- factor(LadderFuelsR::effective_LAD$treeID)
@@ -48,6 +48,7 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
+#' @seealso \code{\link{get_layers_lad}}
 #' @export
 get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
@@ -89,11 +90,6 @@ get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
 
     min_y <- min(tree_data$lad, na.rm = TRUE)
     max_y <- max(tree_data$lad, na.rm = TRUE)
-
-    #print(CBH_0)
-    #print(depth_0)
-    #print(min_y)
-    #print(max_y)
 
     x<-tree_data$height
     y<-tree_data$lad

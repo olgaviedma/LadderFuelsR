@@ -1,9 +1,10 @@
 #' Gaps and Fuel layers Base Height (FBH)
 #' @description This function calculates gaps and fuel layers base height (FBH) as the difference in percentiles between consecutive LAD values along the vertical tree profile (VTP).
 #' Negative differences are linked to gaps and positive differences to fuel base height.
-#' @usage get_gaps_fbhs (LAD_profiles)
+#' @usage get_gaps_fbhs (LAD_profiles, verbose=TRUE)
 #' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
-#' An object of the class text
+#' An object of the class text.
+#' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return A data frame giving the height of gaps and fuel layers bases in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -37,7 +38,7 @@
 #'
 #' for (i in levels(trees_name2)) {
 #' tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#' metrics_precentil <- get_gaps_fbhs(tree1)
+#' metrics_precentil <- get_gaps_fbhs(tree1, verbose=TRUE)
 #' metrics_precentile_list1[[i]] <- metrics_precentil
 #' }
 #'
@@ -74,12 +75,15 @@
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
 #' @export
-get_gaps_fbhs<- function (LAD_profiles) {
+get_gaps_fbhs<- function (LAD_profiles, verbose=TRUE) {
 
     df <- LAD_profiles
 
     treeID <- "treeID"
-    print(paste("treeID:", df[[treeID]][1]))  # Debugging line
+
+    if (verbose) {
+      message("Unique treeIDs:", paste(unique(df$treeID), collapse = ", "))
+    }
 
     df$height <- as.numeric(df$height)
     df$treeID <- factor(df$treeID)

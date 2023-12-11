@@ -3,10 +3,11 @@
 #' This function recalculates fuels base height after removing distances = 1 m,
 #' keeping the first "base height" from those consecutive ones separated by a distance = 1.
 #' @usage
-#' get_real_fbh(depth_metrics)
+#' get_real_fbh(depth_metrics,verbose=TRUE)
 #' @param depth_metrics
 #' Tree metrics with gaps (distances), fuel base heights, and depths
 #' (output of [get_depths()] function). An object of the class text.
+#' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
 #' A data frame giving the first "base height" from those consecutive ones separated by a distance = 1.
 #' This value replaces the values of the next base heights if they are separated by a distance = 1.
@@ -29,8 +30,7 @@
 #' @examples
 #' library(magrittr)
 #' library(dplyr)
-#'
-#' # Load the effective_depth object
+#' #Before running this example, make sure to run get_depths().
 #' if (interactive()) {
 #' depth_metrics <- get_depths()
 #' LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
@@ -44,7 +44,7 @@
 #' # Filter data for each tree
 #' tree3 <- depth_metrics |> dplyr::filter(treeID == i)
 #' # Get real fbh for each tree
-#' fbh_corr <- get_real_fbh(tree3)
+#' fbh_corr <- get_real_fbh(tree3, verbose=TRUE)
 #' # Store fbh values in a list
 #' fbh_corr_list[[i]] <- fbh_corr
 #' }
@@ -66,8 +66,9 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
+#' @seealso \code{\link{get_depths}}
 #' @export
-get_real_fbh <- function (depth_metrics) {
+get_real_fbh <- function (depth_metrics, verbose = TRUE) {
 
   df<- depth_metrics
   df <- df[, !colSums(is.na(df)) > 0]
@@ -90,7 +91,9 @@ get_real_fbh <- function (depth_metrics) {
 
     df2 <- df
 
-    print(paste("Unique treeIDs:", paste(unique(df2$treeID), collapse = ", ")))
+    if (verbose) {
+      message("Unique treeIDs:", paste(unique(df2$treeID), collapse = ", "))
+    }
 
     ###################  rename columns
 
@@ -222,8 +225,6 @@ get_real_fbh <- function (depth_metrics) {
         # Find the closest Hcbh value that's greater than the current Hdist
         idx <- which(hcbh_vals[1, ] > current_hdist)[1]
 
-        #print(paste("Checking Hdist", i, "=", current_hdist, "Found Hcbh idx:", idx))
-
         # Check if idx is valid
         if (!is.null(idx) && !is.na(idx) && idx > 0) {
 
@@ -237,12 +238,10 @@ get_real_fbh <- function (depth_metrics) {
           # If dist value is 1, propagate the last recorded Hcbh value
           if (dist_vals[1, i] == 1) {
             new_Hcbh[idx] <- prev_value
-            #print(paste("Dist value is 1. Propagating Hcbh value:", new_Hcbh[idx]))
           }
           # If dist value is >1 and hdist is < the next Hcbh value, update new_Hcbh and propagate
           else if (hdist_vals[1, i] < hcbh_vals[1, idx]) {
             new_Hcbh[idx:ncol(hcbh_vals)] <- hcbh_vals[1, idx]
-            #print(paste("Updating Hcbh to:", hcbh_vals[1, idx], "and propagating"))
           }
         }
       }}

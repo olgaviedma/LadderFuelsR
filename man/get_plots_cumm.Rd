@@ -8,13 +8,13 @@ get_plots_cumm(LAD_profiles, cummulative_LAD)
 }
 \arguments{
 \item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function from leafR package).
-An object of the class text}
+An object of the class text.}
 
 \item{cummulative_LAD}{tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).
-An object of the class text}
+An object of the class text.}
 }
 \value{
-A plot of the CBH and LAD percentage below and above the CBH
+A plot of the Canopy Base Height (CBH) and Leaf Area Density (LAD) percentage below and above the CBH.
 }
 \description{
 This function plots the canopy base height (CBH) based on breaking point over the cummulative LAD values and gives the LAD percentage below and above that breaking point
@@ -28,17 +28,17 @@ LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = 
 header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-# Load the cummulative_LAD object
+# Before running this example, make sure to run get_cum_break().
 if (interactive()) {
 cummulative_LAD <- get_cum_break()
 LadderFuelsR::cummulative_LAD$treeID <- factor(LadderFuelsR::cummulative_LAD$treeID)
 
-# Tree metrics derived from get_cum_break() function
-cummulative_LAD$treeID <- factor(cummulative_LAD$treeID)
-
 # Generate cumulative LAD plots
 plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
 }
+}
+\seealso{
+\code{\link{get_cum_break}}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

@@ -4,11 +4,13 @@
 \alias{get_real_fbh}
 \title{Fuels base height after removing distances = 1 m}
 \usage{
-get_real_fbh(depth_metrics)
+get_real_fbh(depth_metrics,verbose=TRUE)
 }
 \arguments{
 \item{depth_metrics}{Tree metrics with gaps (distances), fuel base heights, and depths
 (output of [get_depths()] function). An object of the class text.}
+
+\item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
 A data frame giving the first "base height" from those consecutive ones separated by a distance = 1.
@@ -34,8 +36,7 @@ keeping the first "base height" from those consecutive ones separated by a dista
 \examples{
 library(magrittr)
 library(dplyr)
-
-# Load the effective_depth object
+#Before running this example, make sure to run get_depths().
 if (interactive()) {
 depth_metrics <- get_depths()
 LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
@@ -49,7 +50,7 @@ for (i in levels(trees_name2)){
 # Filter data for each tree
 tree3 <- depth_metrics |> dplyr::filter(treeID == i)
 # Get real fbh for each tree
-fbh_corr <- get_real_fbh(tree3)
+fbh_corr <- get_real_fbh(tree3, verbose=TRUE)
 # Store fbh values in a list
 fbh_corr_list[[i]] <- fbh_corr
 }
@@ -58,6 +59,9 @@ fbh_corr_list[[i]] <- fbh_corr
 effective_fbh <- dplyr::bind_rows(fbh_corr_list)
 effective_fbh$treeID <- factor(effective_fbh$treeID)
 }
+}
+\seealso{
+\code{\link{get_depths}}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

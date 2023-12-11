@@ -4,7 +4,7 @@
 \alias{get_cum_break}
 \title{CBH and the LAD percentage below and above the CBH using the breaking point method}
 \usage{
-get_cum_break(LAD_profiles, effective_distances)
+get_cum_break(LAD_profiles, effective_distances, verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
@@ -12,9 +12,11 @@ An object of the class data frame.}
 
 \item{effective_distances}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 An object of the class data frame.}
+
+\item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame identifying the CBH of the vertical tree profile (VTP) based on the breaking point identified by the segmented regression model,
+A data frame identifying the Canopy Base Height (CBH) of the vertical tree profile (VTP) based on the breaking point identified by the segmented regression model,
 and the percentage of LAD values below and above the identified CBH or breaking point.
 }
 \description{
@@ -54,7 +56,7 @@ LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = 
 header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-# Load the effective_distances object
+# Before running this example, make sure to run get_effective_gap().
 if (interactive()) {
 effective_distances <- get_effective_gap()
 LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
@@ -77,6 +79,9 @@ cum_LAD_metrics_list[[i]] <- cum_LAD_metrics
 # Combine the individual data frames
 cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
 }
+}
+\seealso{
+\code{\link{get_effective_gap}}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

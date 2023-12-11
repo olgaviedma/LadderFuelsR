@@ -2,9 +2,9 @@
 % Please edit documentation in R/maxlad_metrics_25perc.R
 \name{get_layers_lad}
 \alias{get_layers_lad}
-\title{Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m)}
+\title{Leaf Area Density (LAD) percentage comprised in each fuel layer and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m)}
 \usage{
-get_layers_lad(LAD_profiles, effective_distances)
+get_layers_lad(LAD_profiles, effective_distances, verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
@@ -12,12 +12,14 @@ An object of the class text.}
 
 \item{effective_distances}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 An object of the class text.}
+
+\item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame identifying the canopy base height (CBH) of the fuel layer with maximum LAD percentage and other fuel layers with their corresponding LAD percentage.
+A data frame identifying the canopy base height (CBH) of the fuel layer with maximum Leaf Area Density (LAD) percentage and other fuel layers with their corresponding LAD percentage.
 }
 \description{
-This function calculates the percentage of leaf area density (LAD) within each fuel layer (first output),
+This function calculates the percentage of Leaf Area Density (LAD) within each fuel layer (first output),
 and removes those fuel layers with LAD percentage less than 25, recalculating the distances of the remaining ones.
 It determines the canopy base height (CBH) as the fuel layer with the highest LAD percentage (second output).
 }
@@ -52,8 +54,7 @@ LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = 
 header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-## Not run:
-# Load or create the effective_distances object
+# Before running this example, make sure to run get_effective_gap().
 if (interactive()) {
 effective_distances <- get_effective_gap()
 LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
@@ -81,6 +82,8 @@ effective_LAD <- dplyr::bind_rows(LAD_metrics2)
 }
 \seealso{
 \code{\link{get_renamed_df}}
+
+\code{\link{get_effective_gap}}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

@@ -4,11 +4,13 @@
 \alias{get_gaps_fbhs}
 \title{Gaps and Fuel layers Base Height (FBH)}
 \usage{
-get_gaps_fbhs (LAD_profiles)
+get_gaps_fbhs (LAD_profiles, verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
-An object of the class text}
+An object of the class text.}
+
+\item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
 A data frame giving the height of gaps and fuel layers bases in meters.
@@ -47,7 +49,7 @@ metrics_precentile_list1<-list()
 
 for (i in levels(trees_name2)) {
 tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-metrics_precentil <- get_gaps_fbhs(tree1)
+metrics_precentil <- get_gaps_fbhs(tree1, verbose=TRUE)
 metrics_precentile_list1[[i]] <- metrics_precentil
 }
 

@@ -17,14 +17,10 @@
 #' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' # Load the depth_metrics object
+#' # Before running this example, make sure to run get_depths().
 #' if (interactive()) {
 #' depth_metrics <- get_depths()
 #' LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
-#'
-#' # Tree metrics derived from get_depths() function
-#' data(depth_metrics)
-#' depth_metrics$treeID <- factor(depth_metrics$treeID)
 #'
 #' # Generate plots for gaps and fbhs
 #' plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
@@ -42,6 +38,7 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
+#' @seealso \code{\link{get_depths}}
 #' @export
 get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
 
@@ -127,7 +124,7 @@ get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
             axis.text.y = element_text(size = 14))
 
     plot_list[[i]] <- bp
-    print(paste("Plot for tree ", i, " created successfully"))
+    #print(paste("Plot for tree ", i, " created successfully"))
   }
   return(plot_list)
 }

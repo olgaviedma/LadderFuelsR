@@ -1,8 +1,9 @@
 #' Effective fuel layers depth
 #' @description This function recalculates fuel layers depth after removing distances = 1 m
-#' @usage get_real_depths (effective_fbh)
+#' @usage get_real_depths (effective_fbh, verbose=TRUE)
 #' @param effective_fbh tree metrics with the recalculated base height of fuel layers after considering distances > 1 m  (output of [get_real_fbh()] function).
-#' An object of the class text
+#' An object of the class text.
+#' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return A data frame giving the fuel layers depth after removing distances = 1 m.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -24,13 +25,10 @@
 #' library(tidyr)
 #' library(dplyr)
 #'
-#' # Load the effective_fbh object
+#' # Before running this example, make sure to run get_real_fbh().
 #' if (interactive()) {
 #' effective_fbh <- get_real_fbh()
 #' LadderFuelsR::effective_fbh$treeID <- factor(LadderFuelsR::effective_fbh$treeID)
-#'
-#' # Tree metrics derived from get_real_fbh() function
-#' effective_fbh$treeID <- factor(effective_fbh$treeID)
 #'
 #' trees_name1 <- as.character(effective_fbh$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
@@ -41,7 +39,7 @@
 #' # Filter data for each tree
 #' tree3 <- effective_fbh |> dplyr::filter(treeID == i)
 #' # Get real depths for each tree
-#' depth_metrics_corr <- get_real_depths(tree3)
+#' depth_metrics_corr <- get_real_depths(tree3, verbose=TRUE)
 #' depth_metrics_corr_list[[i]] <- depth_metrics_corr
 #' }
 #'
@@ -62,15 +60,18 @@
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
 #' @seealso \code{\link{get_renamed0_df}}
+#' @seealso \code{\link{get_real_fbh}}
 #' @export
-get_real_depths <- function (effective_fbh) {
+get_real_depths <- function (effective_fbh, verbose=TRUE) {
 
   #remove the columns from the dataframe df2a which contain only NA values.
   df<- effective_fbh
   df2a <- df[, colSums(!is.na(df)) > 0]
   df2a <- df2a[, !(names(df2a) %in% "depth01")]
 
-  print(paste("Unique treeIDs:", paste(unique(df2a$treeID), collapse = ", ")))
+  if (verbose) {
+    message("Unique treeIDs:", paste(unique(df2a$treeID), collapse = ", "))
+  }
 
   ##check if the first "dist" column has a value greater than 1. If this is true, then it will remove depth0 in computation
 

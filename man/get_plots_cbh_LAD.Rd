@@ -15,7 +15,7 @@ An object of the class text.}
 An object of the class text.}
 }
 \value{
-A plot drawing the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
+A plot drawing the Canopy Base Height (CBH) of the fuel layer with the maximum Leaf Area Density (LAD) percentage and other fuel layers with LAD percentage greater than 25.
 }
 \description{
 This function plots the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
@@ -29,7 +29,7 @@ LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = 
 header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-# Load the effective_LAD object
+# Before running this example, make sure to run get_layers_lad().
 if (interactive()) {
 effective_LAD <- get_layers_lad()
 LadderFuelsR::effective_LAD$treeID <- factor(LadderFuelsR::effective_LAD$treeID)
@@ -40,6 +40,9 @@ trees_name2 <- factor(unique(trees_name1))
 # Generate plots for fuels LAD metrics
 plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
 }
+}
+\seealso{
+\code{\link{get_layers_lad}}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

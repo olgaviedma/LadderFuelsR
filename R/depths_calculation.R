@@ -1,10 +1,11 @@
 #' Fuels depth in meters
 #' @description This function calculates fuels depth as the difference between gaps interleaved between fuel layers minus 1 if the fuel depths are greater than 1.
-#' @usage get_depths (LAD_profiles, distance_metrics)
+#' @usage get_depths (LAD_profiles, distance_metrics,verbose=TRUE)
 #' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
-#' An object of the class text
+#' An object of the class text.
 #' @param distance_metrics tree metrics with gaps (distances) and fuel base heights (output of [get_distance()] function).
-#' An object of the class text
+#' An object of the class text.
+#' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return A data frame giving fuel layers depth and the height of the depths in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -26,7 +27,7 @@
 #' library(magrittr)
 #' library(dplyr)
 #'
-#' # Load the effective_distances object
+#' # Before running this example, make sure to run get_distance().
 #' if (interactive()) {
 #' distance_metrics <- get_distance()
 #' LadderFuelsR::LAD_profiles$treeID <- factor(LadderFuelsR::LAD_profiles$treeID)
@@ -40,7 +41,7 @@
 #' tree2 <- distance_metrics |> dplyr::filter(treeID == i)
 #'
 #' # Get depths for each tree
-#' metrics_depth <- get_depths(tree1, tree2)
+#' metrics_depth <- get_depths(tree1, tree2,verbose=TRUE)
 #' metrics_depth_list[[i]] <- metrics_depth
 #' }
 #'
@@ -60,8 +61,9 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
+#' @seealso \code{\link{get_distance}}
 #' @export
-get_depths <- function (LAD_profiles,distance_metrics) {
+get_depths <- function (LAD_profiles,distance_metrics,verbose=TRUE) {
 
    df1 <- LAD_profiles
 
@@ -116,7 +118,9 @@ get_depths <- function (LAD_profiles,distance_metrics) {
   # Select only numeric columns
   df1_numeric <- df %>% dplyr::select_if(is.numeric)
 
-  #print(paste("treeID1:", df1_numeric$treeID1))
+  if (verbose) {
+    message("Unique treeIDs:", paste(unique(df1_numeric$treeID), collapse = ", "))
+  }
 
   # Assuming that columns starting with "gap" or "cbh" are the ones you want to keep
   columns_to_keep <- names(df1_numeric)[grepl("^gap\\d+$|^cbh\\d+$", names(df1_numeric))]

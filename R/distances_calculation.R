@@ -1,11 +1,12 @@
 #' Distances between fuel layers
 #' @description This function calculates distances (and their heights) between fuel layers as the difference between consecutive gaps and fuel bases
 #' (the gap height always must be lower than the fuel base height).
-#' @usage get_distance (gap_cbh_metrics,gaps_perc2)
+#' @usage get_distance (gap_cbh_metrics,gaps_perc2,verbose=TRUE)
 #' @param gap_cbh_metrics data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
-#' An object of the class text
-#' @param gaps_perc2 data frame with LAD percentiles for each height values (output of [calculate_gaps_perc2()] function).
-#' An object of the class text
+#' An object of the class text.
+#' @param gaps_perc2 data frame with Leaf Area Density (LAD) percentiles for each height values (output of [calculate_gaps_perc2()] function).
+#' An object of the class text.
+#' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return A data frame giving distances (and their heights) between fuel layers in meters.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -26,13 +27,12 @@
 #' library(gdata)
 #' library(dplyr)
 #'
-#' # Load the gap-fbhs object
+#' # Before running this example, make sure to run get_gaps_fbhs().
 #' if (interactive()) {
 #' gap_cbh_metrics <- get_gaps_fbhs()
 #' LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
 #'
-#' # Load the perecentiles object
-#' gaps_perc2 <- calculate_gaps_perc2()
+#' # Before running this example, make sure to run calculate_gaps_perc2().
 #' LadderFuelsR::gaps_perc2$treeID <- factor(LadderFuelsR::gaps_perc2$treeID)
 #'
 #' trees_name1 <- as.character(gaps_perc2$treeID)
@@ -49,7 +49,6 @@
 #' metrics_distance <- get_distance(tree1, tree2)
 #' metrics_distance_list[[i]] <- metrics_distance
 #' }
-#'
 #' # Combine the individual data frames
 #' distance_metrics <- dplyr::bind_rows(metrics_distance_list)
 #' }
@@ -66,8 +65,10 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
+#' @seealso \code{\link{get_gaps_fbhs}}
+#' @seealso \code{\link{calculate_gaps_perc2}}
 #' @export
-get_distance <- function (gap_cbh_metrics,gaps_perc2) {
+get_distance <- function (gap_cbh_metrics,gaps_perc2, verbose = TRUE) {
 
     gaps_perc2<-gaps_perc2
     df <- gap_cbh_metrics
@@ -87,7 +88,9 @@ get_distance <- function (gap_cbh_metrics,gaps_perc2) {
   # Select only numeric columns
   df1_numeric <- df1 %>% dplyr::select_if(is.numeric)
 
-  #print(paste("treeID:", df1_numeric$treeID))
+  if (verbose) {
+    message("Unique treeIDs:", paste(unique(df1_numeric$treeID), collapse = ", "))
+  }
 
   # Assuming that columns starting with "gap" or "cbh" are the ones you want to keep
   columns_to_keep <- names(df1_numeric)[grepl("^gap\\d+$|^cbh\\d+$", names(df1_numeric))]

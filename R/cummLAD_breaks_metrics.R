@@ -3,15 +3,16 @@
 #' This function calculates the canopy base height (CBH) of the vertical tree profile (VTP) using a segmented regression model fitted to
 #' the cumulative LAD values as a function of height.The function also calculates the percentage of LAD values below and above the identified CBH or breaking point.
 #' @usage
-#' get_cum_break(LAD_profiles, effective_distances)
+#' get_cum_break(LAD_profiles, effective_distances, verbose=TRUE)
 #' @param LAD_profiles
 #' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class data frame.
 #' @param effective_distances
 #' Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 #' An object of the class data frame.
+#' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
-#' A data frame identifying the CBH of the vertical tree profile (VTP) based on the breaking point identified by the segmented regression model,
+#' A data frame identifying the Canopy Base Height (CBH) of the vertical tree profile (VTP) based on the breaking point identified by the segmented regression model,
 #' and the percentage of LAD values below and above the identified CBH or breaking point.
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
@@ -49,7 +50,7 @@
 #' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' # Load the effective_distances object
+#' # Before running this example, make sure to run get_effective_gap().
 #' if (interactive()) {
 #' effective_distances <- get_effective_gap()
 #' LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
@@ -85,8 +86,9 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
+#' @seealso \code{\link{get_effective_gap}}
 #' @export
-get_cum_break <- function(LAD_profiles, effective_distances) {
+get_cum_break <- function(LAD_profiles, effective_distances, verbose=TRUE) {
 
   # Initialize the result data frame
   closest_row <- data.frame()
@@ -104,7 +106,10 @@ get_cum_break <- function(LAD_profiles, effective_distances) {
 
     treeID<-"treeID"
     treeID1<-"treeID1"
-    print(paste("treeID:", df_effective[[treeID]]))  # Debugging line
+
+    if (verbose) {
+      message("Unique treeIDs:", paste(unique(df_effective$treeID), collapse = ", "))
+    }
 
     # Add more noise to x-values
 

@@ -1,18 +1,19 @@
-#' Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m)
+#' Leaf Area Density (LAD) percentage comprised in each fuel layer and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m)
 #' @description
-#' This function calculates the percentage of leaf area density (LAD) within each fuel layer (first output),
+#' This function calculates the percentage of Leaf Area Density (LAD) within each fuel layer (first output),
 #' and removes those fuel layers with LAD percentage less than 25, recalculating the distances of the remaining ones.
 #' It determines the canopy base height (CBH) as the fuel layer with the highest LAD percentage (second output).
 #' @usage
-#' get_layers_lad(LAD_profiles, effective_distances)
+#' get_layers_lad(LAD_profiles, effective_distances, verbose=TRUE)
 #' @param LAD_profiles
 #' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class text.
 #' @param effective_distances
 #' Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 #' An object of the class text.
+#' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
-#' A data frame identifying the canopy base height (CBH) of the fuel layer with maximum LAD percentage and other fuel layers with their corresponding LAD percentage.
+#' A data frame identifying the canopy base height (CBH) of the fuel layer with maximum Leaf Area Density (LAD) percentage and other fuel layers with their corresponding LAD percentage.
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -47,8 +48,7 @@
 #' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' ## Not run:
-#' # Load or create the effective_distances object
+#' # Before running this example, make sure to run get_effective_gap().
 #' if (interactive()) {
 #' effective_distances <- get_effective_gap()
 #' LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
@@ -87,8 +87,9 @@
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
 #' @seealso \code{\link{get_renamed_df}}
+#' @seealso \code{\link{get_effective_gap}}
 #' @export
-get_layers_lad <- function(LAD_profiles, effective_distances) {
+get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
 
   df_orig <- LAD_profiles
   effectiv_gaps<- effective_distances
@@ -96,7 +97,10 @@ get_layers_lad <- function(LAD_profiles, effective_distances) {
   df_effective1 <- effectiv_gaps[, !apply(effectiv_gaps, 2, function(x) all(is.na(x)))]
   treeID<-"treeID"
   treeID1<-"treeID1"
-  print(paste("treeID:", df_effective1[[treeID]]))  # Debugging line
+
+  if (verbose) {
+    message("Unique treeIDs:", paste(unique(df_effective1$treeID), collapse = ", "))
+  }
 
   ######################################
   Hcbh_cols <- grep("^Hcbh\\d+$", names(df_effective1), value = TRUE)
@@ -207,7 +211,6 @@ get_layers_lad <- function(LAD_profiles, effective_distances) {
   all_effdist_suffixes <- as.numeric(stringr::str_extract(all_effdist_cols, "\\d+$"))
   suffixes_to_remove <- sort(as.numeric(stringr::str_extract(names(cols_to_remove[cols_to_remove]), "\\d+$")))
 
-  #print(paste("Last LAD Suffix:", last_lad_suffix))  # Debugging line
 
   ##########################################################################
   # IF ANY CHANGE

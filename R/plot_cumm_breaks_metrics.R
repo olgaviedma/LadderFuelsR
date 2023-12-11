@@ -2,10 +2,10 @@
 #' @description This function plots the canopy base height (CBH) based on breaking point over the cummulative LAD values and gives the LAD percentage below and above that breaking point
 #' @usage get_plots_cumm(LAD_profiles, cummulative_LAD)
 #' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function from leafR package).
-#' An object of the class text
+#' An object of the class text.
 #' @param cummulative_LAD tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).
-#' An object of the class text
-#' @return A plot of the CBH and LAD percentage below and above the CBH
+#' An object of the class text.
+#' @return A plot of the Canopy Base Height (CBH) and Leaf Area Density (LAD) percentage below and above the CBH.
 #' @author Olga Viedma, Carlos Silva and JM Moreno
 #'
 #' @examples
@@ -17,13 +17,10 @@
 #' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' # Load the cummulative_LAD object
+#' # Before running this example, make sure to run get_cum_break().
 #' if (interactive()) {
 #' cummulative_LAD <- get_cum_break()
 #' LadderFuelsR::cummulative_LAD$treeID <- factor(LadderFuelsR::cummulative_LAD$treeID)
-#'
-#' # Tree metrics derived from get_cum_break() function
-#' cummulative_LAD$treeID <- factor(cummulative_LAD$treeID)
 #'
 #' # Generate cumulative LAD plots
 #' plots_trees_cumlad <- get_plots_cumm(LAD_profiles, cummulative_LAD)
@@ -41,6 +38,7 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
+#' @seealso \code{\link{get_cum_break}}
 #' @export
 get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
 
@@ -60,8 +58,6 @@ get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
   trees_name1<- as.character(df_effective1$treeID)
   trees_name2<- factor(unique(trees_name1))
 
-  #Print the number of unique trees
-  #print(paste("Number of unique trees: ", length(trees_name2)))
 
   #Initialize the list for the plots with annotations
   plot_with_annotations_list <- list()
@@ -72,8 +68,6 @@ get_plots_cumm <- function(LAD_profiles, cummulative_LAD) {
     tree_data <- df_orig[df_orig$treeID == i, ]
     df_effective1_tree <- df_effective1[df_effective1$treeID == i, ]
 
-    #  Print the tree being processed
-    #print(paste("Processing tree: ", i))
 
     height <- tree_data$height
     lad <- tree_data$lad

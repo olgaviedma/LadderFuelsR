@@ -3,12 +3,13 @@
 #' This function recalculates the distance between fuel layers after removing distances = 1 m and determines the CBH based on the fuel layers
 #' with the highest and the last distance.
 #' @usage
-#' get_effective_gap(effective_depth)
+#' get_effective_gap(effective_depth, verbose=TRUE)
 #' @param effective_depth
 #' Tree metrics with the recalculated depth values considering distances > 1 m (output of [get_real_depths()] function).
 #' An object of the class data frame.
+#' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
-#' A data frame giving the effective distances (> 1 m) between consecutive fuel layers, identifying the CBH of the fuel layer
+#' A data frame giving the effective distances (> 1 m) between consecutive fuel layers, identifying the Canopy Base Height (CBH) of the fuel layer
 #' at the maximum distance and at the last distance.
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
@@ -32,12 +33,11 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(magrittr)
 #' library(stringr)
 #' library(dplyr)
 #'
-#' # Load the effective_depth object
+#' # Before running this example, make sure to run get_real_depths().
 #' if (interactive()) {
 #' effective_depth <- get_real_depths()
 #' LadderFuelsR::effective_depth$treeID <- factor(LadderFuelsR::effective_depth$treeID)
@@ -49,13 +49,12 @@
 #'
 #' for (i in levels(trees_name2)) {
 #' tree1 <- effective_depth |> dplyr::filter(treeID == i)
-#' corr_distance_metrics <- get_effective_gap(tree1)
+#' corr_distance_metrics <- get_effective_gap(tree1, verbose=TRUE)
 #' corr_distance_metrics_list[[i]] <- corr_distance_metrics
 #' }
 #'
 #' # Combine the individual data frames
 #' effective_distances <- dplyr::bind_rows(corr_distance_metrics_list)
-#' }
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars last
@@ -70,15 +69,17 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
+#' @seealso \code{\link{get_real_depths}}
 #' @export
-get_effective_gap <- function (effective_depth) {
+get_effective_gap <- function(effective_depth, verbose = TRUE) {
 
-  df<- effective_depth
+  df <- effective_depth
 
-  #print(paste("Unique treeIDs:", paste(unique(df$treeID), collapse = ", ")))
+if (verbose) {
+  message("Unique treeIDs:", paste(unique(df$treeID), collapse = ", "))
+}
 
   df5b <- df[, colSums(!is.na(df)) > 0]
-
 
   # Identify columns starting with 'Hcbh' and remove duplicates
   hcbh_cols <- grep("^Hcbh", colnames(df5b), value = TRUE)

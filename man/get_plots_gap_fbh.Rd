@@ -28,18 +28,17 @@ LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = 
 header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-# Load the depth_metrics object
+# Before running this example, make sure to run get_depths().
 if (interactive()) {
 depth_metrics <- get_depths()
 LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
 
-# Tree metrics derived from get_depths() function
-data(depth_metrics)
-depth_metrics$treeID <- factor(depth_metrics$treeID)
-
 # Generate plots for gaps and fbhs
 plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
 }
+}
+\seealso{
+\code{\link{get_depths}}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

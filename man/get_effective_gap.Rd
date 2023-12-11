@@ -4,14 +4,16 @@
 \alias{get_effective_gap}
 \title{Effective Distances and CBHs based on maximum and last distance}
 \usage{
-get_effective_gap(effective_depth)
+get_effective_gap(effective_depth, verbose=TRUE)
 }
 \arguments{
 \item{effective_depth}{Tree metrics with the recalculated depth values considering distances > 1 m (output of [get_real_depths()] function).
 An object of the class data frame.}
+
+\item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame giving the effective distances (> 1 m) between consecutive fuel layers, identifying the CBH of the fuel layer
+A data frame giving the effective distances (> 1 m) between consecutive fuel layers, identifying the Canopy Base Height (CBH) of the fuel layer
 at the maximum distance and at the last distance.
 }
 \description{
@@ -37,12 +39,11 @@ List of tree metrics:
 }
 }
 \examples{
-\dontrun{
 library(magrittr)
 library(stringr)
 library(dplyr)
 
-# Load the effective_depth object
+# Before running this example, make sure to run get_real_depths().
 if (interactive()) {
 effective_depth <- get_real_depths()
 LadderFuelsR::effective_depth$treeID <- factor(LadderFuelsR::effective_depth$treeID)
@@ -54,7 +55,7 @@ corr_distance_metrics_list <- list()
 
 for (i in levels(trees_name2)) {
 tree1 <- effective_depth |> dplyr::filter(treeID == i)
-corr_distance_metrics <- get_effective_gap(tree1)
+corr_distance_metrics <- get_effective_gap(tree1, verbose=TRUE)
 corr_distance_metrics_list[[i]] <- corr_distance_metrics
 }
 
@@ -62,6 +63,8 @@ corr_distance_metrics_list[[i]] <- corr_distance_metrics
 effective_distances <- dplyr::bind_rows(corr_distance_metrics_list)
 }
 }
+\seealso{
+\code{\link{get_real_depths}}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno
