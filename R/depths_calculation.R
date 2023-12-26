@@ -72,6 +72,10 @@ get_depths <- function (LAD_profiles,distance_metrics,verbose=TRUE) {
   trees_name1a<- as.character(df1$treeID)
   trees_name3<- factor(unique(trees_name1a))
 
+  if (verbose) {
+    message("Unique treeIDs:", paste(unique(df1$treeID), collapse = ", "))
+  }
+
   lad<-df1$lad
 
   df1_ord<-df1[with(df1, order(lad)), ]
@@ -118,9 +122,6 @@ get_depths <- function (LAD_profiles,distance_metrics,verbose=TRUE) {
   # Select only numeric columns
   df1_numeric <- df %>% dplyr::select_if(is.numeric)
 
-  if (verbose) {
-    message("Unique treeIDs:", paste(unique(df1_numeric$treeID), collapse = ", "))
-  }
 
   # Assuming that columns starting with "gap" or "cbh" are the ones you want to keep
   columns_to_keep <- names(df1_numeric)[grepl("^gap\\d+$|^cbh\\d+$", names(df1_numeric))]

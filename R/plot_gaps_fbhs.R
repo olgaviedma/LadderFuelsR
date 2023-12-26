@@ -118,10 +118,10 @@ get_plots_gap_fbh <- function (LAD_profiles,depth_metrics) {
 
       theme_bw() +
       coord_flip() +
-      theme(axis.title.x=element_text(size=14),    # Adjust font size of x-axis label here
-            axis.title.y=element_text(size=14),    # Adjust font size of y-axis label here
-            axis.text.x = element_text(size = 14),   # Size for x axis text
-            axis.text.y = element_text(size = 14))
+      theme(axis.title.x=element_text(size = 14, family = "sans", color = "black", face = "bold"),    # Adjust font size of x-axis label here
+            axis.title.y=element_text(size = 14, family = "sans", color = "black", face = "bold"),    # Adjust font size of y-axis label here
+            axis.text.x = element_text(angle = 0, vjust = 0.5, hjust = 1, color = "black", size = 14, family = "sans"),   # Size for x axis text
+            axis.text.y = element_text(angle = 0, vjust = 0.5, hjust = 1, color = "black", size = 14, family = "sans"))
 
     plot_list[[i]] <- bp
     #print(paste("Plot for tree ", i, " created successfully"))

@@ -56,6 +56,26 @@ depth_metrics_corr_list[[i]] <- depth_metrics_corr
 
 # Combine depth values for all trees
 effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
+
+# Reorder columns
+original_column_names <- colnames(effective_depth)
+
+# Specify prefixes
+desired_order <- c("treeID", "Hcbh", "dptf", "dist", "Hdist", "Hdptf", "max_height")
+
+# Identify unique prefixes
+prefixes <- unique(sub("^([a-zA-Z]+).*", "\\\\1", original_column_names))
+# Initialize vector to store new order
+new_order <- c()
+
+# Loop over desired order of prefixes
+for (prefix in desired_order) {
+  # Find column names matching the current prefix
+  matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
+  # Append to the new order
+  new_order <- c(new_order, matching_columns)
+}
+effective_depth <- effective_depth[, new_order]
 }
 }
 \seealso{

@@ -55,6 +55,26 @@
 #'
 #' # Combine the individual data frames
 #' effective_distances <- dplyr::bind_rows(corr_distance_metrics_list)
+#'
+#' # Get original column names
+#' original_column_names <- colnames(effective_distances)
+#'
+#' # Specify prefixes
+#' desired_order <- c("treeID", "Hcbh", "dptf","effdist","dist", "Hdist", "Hdptf", "max_","last_")
+#'
+#'# Identify unique prefixes
+#' prefixes <- unique(sub("^([a-zA-Z]+).*", "\\1", original_column_names))
+#' # Initialize vector to store new order
+#' new_order <- c()
+#'
+#' # Loop over desired order of prefixes
+#' for (prefix in desired_order) {
+#'  # Find column names matching the current prefix
+#' matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
+#' # Append to the new order
+#' new_order <- c(new_order, matching_columns)
+#' }
+#' effective_distances <- effective_distances[, new_order]
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars last

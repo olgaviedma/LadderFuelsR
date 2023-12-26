@@ -45,6 +45,26 @@
 #'
 #' # Combine depth values for all trees
 #' effective_depth <- dplyr::bind_rows(depth_metrics_corr_list)
+#'
+#' # Reorder columns
+#' original_column_names <- colnames(effective_depth)
+#'
+#' # Specify prefixes
+#' desired_order <- c("treeID", "Hcbh", "dptf", "dist", "Hdist", "Hdptf", "max_height")
+#'
+#' # Identify unique prefixes
+#' prefixes <- unique(sub("^([a-zA-Z]+).*", "\\1", original_column_names))
+#' # Initialize vector to store new order
+#' new_order <- c()
+#'
+#' # Loop over desired order of prefixes
+#' for (prefix in desired_order) {
+#'   # Find column names matching the current prefix
+#'   matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
+#'   # Append to the new order
+#'   new_order <- c(new_order, matching_columns)
+#' }
+#' effective_depth <- effective_depth[, new_order]
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars n
@@ -80,10 +100,12 @@ get_real_depths <- function (effective_fbh, verbose=TRUE) {
 
   if (length(dist_cols) == 0) {
     df2a$dist1 <- 1
+    df2a$Hdist1 <- 0.5
   }
 
   if (length(dist_cols) == 1 && all(df2a$dist1==0)) {
     df2a$dist1 <- 1
+    df2a$Hdist1 <- 0.5
   }
 
   for (col in names(df2a)) {

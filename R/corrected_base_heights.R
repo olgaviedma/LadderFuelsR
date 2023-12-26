@@ -30,7 +30,7 @@
 #' @examples
 #' library(magrittr)
 #' library(dplyr)
-#' #Before running this example, make sure to run get_depths().
+#' #Before running this example, make sure to run get_depths()
 #' if (interactive()) {
 #' depth_metrics <- get_depths()
 #' LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
@@ -76,7 +76,24 @@ get_real_fbh <- function (depth_metrics, verbose = TRUE) {
        for (i in 1:nrow(df)) {
 
     effective_fbh <- NULL  # Initialize to NULL for each row
-    current_row <- df[i, ]
+
+    current_row <- df[1, ]
+
+    # Extract numeric suffixes from column names
+    numeric_suffixes <- as.numeric(gsub("\\D", "", colnames(current_row)))
+
+    # Identify non-numeric columns and replace their numeric_suffixes with Inf
+    non_numeric_cols <- is.na(numeric_suffixes)
+    numeric_suffixes[non_numeric_cols] <- Inf
+
+    # Order columns by numeric suffix, placing non-numeric columns at the end
+    ordered_cols <- order(numeric_suffixes)
+
+    # Reorder the dataframe columns
+    current_row <- current_row[, ordered_cols]
+
+    # Make column names unique for the rest of the columns
+    colnames(current_row) <- make.names(colnames(current_row))
 
     hgap_cols <- grep("^gap\\d+$", colnames(current_row))
     hcbh_cols <- grep("^cbh\\d+$", colnames(current_row))
@@ -89,7 +106,7 @@ get_real_fbh <- function (depth_metrics, verbose = TRUE) {
       next
     }
 
-    df2 <- df
+    df2 <- current_row
 
     if (verbose) {
       message("Unique treeIDs:", paste(unique(df2$treeID), collapse = ", "))
@@ -262,6 +279,19 @@ get_real_fbh <- function (depth_metrics, verbose = TRUE) {
     prefixes <- c("treeID", "Hdist", "Hdepth", "dist", "depth", "max_height")
     df_subset <- df %>%
       dplyr::select(matches(paste0("^", paste(prefixes, collapse = "|"))))
+
+    # Extract numeric suffixes from column names
+    numeric_suffixes <- as.numeric(gsub("\\D", "", colnames(df_subset)))
+    # Identify non-numeric columns and replace their numeric_suffixes with Inf
+    non_numeric_cols <- is.na(numeric_suffixes)
+    numeric_suffixes[non_numeric_cols] <- Inf
+    # Order columns by numeric suffix, placing non-numeric columns at the end
+    ordered_cols <- order(numeric_suffixes)
+    # Reorder the dataframe columns
+    df_subset <- df_subset[, ordered_cols]
+    # Make column names unique for the rest of the columns
+
+    colnames(df_subset) <- make.names(colnames(df_subset))
 
     if (exists("new_Hcbh_df")) {
       effective_fbh <- cbind.data.frame(df_subset, new_Hcbh_df)

@@ -94,11 +94,19 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
   df_orig <- LAD_profiles
   effectiv_gaps<- effective_distances
 
+  if(is.na(effectiv_gaps$Hdist1)){
+    effectiv_gaps$Hdist1<-0.5
+  }
+
+  if (!("effdist1" %in% colnames(effectiv_gaps))) {
+    effectiv_gaps$effdist1 <- 0
+  }
+
   df_effective1 <- effectiv_gaps[, !apply(effectiv_gaps, 2, function(x) all(is.na(x)))]
   treeID<-"treeID"
   treeID1<-"treeID1"
 
-  if (verbose) {
+    if (verbose) {
     message("Unique treeIDs:", paste(unique(df_effective1$treeID), collapse = ", "))
   }
 
@@ -211,6 +219,9 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
   all_effdist_suffixes <- as.numeric(stringr::str_extract(all_effdist_cols, "\\d+$"))
   suffixes_to_remove <- sort(as.numeric(stringr::str_extract(names(cols_to_remove[cols_to_remove]), "\\d+$")))
 
+  cols_no_remove <- sapply(merged_df1[, lad_columns3], function(col) any(col > 25))
+
+  if (any(cols_no_remove)) {
 
   ##########################################################################
   # IF ANY CHANGE
@@ -904,27 +915,8 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
           }}
       }
 
-
-      dist_cols <- grep("^dist\\d+$", names(merged_df1), value = TRUE)
-      hdist_cols <- grep("^Hdist", names(merged_df1), value = TRUE)
-
-      if (all(dist_cols %in% colnames (merged_df1)) && all(hdist_cols %in% colnames (merged_df1))){
-        merged_df1 <- merged_df1 %>%
-          dplyr::select(-starts_with("dist"))
-
-      }
       merged_df1<- get_renamed_df (merged_df1)
-
-
-      if (length(hdist_cols) > length(all_effdist_cols) && merged_df1$Hcbh1 == 1.5) {
-        merged_df1 <- merged_df1[, !names(merged_df1) %in% last(hdist_cols)]
-      }
-
-      merged_df1<- get_renamed_df (merged_df1)
-
-
-
-      ####################################
+   ###################################
 
       lad_columns2 <- grep("^Hcbh\\d+_Hdptf\\d+$", names(merged_df1),value=TRUE)
       lad_suffixes <- as.numeric(str_extract(lad_columns2, "\\d+$"))
@@ -2009,6 +2001,19 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
               }}
 
 
+            cols_to_check <- c(first_cbh_gt5_col, first(Hcbh_cols))
+            if (all(cols_to_check %in% colnames(merged_df1))) {
+
+              if (isTRUE(first_suffix_eq1 == first(lad_suffixes)) &&
+                  first_cbh_gt5_value  > 1.5 && Hcbh1 ==1.5 &&
+                  !Hdist_next2_colname %in% colnames(merged_df1) &&
+                  all (sapply(all_effdist_values, function(x) x != "1"))) {
+
+                merged_df1[first_col_name] <- dptf_sum + effdist_sum
+                merged_df1 <- merged_df1[, !(names(merged_df1) %in% cols_to_remove_noeffdist1)]
+              }}
+
+
             cols_to_check <- c(first_cbh_gt5_col,Hdist_next_colname)
             if (all(cols_to_check %in% colnames(merged_df1))) {
 
@@ -2232,6 +2237,134 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
 
         #############################
         #############################
+
+        lad_columns2 <- grep("^Hcbh\\d+_Hdptf\\d+$", names(merged_df1),value=TRUE)
+        lad_suffixes <- as.numeric(str_extract(lad_columns2, "\\d+$"))
+
+        lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > 25))
+        suffixes_no_remove <- sort(as.numeric(stringr::str_extract(names(lad_no_remove[lad_no_remove]), "\\d+$")))
+
+        colnames_to_extract <- names(lad_no_remove)[lad_no_remove]
+        # Extract the values from the desired columns
+        lad_values_noremove <- merged_df1[, colnames_to_extract, drop=FALSE]
+
+        pattern <- paste0(suffixes_no_remove, "$")
+
+        # Use sapply to get matches for each pattern
+        matching_cols_list <- sapply(pattern, function(pat) grep(pat, names(merged_df1), value=TRUE))
+
+        # Unlist and make unique the result
+        matching_cols <- unique(unlist(matching_cols_list))
+
+        # Extract column name
+        first_cbh_gt5_col <- first(grep("^Hcbh\\d+$", matching_cols, value = TRUE))
+
+
+        if (first_cbh_gt5_col %in% colnames(merged_df1)) {
+          first_cbh_gt5_value <- merged_df1[, first_cbh_gt5_col]
+        } else {
+          first_cbh_gt5_value <- NA  # or some other default value
+        }
+
+        last_cbh_gt5_col <- last(grep("^Hcbh\\d+$", matching_cols, value = TRUE))
+
+        if (last_cbh_gt5_col %in% colnames(merged_df1)) {
+          last_cbh_gt5_value <- merged_df1[, last_cbh_gt5_col]
+        } else {
+          last_cbh_gt5_value <- NA  # or some other default value
+        }
+
+     #################################################
+
+        # Find the columns with value less than 5
+        cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < 25))
+        suffixes_to_remove <- sort(as.numeric(stringr::str_extract(names(cols_to_remove[cols_to_remove]), "\\d+$")))
+
+        pattern2 <- paste0(suffixes_to_remove, "$")
+        # Get column names matching the pattern
+        matching_cols2 <- unique(unlist(sapply(pattern2, function(pat) {
+          grep(pat, names(merged_df1), value=TRUE)
+        })))
+
+        cols_to_remove_noeffdist <- matching_cols2[!grepl("^(effdist|treeID)", matching_cols2)]
+
+        # Subset the dataframe using matching columns
+        remove_noeffdist_values <- merged_df1[, cols_to_remove_noeffdist]
+
+
+        first_no_consenc_suffix <- min(suffixes_to_remove)
+        last_no_consenc_suffix <- max(suffixes_to_remove)
+        next_column_suffix <- last_no_consenc_suffix + 1
+        previous_column_suffix <- first_no_consenc_suffix - 1
+        first_col_name <- paste0("effdist", first_no_consenc_suffix)
+        last_col_name <- paste0("effdist", last_no_consenc_suffix)
+        last_lad_suffix<-last(lad_suffixes)
+
+
+        if (last_col_name %in% colnames(merged_df1)) {
+          last_col_value <- merged_df1[, last_col_name]
+        } else {
+          last_col_value <- NA  # or some other default value
+        }
+
+
+          next_effdist_col <- paste0("effdist", next_column_suffix)
+          previous_effdist_col <- paste0("effdist", previous_column_suffix)
+
+          if (next_effdist_col %in% colnames(merged_df1)) {
+            next_effdist_value <- merged_df1[, next_effdist_col]
+          } else {
+            next_effdist_value <- NA  # or some other default value
+          }
+
+          if (previous_effdist_col %in% colnames(merged_df1)) {
+            previous_effdist_value <- merged_df1[, previous_effdist_col]
+          } else {
+            previous_effdist_value <- NA  # or some other default value
+          }
+
+
+          Hdist_next_colname <- paste0("Hdist", next_column_suffix)
+          Hdptf_next_colname <- paste0("Hdptf", next_column_suffix)
+
+          if (Hdist_next_colname %in% colnames(merged_df1)) {
+            Hdist_next_value <- merged_df1[, Hdist_next_colname]
+          } else {
+            Hdist_next_value <- NA  # or some other default value
+          }
+
+          if (Hdptf_next_colname %in% colnames(merged_df1)) {
+            Hdptf_next_value <- merged_df1[, Hdptf_next_colname]
+          } else {
+            Hdptf_next_value <- NA  # or some other default value
+          }
+
+          Hdist_previous_colname <- paste0("Hdist", previous_column_suffix)
+          Hdptf_previous_colname <- paste0("Hdptf", previous_column_suffix)
+
+          if (any(Hdist_previous_colname %in% colnames(merged_df1))) {
+            Hdist_previous_value <- merged_df1[, Hdist_previous_colname]
+          } else {
+            Hdist_previous_value <- NA  # or some other default value
+          }
+
+          if (Hdptf_previous_colname %in% colnames(merged_df1)) {
+            Hdptf_previous_value <- merged_df1[, Hdptf_previous_colname]
+          } else {
+            Hdptf_previous_value <- NA  # or some other default value
+          }
+
+          dist_col1 <- paste0("dist", first_no_consenc_suffix)
+
+          if (dist_col1 %in% colnames(merged_df1)) {
+            dist1_value <- merged_df1[, dist_col1]
+          } else {
+            dist1_value <- NA  # or some other default value
+          }
+
+          lad_columns2 <- grep("^Hcbh\\d+_Hdptf\\d+$", names(merged_df1),value=TRUE)
+          lad_suffixes <- as.numeric(str_extract(lad_columns2, "\\d+$"))
+
 
         if (any(suffixes_to_remove > 1)) {
 
@@ -2602,6 +2735,12 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
     }
   }
 
+  } else {
+
+     merged_df1 <- merged_df
+
+  }
+
   ##########################################################################
   # IF NOT ANY CHANGE
   ##########################################################################
@@ -2746,6 +2885,14 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
   }
 
   ######## Hcbh with max % LAD    ###########################
+
+  if (!("effdist1" %in% colnames(merged_df1))) {
+    merged_df1$effdist1 <- 0
+  }
+
+  if (!("Hdist1" %in% colnames(merged_df1))) {
+    merged_df1$Hdist1 <- 0.5
+  }
 
   # Check if df_sub is not empty and contains "Hdist" in column names
   col_names <- names(merged_df1)
@@ -2994,19 +3141,48 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
       merged_df1$maxlad_effdist <- merged_df1[[hdist_cols[1]]] - merged_df1[[hdptf_cols[1]]]
     }
 
-    # Remove sub-columns if they exist
-    cols_to_remove <- grep("^maxlad_effdist\\.", colnames(merged_df1), value = TRUE)
-    merged_df1 <- merged_df1[, !names(merged_df1) %in% cols_to_remove]
 
+   last_values <- sapply(merged_df1, function(col) tail(col, 1), simplify = "data.frame")
+
+  # Filter columns that start with "Hdist" and "Hdptf"
+  Hdist_columns <- grep("^Hdist", names(last_values), value = TRUE)
+  dist_columns <- grep("^dist", names(last_values), value = TRUE)
+  Hdptf_columns <- grep("^Hdptf", names(last_values), value = TRUE)
+
+  last_dist<-merged_df1[, dist_columns]
+  last_Hdist<-merged_df1[, Hdist_columns]
+  last_Hdptf<-merged_df1[, Hdptf_columns]
+
+  # Check if the last Hdist is greater than the last Hdptf
+  if (max(last_Hdist) > max(last_Hdptf)) {
+    merged_df1 <- merged_df1[, !names(merged_df1) %in% dist_columns]
+    merged_df1 <- merged_df1[, !names(merged_df1) %in% Hdist_columns]
   }
 
   # Remove sub-columns if they exist
   cols_to_remove1 <- grep("^max1", colnames(merged_df1), value = TRUE)
   merged_df1 <- merged_df1[, !names(merged_df1) %in% cols_to_remove1]
 
+  # Remove sub-columns if they exist
+  cols_to_remove <- grep("^maxlad_effdist\\.", colnames(merged_df1), value = TRUE)
+  merged_df1 <- merged_df1[, !names(merged_df1) %in% cols_to_remove]
+}
   ##########################################################################
-  all_LAD<-merged_df
-  effective_LAD<-merged_df1
+
+  cols_maxlad <- grep("^maxlad_", colnames(merged_df1), value = TRUE)
+  all_LAD <- data.frame(merged_df, merged_df1[, cols_maxlad, drop = FALSE])
+  effective_LAD <- merged_df1
+
+  cbh_columns1 <- grep("^Hcbh\\d+$", names(all_LAD))  # Extracts numeric cbh columns
+  nlayers1 <- sum(sapply(all_LAD[, cbh_columns1], is.numeric))  # Count numeric values
+
+  cbh_columns2 <- grep("^Hcbh\\d+$", names(effective_LAD))  # Extracts numeric cbh columns
+  nlayers2 <- sum(sapply(effective_LAD[, cbh_columns2], is.numeric))  # Count numeric values
+
+  # Add a new column to tree1 with the calculated nlayers1 value
+  all_LAD$nlayers <- nlayers1
+  effective_LAD$nlayers <- nlayers2
+
   # Return them in a list
   return(list(df1 = all_LAD, df2 = effective_LAD))
 

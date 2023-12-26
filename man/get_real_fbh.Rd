@@ -36,7 +36,7 @@ keeping the first "base height" from those consecutive ones separated by a dista
 \examples{
 library(magrittr)
 library(dplyr)
-#Before running this example, make sure to run get_depths().
+#Before running this example, make sure to run get_depths()
 if (interactive()) {
 depth_metrics <- get_depths()
 LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
