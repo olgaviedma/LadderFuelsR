@@ -4,13 +4,14 @@
 #' and removes those fuel layers with LAD percentage less than 25, recalculating the distances of the remaining ones.
 #' It determines the canopy base height (CBH) as the fuel layer with the highest LAD percentage (second output).
 #' @usage
-#' get_layers_lad(LAD_profiles, effective_distances, verbose=TRUE)
+#' get_layers_lad(LAD_profiles, effective_distances, threshold,verbose=TRUE)
 #' @param LAD_profiles
 #' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class text.
 #' @param effective_distances
 #' Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 #' An object of the class text.
+#' @param threshold Numeric value for the minimum required LAD percentage in a fuel layer.
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
 #' A data frame identifying the canopy base height (CBH) of the fuel layer with maximum Leaf Area Density (LAD) percentage and other fuel layers with their corresponding LAD percentage.
@@ -65,7 +66,7 @@
 #' tree2 <- effective_distances |> dplyr::filter(treeID == i)
 #'
 #' # Get LAD metrics for each tree
-#' LAD_metrics <- get_layers_lad(tree1, tree2)
+#' LAD_metrics <- get_layers_lad(tree1, tree2,threshold=25)
 #' LAD_metrics1[[i]] <- LAD_metrics$df1
 #' LAD_metrics2[[i]] <- LAD_metrics$df2
 #' }
@@ -89,7 +90,7 @@
 #' @seealso \code{\link{get_renamed_df}}
 #' @seealso \code{\link{get_effective_gap}}
 #' @export
-get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
+get_layers_lad <- function(LAD_profiles, effective_distances,threshold, verbose=TRUE) {
 
   df_orig <- LAD_profiles
   effectiv_gaps<- effective_distances
@@ -213,13 +214,17 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
   last_lad_suffix <- max(lad_suffixes)
 
   # Find the columns with value less than 25
-  cols_to_remove <- sapply(merged_df1[, lad_columns3], function(col) any(col < 25))
+  threshold_value <- threshold
+
+  # Use the threshold dynamically in your code
+  cols_to_remove <- sapply(merged_df1[, lad_columns3], function(col) any(col < threshold_value))
+
 
   all_effdist_cols <- grep("^effdist\\d+$", names(merged_df1), value = TRUE)
   all_effdist_suffixes <- as.numeric(stringr::str_extract(all_effdist_cols, "\\d+$"))
   suffixes_to_remove <- sort(as.numeric(stringr::str_extract(names(cols_to_remove[cols_to_remove]), "\\d+$")))
 
-  cols_no_remove <- sapply(merged_df1[, lad_columns3], function(col) any(col > 25))
+  cols_no_remove <- sapply(merged_df1[, lad_columns3], function(col) any(col > threshold_value))
 
   if (any(cols_no_remove)) {
 
@@ -278,8 +283,10 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
 
     ###################################33
 
+    threshold_value <- threshold
+
     # Find the columns with value less than 5
-    cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < 25))
+    cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < threshold_value))
     suffixes_to_remove <- sort(as.numeric(stringr::str_extract(names(cols_to_remove[cols_to_remove]), "\\d+$")))
 
     colnames_to_extract <- names(cols_to_remove)[cols_to_remove]
@@ -921,7 +928,7 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
       lad_columns2 <- grep("^Hcbh\\d+_Hdptf\\d+$", names(merged_df1),value=TRUE)
       lad_suffixes <- as.numeric(str_extract(lad_columns2, "\\d+$"))
 
-      lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > 25))
+      lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > threshold_value))
       suffixes_no_remove <- sort(as.numeric(stringr::str_extract(names(lad_no_remove[lad_no_remove]), "\\d+$")))
 
       colnames_to_extract <- names(lad_no_remove)[lad_no_remove]
@@ -956,7 +963,8 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
 
       #########################################
       # Find the columns with value less than 5
-      cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < 25))
+      threshold_value <- threshold
+      cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < threshold_value))
       suffixes_to_remove <- sort(as.numeric(stringr::str_extract(names(cols_to_remove[cols_to_remove]), "\\d+$")))
 
       pattern2 <- paste0(suffixes_to_remove, "$")
@@ -1384,6 +1392,8 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
 
         if (any(suffixes_to_remove > 1)) {
 
+          threshold_value <- threshold
+
           last_col_name <- paste0("effdist", last_no_consenc_suffix)
 
           if (last_col_name %in% colnames(merged_df1)) {
@@ -1391,10 +1401,10 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
             lad_columns2 <- grep("^Hcbh\\d+_Hdptf\\d+$", names(merged_df1),value=TRUE)
             lad_suffixes <- as.numeric(str_extract(lad_columns2, "\\d+$"))
 
-            cols_to_remove1 <- sapply(merged_df1[, lad_columns2], function(col) any(col < 25))
+            cols_to_remove1 <- sapply(merged_df1[, lad_columns2], function(col) any(col < threshold_value))
             suffixes_to_remove2 <- sort(as.numeric(stringr::str_extract(names(cols_to_remove1[cols_to_remove1]), "\\d+$")))
 
-            lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > 25))
+            lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > threshold_value))
             suffixes_no_remove <- sort(as.numeric(stringr::str_extract(names(lad_no_remove[lad_no_remove]), "\\d+$")))
 
             colnames_to_extract <- names(lad_no_remove)[lad_no_remove]
@@ -1755,12 +1765,13 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
 
     if (identical(merged_df1,merged_df)) {
 
+      threshold_value <- threshold
       merged_df1 <-merged_df
 
       lad_columns2 <- grep("^Hcbh\\d+_Hdptf\\d+$", names(merged_df1),value=TRUE)
       lad_suffixes <- as.numeric(str_extract(lad_columns2, "\\d+$"))
 
-      lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > 25))
+      lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > threshold_value))
       suffixes_no_remove <- sort(as.numeric(stringr::str_extract(names(lad_no_remove[lad_no_remove]), "\\d+$")))
 
       colnames_to_extract <- names(lad_no_remove)[lad_no_remove]
@@ -1796,7 +1807,8 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
 
       #########################################
       # Find the columns with value less than 5
-      cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < 25))
+      threshold_value <- threshold
+      cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < threshold_value))
       suffixes_to_remove <- sort(as.numeric(stringr::str_extract(names(cols_to_remove[cols_to_remove]), "\\d+$")))
 
       pattern2 <- paste0(suffixes_to_remove, "$")
@@ -2241,7 +2253,8 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
         lad_columns2 <- grep("^Hcbh\\d+_Hdptf\\d+$", names(merged_df1),value=TRUE)
         lad_suffixes <- as.numeric(str_extract(lad_columns2, "\\d+$"))
 
-        lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > 25))
+        threshold_value <- threshold
+        lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > threshold_value))
         suffixes_no_remove <- sort(as.numeric(stringr::str_extract(names(lad_no_remove[lad_no_remove]), "\\d+$")))
 
         colnames_to_extract <- names(lad_no_remove)[lad_no_remove]
@@ -2277,7 +2290,8 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
      #################################################
 
         # Find the columns with value less than 5
-        cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < 25))
+        threshold_value <- threshold
+        cols_to_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col < threshold_value))
         suffixes_to_remove <- sort(as.numeric(stringr::str_extract(names(cols_to_remove[cols_to_remove]), "\\d+$")))
 
         pattern2 <- paste0(suffixes_to_remove, "$")
@@ -2375,10 +2389,11 @@ get_layers_lad <- function(LAD_profiles, effective_distances,verbose=TRUE) {
             lad_columns2 <- grep("^Hcbh\\d+_Hdptf\\d+$", names(merged_df1),value=TRUE)
             lad_suffixes <- as.numeric(str_extract(lad_columns2, "\\d+$"))
 
-            cols_to_remove1 <- sapply(merged_df1[, lad_columns2], function(col) any(col < 25))
+            threshold_value <- threshold
+            cols_to_remove1 <- sapply(merged_df1[, lad_columns2], function(col) any(col < threshold_value))
             suffixes_to_remove2 <- sort(as.numeric(stringr::str_extract(names(cols_to_remove1[cols_to_remove1]), "\\d+$")))
 
-            lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > 25))
+            lad_no_remove <- sapply(merged_df1[, lad_columns2], function(col) any(col > threshold_value))
             suffixes_no_remove <- sort(as.numeric(stringr::str_extract(names(lad_no_remove[lad_no_remove]), "\\d+$")))
 
             colnames_to_extract <- names(lad_no_remove)[lad_no_remove]

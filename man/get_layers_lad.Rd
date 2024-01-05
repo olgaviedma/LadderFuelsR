@@ -4,7 +4,7 @@
 \alias{get_layers_lad}
 \title{Leaf Area Density (LAD) percentage comprised in each fuel layer and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m)}
 \usage{
-get_layers_lad(LAD_profiles, effective_distances, verbose=TRUE)
+get_layers_lad(LAD_profiles, effective_distances, threshold,verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
@@ -12,6 +12,8 @@ An object of the class text.}
 
 \item{effective_distances}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 An object of the class text.}
+
+\item{threshold}{Numeric value for the minimum required LAD percentage in a fuel layer.}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
@@ -71,7 +73,7 @@ tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
 tree2 <- effective_distances |> dplyr::filter(treeID == i)
 
 # Get LAD metrics for each tree
-LAD_metrics <- get_layers_lad(tree1, tree2)
+LAD_metrics <- get_layers_lad(tree1, tree2,threshold=25)
 LAD_metrics1[[i]] <- LAD_metrics$df1
 LAD_metrics2[[i]] <- LAD_metrics$df2
 }
