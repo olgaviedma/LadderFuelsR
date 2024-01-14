@@ -14,18 +14,23 @@ Imports: dplyr, gdata, ggplot2, magrittr, segmented, stringr, tidyr, tibble, tid
 RoxygenNote: 7.2.3
 Roxygen: list(roclets = c("rd", "collate", "namespace", "vignette"))
 Collate: 
-    'calculate_gaps_perc2.R'
+    'calculate_gaps_perc.R'
     'gap_fbh.R'
     'distances_calculation.R'
     'depths_calculation.R'
     'corrected_base_heights.R'
     'corrected_depth.R'
     'corrected_distances.R'
-    'cummLAD_breaks_metrics.R'
     'maxlad_metrics_25perc.R'
-    'plot_cumm_breaks_metrics.R'
+    'remove_no_flayer_noconsec.R'
+    'cbh_metrics.R'
+    'cummLAD_breaks_metrics.R'
+    'plot_cbh_bpoint.R'
     'plot_gaps_fbhs.R'
-    'plot_maxlad_metrics.R'
+    'plot_cbh_maxdist.R'
+    'plot_cbh_lastdist.R'
+    'plot_cbh_maxlad.R'
+    'plot_effective_metrics.R'
     'renamed0_df.R'
     'renamed_df.R'
 BugReports: https://github.com/olgaviedma/LadderFuelsR/issues

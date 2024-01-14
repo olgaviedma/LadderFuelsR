@@ -1,6 +1,6 @@
 #' Compute the percentile value of each height
 #' @description This function calculates the percentile value of each height
-#' @usage calculate_gaps_perc2 (LAD_profiles)
+#' @usage calculate_gaps_perc (LAD_profiles)
 #' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 #' An object of the class text
 #' @return A data frame giving the percentile value of each height.
@@ -22,11 +22,11 @@
 #'
 #' for (i in levels(trees_name2)) {
 #' tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#' percentiles <- calculate_gaps_perc2(tree1)
+#' percentiles <- calculate_gaps_perc(tree1)
 #' percentile_list1[[i]] <- percentiles
 #' }
-#' gaps_perc2 <- dplyr::bind_rows(percentile_list1)
-#' gaps_perc2$treeID <- factor(gaps_perc2$treeID)
+#' gaps_perc <- dplyr::bind_rows(percentile_list1)
+#' gaps_perc$treeID <- factor(gaps_perc$treeID)
 #'
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
@@ -42,7 +42,7 @@
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
 #' @export
-calculate_gaps_perc2 <- function(LAD_profiles) {
+calculate_gaps_perc <- function(LAD_profiles) {
 
   df <- LAD_profiles
 

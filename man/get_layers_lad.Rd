@@ -2,9 +2,9 @@
 % Please edit documentation in R/maxlad_metrics_25perc.R
 \name{get_layers_lad}
 \alias{get_layers_lad}
-\title{Leaf Area Density (LAD) percentage comprised in each fuel layer and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m)}
+\title{Leaf Area Density (LAD) percentage comprised in each effective fuel layer}
 \usage{
-get_layers_lad(LAD_profiles, effective_distances, threshold,verbose=TRUE)
+get_layers_lad(LAD_profiles, effective_distances, threshold=25, verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
@@ -13,36 +13,30 @@ An object of the class text.}
 \item{effective_distances}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
 An object of the class text.}
 
-\item{threshold}{Numeric value for the minimum required LAD percentage in a fuel layer.}
+\item{threshold}{Numeric value for the minimum required LAD percentage in a fuel layer. The default threshold is 25.}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame identifying the canopy base height (CBH) of the fuel layer with maximum Leaf Area Density (LAD) percentage and other fuel layers with their corresponding LAD percentage.
+A data frame identifying the fuel layers with their corresponding LAD percentage.
 }
 \description{
-This function calculates the percentage of Leaf Area Density (LAD) within each fuel layer (first output),
-and removes those fuel layers with LAD percentage less than 25, recalculating the distances of the remaining ones.
-It determines the canopy base height (CBH) as the fuel layer with the highest LAD percentage (second output).
+This function calculates the percentage of Leaf Area Density (LAD) within each fuel layer (first output)
+and removes those fuel layers with LAD percentage less than a specified threshold, recalculating the distances and
+the depth of the remaining ones (second output).
 }
 \details{
-# List of tree metrics:
 \itemize{
-  \item treeID: tree ID with strings and numeric values
-  \item treeID1: tree ID with only numeric values
-  \item Hdist - Height of the distance between consecutive fuel layers (m)
-  \item Hcbh - Height of the base of each fuel layer (m)
-  \item effdist - Distance between consecutive fuel layers (m)
-  \item dptf - Depth of fuel layers (m) after removing distances equal to 1 m
-  \item Hdptf - Height of the depth of fuel layers (m) after removing distances equal to 1 m
-  \item Hcbh_Hdptf - Percentage of LAD values comprised in each fuel layer
-  \item maxlad_Hcbh - Height of the CBH of the segmented tree based on the maximum LAD percentage
-  \item max_Hcbh - Height of the CBH of the segmented tree based on the maximum distance found in its profile
-  \item last_Hcbh - Height of the CBH of the segmented tree based on the last distance found in its profile
-  \item maxlad_ - Values of distance and fuel depth and their corresponding heights at the maximum LAD percentage
-  \item max_ - Values of distance and fuel depth and their corresponding heights at the maximum distance found in the tree profile
-  \item last_ - Values of distance and fuel depth and their corresponding heights at the last distance found in its profile
-  \item max_height - Maximum height of the tree profile
+\item treeID: tree ID with strings and numeric values
+\item treeID1: tree ID with only numeric values
+\item Hcbh - Height of the base of each effective fuel layer (m)
+\item Hdist - Height of the distance between consecutive fuel layers (m)
+\item effdist - Distance between consecutive fuel layers (m)
+\item dptf - Depth of the effective fuel layers (m) at distances greater than 1 m
+\item Hdptf - Height of the depth of fuel layers (m) at distances greater than 1 m
+\item Hcbh_Hdptf - Percentage of LAD values comprised in each effective fuel layer
+\item max_height - Maximum height of the tree profile
+\item nlayers - Number of effective fuel layers
 }
 }
 \examples{
@@ -73,7 +67,7 @@ tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
 tree2 <- effective_distances |> dplyr::filter(treeID == i)
 
 # Get LAD metrics for each tree
-LAD_metrics <- get_layers_lad(tree1, tree2,threshold=25)
+LAD_metrics <- get_layers_lad(tree1, tree2, threshold=25, verbose=TRUE)
 LAD_metrics1[[i]] <- LAD_metrics$df1
 LAD_metrics2[[i]] <- LAD_metrics$df2
 }
@@ -86,6 +80,8 @@ effective_LAD <- dplyr::bind_rows(LAD_metrics2)
 \code{\link{get_renamed_df}}
 
 \code{\link{get_effective_gap}}
+
+\code{\link{remove_no_flayer_noconsec}}
 }
 \author{
 Olga Viedma, Carlos Silva and JM Moreno

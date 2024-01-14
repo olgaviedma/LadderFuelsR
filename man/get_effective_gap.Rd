@@ -2,7 +2,7 @@
 % Please edit documentation in R/corrected_distances.R
 \name{get_effective_gap}
 \alias{get_effective_gap}
-\title{Effective Distances and CBHs based on maximum and last distance}
+\title{Effective Distances between fuel layers}
 \usage{
 get_effective_gap(effective_depth, verbose=TRUE)
 }
@@ -13,12 +13,10 @@ An object of the class data frame.}
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame giving the effective distances (> 1 m) between consecutive fuel layers, identifying the Canopy Base Height (CBH) of the fuel layer
-at the maximum distance and at the last distance.
+A data frame giving the effective distances (> 1 m) between consecutive fuel layers.
 }
 \description{
-This function recalculates the distance between fuel layers after removing distances = 1 m and determines the CBH based on the fuel layers
-with the highest and the last distance.
+This function recalculates the distance between fuel layers after removing distances = 1 m.
 }
 \details{
 List of tree metrics:
@@ -26,16 +24,12 @@ List of tree metrics:
   \item treeID: tree ID with strings and numeric values
   \item treeID1: tree ID with only numeric values
   \item dist: Distance between consecutive fuel layers (m)
-  \item Hdist: Height of the distance between consecutive fuel layers (m)
-  \item Hcbh: Height of the base of each fuel layer (m)
-  \item effdist: Effective distance between consecutive fuel layers (m) (> 1 m)
   \item dptf: Depth of fuel layers (m) after removing distances equal to 1 m
+  \item effdist: Effective distance between consecutive fuel layers (m) (> 1 m)
+  \item Hcbh: Height of the base of each fuel layer (m)
+  \item Hdist: Height of the distance between consecutive fuel layers (m)
   \item Hdptf: Height of the depth of fuel layers (m) after removing distances equal to 1 m
-  \item max_Hcbh: Canopy base height of the segmented tree based on the maximum distance found in its profile
-  \item last_Hcbh: Canopy base height of the segmented tree based on the last distance found in its profile
-  \item max_height: Maximum height of the tree profile
-  \item max_: Values of distance and fuel depth and their corresponding heights at the maximum distance found in the tree profile
-  \item last_: Values of distance and fuel depth and their corresponding heights at the last distance found in its profile
+  \item max_height: Maximum height of the tree
 }
 }
 \examples{
@@ -66,7 +60,7 @@ effective_distances <- dplyr::bind_rows(corr_distance_metrics_list)
 original_column_names <- colnames(effective_distances)
 
 # Specify prefixes
-desired_order <- c("treeID", "Hcbh", "dptf","effdist","dist", "Hdist", "Hdptf", "max_","last_")
+desired_order <- c("treeID", "Hcbh", "dptf","effdist","dist", "Hdist", "Hdptf", "max_")
 
 # Identify unique prefixes
 prefixes <- unique(sub("^([a-zA-Z]+).*", "\\\\1", original_column_names))

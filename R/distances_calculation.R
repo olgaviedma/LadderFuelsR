@@ -1,10 +1,10 @@
 #' Distances between fuel layers
 #' @description This function calculates distances (and their heights) between fuel layers as the difference between consecutive gaps and fuel bases
 #' (the gap height always must be lower than the fuel base height).
-#' @usage get_distance (gap_cbh_metrics,gaps_perc2,verbose=TRUE)
+#' @usage get_distance (gap_cbh_metrics,gaps_perc,verbose=TRUE)
 #' @param gap_cbh_metrics data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
 #' An object of the class text.
-#' @param gaps_perc2 data frame with Leaf Area Density (LAD) percentiles for each height values (output of [calculate_gaps_perc2()] function).
+#' @param gaps_perc data frame with Leaf Area Density (LAD) percentiles for each height values (output of [calculate_gaps_perc()] function).
 #' An object of the class text.
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return A data frame giving distances (and their heights) between fuel layers in meters.
@@ -32,10 +32,10 @@
 #' gap_cbh_metrics <- get_gaps_fbhs()
 #' LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
 #'
-#' # Before running this example, make sure to run calculate_gaps_perc2().
-#' LadderFuelsR::gaps_perc2$treeID <- factor(LadderFuelsR::gaps_perc2$treeID)
+#' # Before running this example, make sure to run calculate_gaps_perc().
+#' LadderFuelsR::gaps_perc$treeID <- factor(LadderFuelsR::gaps_perc$treeID)
 #'
-#' trees_name1 <- as.character(gaps_perc2$treeID)
+#' trees_name1 <- as.character(gaps_perc$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
 #'
 #' metrics_distance_list <- list()
@@ -44,7 +44,7 @@
 #'
 #' # Filter data for each tree
 #' tree1 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
-#' tree2 <- gaps_perc2 |> dplyr::filter(treeID == i)
+#' tree2 <- gaps_perc |> dplyr::filter(treeID == i)
 #' # Get distance metrics for each tree
 #' metrics_distance <- get_distance(tree1, tree2)
 #' metrics_distance_list[[i]] <- metrics_distance
@@ -66,11 +66,11 @@
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
 #' @seealso \code{\link{get_gaps_fbhs}}
-#' @seealso \code{\link{calculate_gaps_perc2}}
+#' @seealso \code{\link{calculate_gaps_perc}}
 #' @export
-get_distance <- function (gap_cbh_metrics,gaps_perc2, verbose = TRUE) {
+get_distance <- function (gap_cbh_metrics,gaps_perc, verbose = TRUE) {
 
-    gaps_perc2<-gaps_perc2
+    gaps_perc2<-gaps_perc
     df <- gap_cbh_metrics
 
     gaps_perc2$treeID <- factor(gaps_perc2$treeID)

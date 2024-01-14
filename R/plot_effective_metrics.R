@@ -1,17 +1,17 @@
-#' Plots of fuel layers with LAD percentage > 5 and the canopy base height (CBH) based on the maximum LAD percentage
+#' Plots of fuel layers with LAD percentage greater than a specified threshold
 #' @description
-#' This function plots the CBH of the fuel layer with the maximum LAD percentage and other fuel layers with LAD percentage greater than 5.
+#' This function plots effective fuel layers separated by effective distances (> 1 m).
 #' @usage
-#' get_plots_cbh_LAD(LAD_profiles, effective_LAD)
+#' get_plots_effective(LAD_profiles, effective_LAD)
 #' @param LAD_profiles
 #' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class text.
 #' @param effective_LAD
-#' Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than 5
+#' Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than a specified threshold
 #' (output of [get_layers_lad()] function).
 #' An object of the class text.
 #' @return
-#' A plot drawing the Canopy Base Height (CBH) of the fuel layer with the maximum Leaf Area Density (LAD) percentage and other fuel layers with LAD percentage greater than 25.
+#' A plot drawing the effective fuel layers with LAD percentage greater than a specified threshold.
 #' @author
 #' Olga Viedma, Carlos Silva and JM Moreno
 #'
@@ -33,7 +33,7 @@
 #' trees_name2 <- factor(unique(trees_name1))
 #'
 #' # Generate plots for fuels LAD metrics
-#' plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, effective_LAD)
+#' plots_effective_metrics <- get_plots_effective(LAD_profiles, effective_LAD)
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars
@@ -50,7 +50,7 @@
 #' theme element_text xlab ylab ggplot
 #' @seealso \code{\link{get_layers_lad}}
 #' @export
-get_plots_cbh_LAD <- function (LAD_profiles, effective_LAD) {
+get_plots_effective <- function (LAD_profiles, effective_LAD) {
 
   df_orig <- LAD_profiles
 

@@ -454,4 +454,3 @@ names(max_height)="max_height"
 
 return(gap_cbh_metrics)
 }
-

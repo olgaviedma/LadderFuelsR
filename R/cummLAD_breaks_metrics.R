@@ -1,44 +1,35 @@
-#' CBH and the LAD percentage below and above the CBH using the breaking point method
-#' @description
-#' This function calculates the canopy base height (CBH) of the vertical tree profile (VTP) using a segmented regression model fitted to
-#' the cumulative LAD values as a function of height.The function also calculates the percentage of LAD values below and above the identified CBH or breaking point.
-#' @usage
-#' get_cum_break(LAD_profiles, effective_distances, verbose=TRUE)
-#' @param LAD_profiles
-#' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
+#' CBH estimation using the breaking point method and the LAD percentage below and above the CBH
+#' @description This function calculates the canopy base height (CBH) of the vertical tree profile (VTP) using a segmented regression model fitted
+#' to the cumulative LAD values as a function of height.The function also calculates the percentage of LAD values below and above the identified
+#' CBH or breaking point.
+#' @usage get_cum_break(LAD_profiles, cbh_metrics, threshold=75, verbose=TRUE)
+#' @param LAD_profiles Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class data frame.
-#' @param effective_distances
-#' Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
+#' @param cbh_metrics CBH metrics based on three criteria: maximum LAD percentage, maximum distance and last distance (output of [get_cbh_metrics()] function).
 #' An object of the class data frame.
+#' @param threshold Numeric value of the LAD percentage below or above the breaking point to set the CBH (default 75).
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
-#' @return
-#' A data frame identifying the Canopy Base Height (CBH) of the vertical tree profile (VTP) based on the breaking point identified by the segmented regression model,
-#' and the percentage of LAD values below and above the identified CBH or breaking point.
-#' @author
-#' Olga Viedma, Carlos Silva and JM Moreno
-#'
-#'@details
+#' @return A data frame identifying the CBH of the vertical tree profile (VTP) based on the breaking point method and
+#' the percentage of LAD values below and above the identified CBH or breaking point.
+#' @author Olga Viedma, Carlos Silva and JM Moreno
+#' @details
+#' # List of tree metrics:
 #' \itemize{
-#'   \item treeID: tree ID with strings and numeric values
-#'   \item treeID1: tree ID with only numeric values
-#'   \item Hdist: Height of the distance between the ground and the CBH or breaking point (m)
-#'   \item Hcbh: Height of the CBH or breaking point (m)
-#'   \item Hcbh_bp: Height of the CBH or breaking point (m)
-#'   \item effdist: Distance between the ground and the CBH or breaking point (m)
-#'   \item dptf: Depth of the CBH or breaking point (m)
-#'   \item Hdptf: Height of the depth of the CBH or breaking point (m)
-#'   \item below_hcbhbp: Percentage of LAD values below the CBH or breaking point
-#'   \item above_hcbhbp: Percentage of LAD values above the CBH or breaking point
-#'   \item maxlad_Hcbh: Height of the CBH or breaking point with maximum LAD percentage
-#'   \item max_Hcbh: Height of the CBH or breaking point at maximum height distance
-#'   \item last_Hcbh: Height of the CBH or breaking point at the last distance
-#'   \item maxlad_: Values of distance and fuel depth and their corresponding heights for the CBH or breaking point with maximum LAD percentage
-#'   \item max_: Values of distance and fuel depth and their corresponding heights for the CBH or breaking point at maximum height distance
-#'   \item last_: Values of distance and fuel depth and their corresponding heights for the CBH or breaking point at the last distance
-#'   \item cumlad: Cumulative LAD values at the CBH or breaking point
-#'   \item max_height: Maximum height of the tree profile
+#' \item treeID: tree ID with strings and numeric values
+#' \item treeID1: tree ID with only numeric values
+#' \item Hdist: Height of the distance between the ground and the CBH or breaking point (m)
+#' \item Hcbh_brpt: Height of the CBH based on the breaking point method (m)
+#' \item below_hcbhbp: Percentage of LAD values below the CBH or breaking point
+#' \item above_hcbhbp: Percentage of LAD values above the CBH or breaking point
+#' \item bp_hcbh: Height of the CBH based on the breaking point method or on the maximum LAD criterium if there is not breaking point (m)
+#' \item bp_Hdptf: Height of the canopy layer depth using the breaking point method or the maximum LAD criterium (m)
+#' \item bp_dptf: Depth of the CBH using the breaking point method or the maximum LAD criterium (m)
+#' \item bp_Hdist: Height of the distance between the CBH and the ground using the breaking point method or the maximum LAD criterium (m)
+#' \item bp_effdist: Distance between the CBH and the ground using the breaking point method or the maximum LAD criterium (m)
+#' \item bp_lad: Percentage of LAD comprised by the canopy layer
+#' \item cumlad: Cumulative LAD values at the CBH or breaking point
+#' \item max_height: Maximum height of the tree profile
 #' }
-#'
 #' @examples
 #' library(magrittr)
 #' library(segmented)
@@ -50,12 +41,12 @@
 #' header = TRUE)
 #' LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 #'
-#' # Before running this example, make sure to run get_effective_gap().
+#' # Before running this example, make sure to run get_cbh_metrics().
 #' if (interactive()) {
-#' effective_distances <- get_effective_gap()
-#' LadderFuelsR::effective_distances$treeID <- factor(LadderFuelsR::effective_distances$treeID)
+#' cbh_metrics <- get_cbh_dist()
+#' LadderFuelsR::cbh_metrics$treeID <- factor(LadderFuelsR::cbh_metrics$treeID)
 #'
-#' trees_name1 <- as.character(effective_distances$treeID)
+#' trees_name1 <- as.character(cbh_metrics$treeID)
 #' trees_name2 <- factor(unique(trees_name1))
 #'
 #' cum_LAD_metrics_list <- list()
@@ -63,10 +54,10 @@
 #' for (i in levels(trees_name2)) {
 #' # Filter data for each tree
 #' tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#' tree2 <- effective_distances |> dplyr::filter(treeID == i)
+#' tree2 <- cbh_metrics |> dplyr::filter(treeID == i)
 #'
 #' # Get cumulative LAD metrics for each tree
-#' cum_LAD_metrics <- get_cum_break(tree1, tree2)
+#' cum_LAD_metrics <- get_cum_break(tree1, tree2, threshold=75, verbose=TRUE)
 #' cum_LAD_metrics_list[[i]] <- cum_LAD_metrics
 #' }
 #'
@@ -86,15 +77,18 @@
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
 #' theme element_text xlab ylab ggplot
-#' @seealso \code{\link{get_effective_gap}}
+#' @seealso \code{\link{get_cbh_metrics}}
 #' @export
-get_cum_break <- function(LAD_profiles, effective_distances, verbose=TRUE) {
+get_cum_break <- function(LAD_profiles, cbh_metrics, threshold=75, verbose=TRUE) {
 
   # Initialize the result data frame
   closest_row <- data.frame()
 
-  df_effective<- effective_distances
+  df_effective<- cbh_metrics
   df_orig<- LAD_profiles
+
+  #print(paste(unique(df_effective$treeID), collapse = ", "))
+  if (verbose) {message("Unique treeIDs:", paste(unique(df_effective$treeID), collapse = ", "))}
 
   tryCatch({
     # Validate input data frames
@@ -106,10 +100,6 @@ get_cum_break <- function(LAD_profiles, effective_distances, verbose=TRUE) {
 
     treeID<-"treeID"
     treeID1<-"treeID1"
-
-    if (verbose) {
-      message("Unique treeIDs:", paste(unique(df_effective$treeID), collapse = ", "))
-    }
 
     # Add more noise to x-values
 
@@ -143,7 +133,7 @@ get_cum_break <- function(LAD_profiles, effective_distances, verbose=TRUE) {
     } else {
       # Subset the row from the data frame that is closest to the breakpoint
       closest_row <- df_orig[index, c("height", "cumulative_value")]
-      names(closest_row) <- c("Hcbh_bp", "cumlad")
+      names(closest_row) <- c("Hcbh_brpt", "cumlad")
     }
 
 
@@ -155,14 +145,15 @@ get_cum_break <- function(LAD_profiles, effective_distances, verbose=TRUE) {
     closest_row <- df_effective
   })
 
+
   if(length(closest_row) > 0 && all(!is.na(closest_row))) {
 
     total_lad <- sum(df_orig$lad)
 
-    hcbh_bp <- closest_row[1, grep("^Hcbh_bp$", names(closest_row))]
+    Hcbh_brpt <- closest_row[1, grep("^Hcbh_brpt$", names(closest_row))]
 
-    below_df1 <- df_orig[df_orig$height <= hcbh_bp, ]
-    above_df1 <- df_orig[df_orig$height >= hcbh_bp, ]
+    below_df1 <- df_orig[df_orig$height <= Hcbh_brpt, ]
+    above_df1 <- df_orig[df_orig$height >= Hcbh_brpt, ]
 
     lad_below <- below_df1$lad
     lad_above <- above_df1$lad
@@ -178,94 +169,90 @@ get_cum_break <- function(LAD_profiles, effective_distances, verbose=TRUE) {
 
     output_df2<-data.frame(closest_row,percentage2)
 
-    lad_columns <- grep("^Hcbh_bp$", names(output_df2))
+    lad_columns <- grep("^Hcbh_brpt$", names(output_df2))
     lad_columns1 <- names(output_df2)[lad_columns]
 
     # Check how many lad_columns in the current row have numeric values
     numeric_count <- sum(sapply(output_df2[1, lad_columns1], function(x) is.numeric(x) & !is.na(x)))
+  }
+
+    threshold_value <- threshold
+
+    if (exists("output_df2") && length(output_df2) > 0) {
 
     # Check the specified conditions
-    if(!is.na(output_df2$above_hcbhbp[1]) && output_df2$above_hcbhbp[1] > 75 && numeric_count == 1) {
-      output_df2$maxlad_Hcbh[1] <- round(output_df2$Hcbh_bp[1], 1)
-      output_df2$maxlad_Hdptf[1] <- round(df_effective$max_height[1], 1)
-      output_df2$maxlad_Hdist[1] <- round(output_df2$Hcbh_bp[1] - 1, 1)
-      output_df2$maxlad_effdist[1] <- round(output_df2$Hcbh_bp[1] - 1, 0)
+    if(!is.na(output_df2$above_hcbhbp[1]) && (output_df2$above_hcbhbp[1] >= threshold_value) && numeric_count == 1) {
+      output_df2$bp_Hcbh[1] <- round(output_df2$Hcbh_brpt[1], 1)
+      output_df2$bp_Hdptf[1] <- round(df_effective$max_height[1], 1)
+      output_df2$bp_Hdist[1] <- round(output_df2$Hcbh_brpt[1] - 1, 1)
+      output_df2$bp_effdist[1] <- round(output_df2$Hcbh_brpt[1] - 1, 0)
+      output_df2$bp_dptf[1] <- round(df_effective$max_height[1] - output_df2$Hcbh_brpt[1], 0)
+      output_df2$bp_lad[1] <- output_df2$above_hcbhbp[1]
 
-      output_df2$Hcbh1_Hdptf1[1] <- output_df2$above_hcbhbp[1]
-      output_df2$Hcbh1[1] <- output_df2$Hcbh_bp[1]
-      output_df2$Hdptf1[1] <- df_effective$max_height[1]
-      output_df2$dptf1[1] <- round(df_effective$max_height[1] - output_df2$Hcbh_bp[1], 0)
-      output_df2$Hdist1[1] <- round(output_df2$Hcbh_bp[1] - 1, 1)
-      output_df2$effdist1[1] <- round(output_df2$Hcbh_bp[1] - 1, 0)
+    }
 
-      output_df2$last_effdist[1] <- round(output_df2$Hcbh_bp[1] - 1, 0)
-      output_df2$last_Hcbh[1] <- round(output_df2$Hcbh_bp[1], 1)
-      output_df2$last_Hdptf[1] <- round(df_effective$max_height[1], 1)
-      output_df2$last_Hdist[1] <- round(output_df2$Hcbh_bp[1] - 1, 1)
-
-      output_df2$max_dptf[1] <- round(df_effective$max_height[1] - output_df2$Hcbh_bp[1], 0)
-      output_df2$max_Hcbh[1] <- round(output_df2$Hcbh_bp[1], 1)
-      output_df2$max_Hdptf[1] <- round(df_effective$max_height[1], 1)
-      output_df2$max_Hdist[1] <- round(output_df2$Hcbh_bp[1] - 1, 1)
+    # Check the specified conditions and modify columns if necessary
+    if (!is.na(output_df2$below_hcbhbp[1]) && output_df2$below_hcbhbp[1] >= threshold_value && numeric_count == 1) {
+      output_df2$bp_Hcbh[1] <- 1.5
+      output_df2$bp_Hdptf[1] <- round(output_df2$Hcbh_brpt[1], 1)
+      output_df2$bp_Hdist[1] <- 0.5
+      output_df2$bp_effdist[1] <- 0
+      output_df2$bp_dptf[1] <- round(output_df2$Hcbh_brpt[1], 0)
+      output_df2$bp_lad[1] <- round(output_df2$below_hcbhbp[1], 1)
     }
 
 
+    if(!is.na(output_df2$below_hcbhbp[1]) && !is.na(output_df2$above_hcbhbp[1]) && (output_df2$below_hcbhbp[1]< threshold_value) &&
+       (output_df2$above_hcbhbp[1]< threshold_value) && numeric_count == 1) {
 
-    # Check the specified conditions
-    if(!is.na(output_df2$below_hcbhbp[1]) && output_df2$below_hcbhbp[1] > 75 && numeric_count == 1) {
-      output_df2$maxlad_Hcbh[1] <- 1.5
-      output_df2$maxlad_Hdptf[1] <- round(output_df2$Hcbh_bp[1], 1)
-      output_df2$maxlad_Hdist[1] <- 0.5
-      output_df2$maxlad_effdist[1] <- NA
-      output_df2$Hcbh1_Hdptf1[1] <- round(output_df2$below_hcbhbp[1], 1)
-
-      output_df2$Hcbh1_Hdptf1[1] <- round(output_df2$below_hcbhbp[1], 1)
-      output_df2$Hcbh1[1] <- 1.5
-      output_df2$Hdptf1[1] <- round(output_df2$Hcbh_bp[1], 1)
-      output_df2$dptf1[1] <- round(output_df2$Hcbh_bp[1], 0)
-      output_df2$Hdist1[1] <- 0.5
-      output_df2$effdist1[1] <- NA
-
-      output_df2$last_effdist[1] <- NA
-      output_df2$last_Hcbh[1] <- 1.5
-      output_df2$last_Hdptf[1] <- round(output_df2$Hcbh_bp[1], 1)
-      output_df2$last_Hdist[1] <- 0.5
-
-      output_df2$max_dptf[1] <- round(output_df2$Hcbh_bp[1], 0)
-      output_df2$max_Hcbh[1] <- 1.5
-      output_df2$max_Hdptf[1] <- round(output_df2$Hcbh_bp[1], 1)
-      output_df2$max_Hdist[1] <- 0.5
+       # Check if df_effective$maxlad_Hcbh has a valid value
+      if (!is.na(df_effective$maxlad_Hcbh[1])) {
+        # Modify values in output_df2 based on conditions
+        output_df2$bp_Hcbh[1] <- round(df_effective$maxlad_Hcbh[1], 1)
+        output_df2$bp_Hdptf[1] <- round(df_effective$maxlad_Hdptf[1], 1)
+        output_df2$bp_Hdist[1] <- round(df_effective$maxlad_Hdist[1], 1)
+        output_df2$bp_effdist[1] <- round(df_effective$maxlad_effdist[1], 0)
+        output_df2$bp_dptf[1] <- round(df_effective$maxlad_dptf[1], 0)
+        output_df2$bp_lad[1] <- round(df_effective$maxlad_lad[1], 1)
+      }
     }
 
-    treeID<-unique(factor(df_effective$treeID))
-    if(!"treeID" %in% colnames(output_df2)) {
-      output_df2 <- cbind(df_effective[c("treeID","treeID1")],output_df2 )
-    }
-
-    max_height<-data.frame(df_effective$max_height)
-    names(max_height)<-"max_height"
-
-    if(!"max_height" %in% colnames(output_df2)) {
-      output_df2 <- cbind(output_df2, df_effective[c("max_height")])
-    }
 
   } else {
 
-    output_df2 <- data.frame(matrix(ncol = 0, nrow = nrow(df_effective)))
+      # Initialize output_df2 with at least one row and necessary columns
+      output_df2 <- data.frame(
+        bp_Hcbh = numeric(1),
+        bp_Hdptf = numeric(1),
+        bp_Hdist = numeric(1),
+        bp_effdist = numeric(1),
+        bp_dptf = numeric(1),
+        bp_lad = numeric(1),
+        stringsAsFactors = FALSE
+      )
 
-    # Add the "treeID" and "treeID1" columns to output_df2
-    if (!("treeID" %in% colnames(output_df2))) {
-      output_df2 <- cbind(df_effective[c("treeID", "treeID1")], output_df2)
-    }
-
-    max_height<-data.frame(df_effective$max_height)
-    names(max_height)<-"max_height"
-
-    if(!"max_height" %in% colnames(output_df2)) {
-      output_df2 <- cbind(output_df2, df_effective[c("max_height")])
-    }
+    output_df2$bp_Hcbh[1] <-  round(df_effective$maxlad_Hcbh[1], 1)
+    output_df2$bp_Hdptf[1] <- round(df_effective$maxlad_Hdptf[1], 1)
+    output_df2$bp_Hdist[1] <- round(df_effective$maxlad_Hdist[1], 1)
+    output_df2$bp_effdist[1] <- round(df_effective$maxlad_effdist[1], 0)
+    output_df2$bp_dptf[1] <- round(df_effective$maxlad_dptf[1], 0)
+    output_df2$bp_lad[1] <- round(df_effective$maxlad_lad[1], 1)
   }
+
+  treeID<-unique(factor(df_effective$treeID))
+  if(!"treeID" %in% colnames(output_df2)) {
+    output_df2 <- cbind(df_effective[c("treeID","treeID1")],output_df2 )
+  }
+
+  max_height<-data.frame(df_effective$max_height)
+  names(max_height)<-"max_height"
+
+  if(!"max_height" %in% colnames(output_df2)) {
+    output_df2 <- cbind(output_df2, df_effective[c("max_height")])
+  }
+
   cummulative_LAD <-output_df2
+
 
   return(cummulative_LAD)
 }
