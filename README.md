@@ -305,8 +305,8 @@ head(gaps_fbhs_metrics)
 ```
 ![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table9.PNG)
 
-## 10.LAD percentage of each height bin
-```{r LAD percentage of each height bin, echo=TRUE, message=FALSE, warning=FALSE}
+## 10.LAD percentile of each height bin
+```{r LAD percentile of each height bin, echo=TRUE, message=FALSE, warning=FALSE}
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function from leafR package
 profile_list2$treeID <- factor(profile_list2$treeID)
