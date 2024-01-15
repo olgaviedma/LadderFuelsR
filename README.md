@@ -8,7 +8,7 @@
 
 Authors: Olga Viedma, Carlos Silva and JM Moreno
 
-Automated tool for vertical fuel continuity analysis using Airborne Laser Scanning data that can be applied on multiple tree species and for large-scale studies.The workflow consisted of: 1) calculating the vertical height profiles (VHP) of each segmented tree; 2) identifying gaps and fuel layers; 3) estimating the distance between fuel layers; and 4) retrieving the fuel layers base height (FBH) and depth. Additionally, other functions recalculate previous metrics after considering distances \> 1 m and calculate the canopy base height (CBH) as the FBH located at the largest- and at the last-distance. Moreover, the package calculates: i) the percentage of LAD comprised in each fuel layer, ii) remove fuel layers with LAD percentage \< 25 %, iii) recalculate the distances among the reminder ones, and iv) identify the CBH as the FBH with the highest LAD percentage. On the other hand, when the vertical height profiles (VHP) showed only one fuel layer, it identifies a possible CBH performing a segmented linear regression (breaking points) on the cumulative sum of LAD as a function of height. Finally, a collection of plotting functions is developed to represent: i) the VHP with the initial gaps and fuel layers; ii) the FBHs, depths and gaps with distances \> 1 m and, iii) the FBHs and depths after applying the breaking point method over trees with only one fuel layer.
+Automated tool for vertical fuel continuity analysis using Airborne Laser Scanning data that can be applied on multiple tree species and for large-scale studies.The workflow consisted of: 1) calculating the vertical height profiles (VHP) of each segmented tree; 2) identifying gaps and fuel layers; 3) estimating the distance between fuel layers; and 4) retrieving the fuel layers base height (FBH) and depth. Additionally, other functions recalculate previous metrics after considering distances \> 1 m and calculate the canopy base height (CBH) as the FBH located at the largest- and at the last-distance. Moreover, the package calculates: i) the percentage of LAD comprised in each fuel layer, ii) remove fuel layers with LAD percentage below a specified threshold, iii) recalculate the distances among the reminder ones, and iv) identify the CBH as the FBH with the highest LAD percentage. On the other hand, when the vertical height profiles (VHP) showed only one fuel layer, it identifies a possible CBH performing a segmented linear regression (breaking points) on the cumulative sum of LAD as a function of height. Finally, a collection of plotting functions is developed to represent: i) the VHP with the initial gaps and fuel layers; ii) the FBHs, depths and gaps with distances \> 1 m and, iii) the FBHs and depths after applying the breaking point method over trees with only one fuel layer.
 
 # Getting Started
 
@@ -305,15 +305,40 @@ head(gaps_fbhs_metrics)
 ```
 ![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table9.PNG)
 
-## 10.Distance between Fuel Layers
+## 10.LAD percentage of each height bin
+```{r LAD percentage of each height bin, echo=TRUE, message=FALSE, warning=FALSE}
+
+# LAD profiles derived from normalized ALS data after applying [lad.profile()] function from leafR package
+profile_list2$treeID <- factor(profile_list2$treeID)
+
+trees_name1 <- as.character(profile_list2$treeID)
+trees_name2 <- factor(unique(trees_name1))
+
+gaps_perc_list <- list()  # Initialize outside the loop
+
+    for (i in levels(trees_name2)) {
+      tree1 <- profile_list2 |> dplyr::filter(treeID == i)
+      percentiles <- calculate_gaps_perc(tree1)
+      gaps_perc_list[[i]] <- percentiles
+    }
+
+    gaps_perc <- dplyr::bind_rows(gaps_perc_list)
+ 
+head(gaps_perc)
+```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table10.PNG)
+
+## 11.Distance between Fuel Layers
 ```{r Distances (and their heights) between fuel layers, echo=TRUE, message=FALSE, warning=FALSE}
 
 # Tree metrics derived from get_gaps_fbhs() function
-
 numeric_vars <- setdiff(names(gaps_fbhs_metrics), c("treeID", "treeID1"))
 gaps_fbhs_metrics[numeric_vars] <- lapply(gaps_fbhs_metrics[numeric_vars], function(x) as.numeric(ifelse(x == "NA", NA, x)))
-
 gaps_fbhs_metrics$treeID <- factor(gaps_fbhs_metrics$treeID)
+
+# Tree metrics derived from calculate_gaps_perc() function
+gaps_perc$treeID <- factor(gaps_perc$treeID)
+
 trees_name1 <- as.character(gaps_fbhs_metrics$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
@@ -322,10 +347,11 @@ metrics_distance_list <- list()
 for (i in levels(trees_name2)) {
 
   # Filter data for each tree
-  tree2 <- gaps_fbhs_metrics |> dplyr::filter(treeID == i)
+  tree1 <- gaps_fbhs_metrics |> dplyr::filter(treeID == i)
+  tree2 <- gaps_perc |> dplyr::filter(treeID == i)
 
   # Get distance metrics for each tree
-  metrics_distance <- get_distance(tree2)
+  metrics_distance <- get_distance(tree1,tree2)
   metrics_distance_list[[i]] <- metrics_distance
 }
 
@@ -335,9 +361,9 @@ distance_metrics <- distance_metrics[, order(names(distance_metrics))]
 rownames(distance_metrics) <- NULL
 head(distance_metrics)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table10.PNG)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table11.PNG)
 
-## 11.Fuel Layers Depth
+## 12.Fuel Layers Depth
 ```{r Distane between fuel layers, echo=TRUE, message=FALSE, warning=FALSE}
 
 library(dplyr)
@@ -367,9 +393,9 @@ depth_metrics <- depth_metrics[, order(names(depth_metrics))]
 rownames(depth_metrics) <- NULL
 head(depth_metrics)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table11.PNG)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table12.PNG)
 
-## 12.Plot Gaps and Fuel Layers Base Height (FBH)
+## 13.Plot Gaps and Fuel Layers Base Height (FBH)
 ```{r Plots Gaps and Fuel layers Base Height (fbh), echo=TRUE, message=FALSE, warning=FALSE}
 
 library(LadderFuelsR)
@@ -389,26 +415,25 @@ par(mfrow = c(2, 2))
 plot(plots_gaps_fbhs[[1]])
 plot(plots_gaps_fbhs[[2]])
 plot(plots_gaps_fbhs[[3]])
-plot(plots_gaps_fbhs[[4]])
 ```
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_1.png" width="400" height="300" alt="Plot 1">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig13_1.png" width="400" height="300" alt="Plot 1">
     </td>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_2.png" width="400" height="300" alt="Plot 2">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig13_2.png" width="400" height="300" alt="Plot 2">
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
       <!-- Centered content in a cell that spans two columns -->
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig12_3.png" width="400" height="300" alt="Plot 3">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig13_3.png" width="400" height="300" alt="Plot 3">
     </td>
   </tr>
 </table>
 
-## 13.Fuel Layers Base Height (FBH) after removing distances = 1
+## 14.Fuel Layers Base Height (FBH) after removing distances = 1
 ```{r Fuels base height after removing distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
 
 library(SSBtools)
@@ -462,9 +487,9 @@ fbh_metrics_corr <- fbh_metrics_corr[, new_order]
 rownames(fbh_metrics_corr) <- NULL
 head(fbh_metrics_corr)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table13.PNG)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table14.PNG)
 
-## 14.Fuel Layers Depth after removing distances = 1
+## 15.Fuel Layers Depth after removing distances = 1
 ```{r Fuel layers depth after removinG distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
 
 library(dplyr)
@@ -489,9 +514,9 @@ depth_metrics_corr <- dplyr::bind_rows(depth_metrics_corr_list)
 rownames(depth_metrics_corr) <- NULL
 head(depth_metrics_corr)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table14.PNG)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table15.PNG)
 
-## 15.Distance between Fuel Layers after removing distances = 1 and CBH based ON MAX- AND LAST- Distance
+## 16.Distance between Fuel Layers after removing distances = 1
 ```{r Fuel layers distances after removing distances equal 1 m, echo=TRUE, message=FALSE, warning=FALSE}
 
 library(dplyr)
@@ -546,10 +571,10 @@ distances_metrics_corr2 <- as.data.frame(lapply(distances_metrics_corr1, functio
 rownames(distances_metrics_corr2) <- NULL
 head(distances_metrics_corr2)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table15.PNG)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table16.PNG)
 
-## 16.Fuels LAD percentage (greater than 25 percent) and CBH based on MAX LAD percentage
-```{r Fuels LAD percentage and canopy base height (CBH) based on maximum LAD percentage (distances greater than 1 m), echo=TRUE, message=FALSE, warning=FALSE}
+## 17.Fuels LAD percentage (greater than a threshold)
+```{r Fuels LAD percentage for fule layers with a LAD percentage above a threshold, echo=TRUE, message=FALSE, warning=FALSE}
 
 library(dplyr)
 library(magrittr)
@@ -572,7 +597,7 @@ for (i in levels(trees_name2)) {
   tree2 <- distances_metrics_corr2 |> dplyr::filter(treeID == i)
 
   # Get LAD metrics for each tree
-  LAD_metrics <- get_layers_lad(tree1, tree2)
+  LAD_metrics <- get_layers_lad(tree1, tree2, thrshold = 10)
   LAD_metrics1[[i]] <- LAD_metrics$df1
   LAD_metrics2[[i]] <- LAD_metrics$df2
 }
@@ -624,48 +649,136 @@ rownames(fuels_LAD_metrics[[2]]) <- NULL
 
 head(fuels_LAD_metrics[[2]])
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table16.PNG)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table17.PNG)
 
-## 17.Plot Fuel Layers with LAD percentage greater than 25 percent and CBH based on MAX LAD percentage
-```{r Plots of fuel layers with LAD percentage greater than 25 and the canopy base height (CBH) based on the maximum LAD percentage, echo=TRUE, message=FALSE, warning=FALSE}
+## 18.Plot Effective Fuel Layers with LAD percentage greater than a threshold
+```{r Plots of fuel layers with LAD percentage greater than a threshold, echo=TRUE, message=FALSE, warning=FALSE}
 
 library(ggplot2)
 
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 profile_list2$treeID <- factor(profile_list2$treeID)
 # Tree metrics derived from get_layers_lad() function
-LAD_gt25p <- fuels_LAD_metrics[[2]]
+LAD_gt10p <- fuels_LAD_metrics[[2]]
 
-trees_name1 <- as.character(LAD_gt25p$treeID)
+trees_name1 <- as.character(LAD_gt10p$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
 # Generate plots for fuels LAD metrics
-plots_trees_LAD <- get_plots_cbh_LAD(profile_list2, LAD_gt25p)
+plots_trees_LAD <- get_plots_effective(profile_list2, LAD_gt10p)
 
 par(mfrow = c(2, 2))
 plot(plots_trees_LAD[[1]])
 plot(plots_trees_LAD[[2]])
 plot(plots_trees_LAD[[3]])
-plot(plots_trees_LAD[[4]])
 ```
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_1.png" width="400" height="300" alt="Plot 1">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig18_1.png" width="400" height="300" alt="Plot 1">
     </td>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_2.png" width="400" height="300" alt="Plot 2">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig18_2.png" width="400" height="300" alt="Plot 2">
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
       <!-- Centered content in a cell that spans two columns -->
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig17_3.png" width="400" height="300" alt="Plot 3">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig18_3.png" width="400" height="300" alt="Plot 3">
     </td>
   </tr>
 </table>
 
-## 18.CBH based on the Breaking Point method and LAD percentage
+## 19.CBH based on different criteria: maximum LAD, maximum and last distance 
+```{r CBH based on different criteria: maximum LAD, maximum and last distance, echo=TRUE, message=FALSE, warning=FALSE}
+
+library(dplyr)
+library(magrittr)
+
+# Tree metrics derived from get_layers_lad() function
+LAD_gt10p <- fuels_LAD_metrics[[2]]
+
+trees_name1 <- as.character(LAD_gt10p$treeID)
+trees_name2 <- factor(unique(trees_name1))
+
+cbh_metrics_list <- list()
+
+for (j in levels(trees_name2)){
+
+  # Filter data for each tree
+  tree1 <- LAD_gt10p |> dplyr::filter(treeID == j)
+  cbh_metrics <- get_cbh_metrics(tree1)
+  cbh_metrics_list[[j]] <- cbh_metrics
+}
+
+# Combine depth values for all trees
+cbh_metrics_all <- dplyr::bind_rows(cbh_metrics_list)
+
+# Get original column names
+  original_column_names <- colnames(cbh_metrics_all)
+
+  # Specify prefixes
+desired_order <- c("treeID", "Hcbh", "dptf","effdist","dist", "Hdist", "Hdptf","maxlad_","max_","last_","nlayers")
+
+  # Identify unique prefixes
+  prefixes <- unique(sub("^([a-zA-Z]+).*", "\\1", original_column_names))
+  # Initialize vector to store new order
+  new_order <- c()
+
+  # Loop over desired order of prefixes
+  for (prefix in desired_order) {
+    # Find column names matching the current prefix
+    matching_columns <- grep(paste0("^", prefix), original_column_names, value = TRUE)
+    # Append to the new order
+    new_order <- c(new_order, matching_columns)
+  }
+  
+  # Reorder columns
+  cbh_metrics_all <- cbh_metrics_all[, new_order]
+
+```
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table19.PNG)
+
+## 20.Plots CBH based on different criteria: maximum LAD, maximum and last distance
+```{r Plots of CBH based on different criteria: maximum LAD, maximum and last distance, echo=TRUE, message=FALSE, warning=FALSE}
+library(ggplot2)
+
+# LAD profiles derived from normalized ALS data after applying [lad.profile()] function
+profile_list2$treeID <- factor(profile_list2$treeID)
+# Tree metrics derived from get_cbh_metrics() function
+cbh_metrics_all$treeID <- factor(cbh_metrics_all$treeID)
+
+trees_name1 <- as.character(cbh_metrics_all$treeID)
+trees_name2 <- factor(unique(trees_name1))
+
+# Generate plots for fuels LAD metrics
+plots_cbh_maxlad <- get_plots_cbh_LAD(profile_list2, cbh_metrics_all)
+plots_cbh_maxdist <- get_plots_cbh_maxdist(profile_list2, cbh_metrics_all)
+plots_cbh_lastdist <- get_plots_cbh_lastdist(profile_list2, cbh_metrics_all)
+
+par(mfrow = c(2, 2))
+plot(plots_cbh_maxlad[[1]])
+plot(plots_cbh_maxdist[[1]])
+plot(plots_cbh_lastdist[[1]])
+```
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20_1.png" width="400" height="300" alt="Plot 1">
+    </td>
+    <td align="center">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20_2.png" width="400" height="300" alt="Plot 2">
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <!-- Centered content in a cell that spans two columns -->
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20_3.png" width="400" height="300" alt="Plot 3">
+    </td>
+  </tr>
+</table>
+
+## 21.CBH based on the Breaking Point method and LAD percentage
 ```{r CBH and the LAD percentage below and above the CBH using the breaking point method, echo=TRUE, message=FALSE, warning=FALSE}
 
 library(dplyr)
@@ -674,10 +787,10 @@ library(magrittr)
 # LAD profiles derived from normalized ALS data after applying [lad.profile()] function
 profile_list2$treeID <- factor(profile_list2$treeID)
 
-# Tree metrics derived from get_effective_gap() function
-distances_metrics_corr2$treeID <- factor(distances_metrics_corr2$treeID)
+# Tree metrics derived from get_cbh_metrics() function
+cbh_metrics_all$treeID <- factor(cbh_metrics_all$treeID)
 
-trees_name1 <- as.character(distances_metrics_corr2$treeID)
+trees_name1 <- as.character(cbh_metrics_all$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
 cum_LAD_metrics_list <- list()
@@ -685,10 +798,10 @@ cum_LAD_metrics_list <- list()
 for (i in levels(trees_name2)) {
   # Filter data for each tree
   tree1 <- profile_list2 |> dplyr::filter(treeID == i)
-  tree2 <- distances_metrics_corr2 |> dplyr::filter(treeID == i)
+  tree2 <- cbh_metrics_all |> dplyr::filter(treeID == i)
 
   # Get cumulative LAD metrics for each tree
-  cum_LAD_metrics_all <- get_cum_break(tree1, tree2)
+  cum_LAD_metrics_all <- get_cum_break(tree1, tree2,threshold=75, verbose=TRUE)
   cum_LAD_metrics_list[[i]] <- cum_LAD_metrics_all
 }
 
@@ -703,7 +816,7 @@ cum_LAD_metrics <- dplyr::bind_rows(cum_LAD_metrics_list)
 original_column_names <- colnames(cum_LAD_metrics)
 
 # Specify prefixes (adjust accordingly)
-prefixes <- c("treeID", "Hcbh", "below", "above", "depth", "Hdepth", "dptf", "Hdptf", "Hdist", "effdist", "max", "last", "cumlad")
+prefixes <- c("treeID", "Hcbh", "below", "above", "bp", "max", "cumlad")
 
 # Initialize vector to store new order
 new_order <- c()
@@ -724,13 +837,13 @@ for (prefix in prefixes) {
 # Reorder columns
 cum_LAD_metrics <- cum_LAD_metrics[, new_order]
 
-## when % LAD is < 75 % below or above the BP (Breaking Point), Hcbh1 is not calculated and only it is given the Hcbh_bp (Hcbh from the BP)
+## when % LAD is < 75 % below or above the BP (Breaking Point), Hcbh1 is derived from CBH maximum LAD criterium
 rownames(cum_LAD_metrics) <- NULL
 head(cum_LAD_metrics)
 ```
-![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table18.PNG)
+![](https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/table21.PNG)
 
-## 19.Plot CBH based on the Breaking Point method and LAD percentage
+## 22.Plot CBH based on the Breaking Point method and LAD percentage
 ```{r Plots of the CBH and the LAD percentage below and above the CBH using the breaking point method, echo=TRUE, message=FALSE, warning=FALSE}
 
 library(ggplot2)
@@ -741,44 +854,41 @@ profile_list2$treeID <- factor(profile_list2$treeID)
 # Tree metrics derived from get_cum_break() function
 cum_LAD_metrics$treeID <- factor(cum_LAD_metrics$treeID)
 
-# Generate cumulative LAD plots
-plots_trees_cumlad <- get_plots_cumm(profile_list2, cum_LAD_metrics)
+# Generate plots
+plots_cbh_bp <- get_plots_cbh_bp(profile_list2, cum_LAD_metrics)
 
 par(mfrow = c(2, 2))
-plot(plots_trees_cumlad[[1]])
-plot(plots_trees_cumlad[[2]])
-plot(plots_trees_cumlad[[3]])
-plot(plots_trees_cumlad[[4]])
+plot(plots_cbh_bp[[1]])
+plot(plots_cbh_bp[[2]])
+plot(plots_cbh_bp[[3]])
 ```
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_1.png" width="400" height="300" alt="Plot 1">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig22_1.png" width="400" height="300" alt="Plot 1">
     </td>
     <td align="center">
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_2.png" width="400" height="300" alt="Plot 2">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig22_2.png" width="400" height="300" alt="Plot 2">
     </td>
   </tr>
   <tr>
     <td align="center" colspan="2">
       <!-- Centered content in a cell that spans two columns -->
-      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig19_3.png" width="400" height="300" alt="Plot 3">
+      <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig22_3.png" width="400" height="300" alt="Plot 3">
     </td>
   </tr>
 </table>
 
-## 20. Joinning Fuel ladder properties with Crown polygons
+## 23. Joinning Fuel ladder properties with Crown polygons
 ```{r Joining crown polygons and ladder fuels metrics, echo=TRUE, message=FALSE, warning=FALSE}
 
 # Tree metrics derived from get_layers_lad() function
-LAD_gt25p <- fuels_LAD_metrics[[2]]
-LAD_gt25p$treeID1 <- factor(LAD_gt25p$treeID1)
+cbh_metrics_all$treeID1 <- factor(cbh_metrics_all$treeID1)
 
 # crown polygons (output from step 4)
 tree_crowns$treeID1 <- factor(tree_crowns$treeID)
 
-crowns_properties<-merge (tree_crowns,LAD_gt25p, by="treeID1")
-
+crowns_properties<-merge (tree_crowns,cbh_metrics_all, by="treeID1")
 crowns_properties$maxlad_Hcbh_factor <- cut(crowns_properties$maxlad_Hcbh, breaks = 5)
 
 # Plotting with a discrete legend
@@ -793,7 +903,7 @@ ggplot() +
 
 ```
 <p align="center">
-  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig20.png">
+  <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig23.png">
 </p>
 
 # Acknowledgements
