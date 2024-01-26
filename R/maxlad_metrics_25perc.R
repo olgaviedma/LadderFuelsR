@@ -314,6 +314,8 @@ get_layers_lad <- function(LAD_profiles, effective_distances,threshold=25, verbo
     some_element_blocks <- consec_blocks[sapply(consec_blocks, length) > 1]
     single_element_blocks <- consec_blocks[sapply(consec_blocks, length) == 1]
 
+    if (has_some_element_block == TRUE) {
+
     # Suffixes from some_element_blocks
     suffixes <-lapply(some_element_blocks, unlist)
     suffixes <- unlist(suffixes)
@@ -373,8 +375,6 @@ get_layers_lad <- function(LAD_profiles, effective_distances,threshold=25, verbo
     }
 
     ##########################################################
-
-    if (has_some_element_block == TRUE) {
 
       block <- some_element_blocks[[1]]
 
