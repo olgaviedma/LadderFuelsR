@@ -567,13 +567,13 @@ if (verbose) {
   if (exists("distance_data") && nrow(distance_data) != 0 && any(!is.na(distance_data))) {
 
     if (exists("distance_data1")) {
-      if (!is.na(distance_data1) && length(distance_data1) > 0 && any(!is.na(distance_data1))) {
+      if (length(distance_data1) > 0 && any(!is.na(distance_data1))) {
 
         if (exists("distance_data2")) {
-          if (!is.na(distance_data2) && length(distance_data2) > 0 && any(!is.na(distance_data2))) {
+          if (length(distance_data2) > 0 && any(!is.na(distance_data2))) {
 
             if (exists("distance_data3")) {
-              if (!is.na(distance_data3) && length(distance_data3) > 0 && any(!is.na(distance_data3))) {
+              if (length(distance_data3) > 0 && any(!is.na(distance_data3))) {
 
                 if(ncol(distance_data)==1) {
 
@@ -593,10 +593,10 @@ if (verbose) {
     if (!exists("distance_data1")) {
 
       if (exists("distance_data2")) {
-        if (!is.na(distance_data2) && length(distance_data2) > 0 && any(!is.na(distance_data2))) {
+        if (length(distance_data2) > 0 && any(!is.na(distance_data2))) {
 
           if (exists("distance_data3")) {
-            if (!is.na(distance_data3) && length(distance_data3) > 0 && any(!is.na(distance_data3))) {
+            if (length(distance_data3) > 0 && any(!is.na(distance_data3))) {
 
               if(ncol(distance_data)==1) {
 
@@ -617,7 +617,7 @@ if (verbose) {
 
       if (!exists("distance_data2")) {
 
-        if (exists("distance_data3") && !is.na(distance_data3) && length(distance_data3) > 0 && any(!is.na(distance_data3))) {
+        if (exists("distance_data3") && length(distance_data3) > 0 && any(!is.na(distance_data3))) {
 
           if(ncol(distance_data)==1) {
 
@@ -632,8 +632,8 @@ if (verbose) {
 
   if ((exists("distance_data") && nrow(distance_data) != 0 && any(!is.na(distance_data)))) {
 
-    if  (exists("distance_data1") && !is.na(distance_data1) && length(distance_data1) != 0 && any(!is.na(distance_data1))) {
-      if (exists("distance_data2") && !is.na(distance_data2) && length(distance_data2) != 0 && any(!is.na(distance_data2))) {
+    if  (exists("distance_data1") && length(distance_data1) != 0 && any(!is.na(distance_data1))) {
+      if (exists("distance_data2") && length(distance_data2) != 0 && any(!is.na(distance_data2))) {
         if (!exists("distance_data3")) {
 
           if(ncol(distance_data)==1) {
@@ -651,9 +651,9 @@ if (verbose) {
 
   if ((exists("distance_data") && nrow(distance_data) != 0 && any(!is.na(distance_data)))) {
 
-    if (exists("distance_data1") && is.na(distance_data1) && length(distance_data1) == 0 && any(is.na(distance_data1))) {
+    if (exists("distance_data1") && length(distance_data1) == 0 && any(is.na(distance_data1))) {
       if (!exists("distance_data2")) {
-        if (exists("distance_data3") && !is.na(distance_data3) && length(distance_data3) != 0 && any(!is.na(distance_data3))) {
+        if (exists("distance_data3") && length(distance_data3) != 0 && any(!is.na(distance_data3))) {
 
           if(ncol(distance_data)==1) {
 
@@ -669,7 +669,7 @@ if (verbose) {
 
 
   if (length(gap_cols) > 1 && length(cbh_cols) > 1 && ((exists("distance_data") || !is.null(distance_data) || (ncol(distance_data) != 0 &&
-  nrow(distance_data) != 0)) || !is.na(distance_data))) {
+  nrow(distance_data) != 0)) || any(!is.na(distance_data)))) {
 
     height<-gaps_perc2$height
     percent2a <- gaps_perc2 %>% dplyr::filter(height < min(kk_copy[, cbh_cols]))
