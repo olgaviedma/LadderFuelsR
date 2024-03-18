@@ -335,7 +335,7 @@ if (verbose) {
     Hdist4<-last_value
 
     # Add Hdist4 column to the data frame if it exists and is not empty
-    if (exists("Hdist4") && !is.null(Hdist4) && ncol(Hdist4) != 0 && nrow(Hdist4) != 0 && !is.na(Hdist4)) {
+    if (exists("Hdist4") && !is.null(Hdist4) && ncol(Hdist4) != 0 && nrow(Hdist4) != 0 && any(!is.na(Hdist4)) {
       distance_data3 <- cbind(distance_data3,Hdist4)
       colnames(distance_data3)<-c("dist", "Hdist")
     }
@@ -346,7 +346,7 @@ if (verbose) {
 
   if (!exists("distance_data")) {
     if (exists("distance_data1")) {
-      if(!is.null(distance_data1) || ncol(distance_data1) != 0 || nrow(distance_data1) != 0 || !is.na(distance_data1)) {
+      if(!is.null(distance_data1) || ncol(distance_data1) != 0 || nrow(distance_data1) != 0 || any(!is.na(distance_data1)) {
         if(!exists("distance_data2") || is.null(distance_data2) || any(is.na(distance_data2))) {
           if (!exists("distance_data3") || is.null(distance_data3) || any(is.na(distance_data3))) {
 
@@ -357,7 +357,7 @@ if (verbose) {
 
   if (!exists("distance_data")) {
     if (exists("distance_data2")) {
-      if(!is.null(distance_data2) || ncol(distance_data2) != 0 || nrow(distance_data2) != 0 || !is.na(distance_data2)) {
+      if(!is.null(distance_data2) || ncol(distance_data2) != 0 || nrow(distance_data2) != 0 || any(!is.na(distance_data2)) {
         if(!exists("distance_data1") || is.null(distance_data1) || any(is.na(distance_data1))) {
           if (!exists("distance_data3") || is.null(distance_data3) || any(is.na(distance_data3))) {
 
@@ -368,7 +368,7 @@ if (verbose) {
 
   if (!exists("distance_data")) {
     if (exists("distance_data3")) {
-      if(!is.null(distance_data3) || ncol(distance_data3) != 0 || nrow(distance_data3) != 0 || !is.na(distance_data3)) {
+      if(!is.null(distance_data3) || ncol(distance_data3) != 0 || nrow(distance_data3) != 0 || any(!is.na(distance_data3))) {
         if(!exists("distance_data1") || is.null(distance_data1) || any(is.na(distance_data1))) {
           if (!exists("distance_data2") || is.null(distance_data2) || any(is.na(distance_data2))) {
 
@@ -378,7 +378,7 @@ if (verbose) {
 
   if (!exists("distance_data")) {
     if (exists("distance_data1")) {
-      if(!is.null(distance_data1) || ncol(distance_data1) != 0 || nrow(distance_data1) != 0 || !is.na(distance_data1)) {
+      if(!is.null(distance_data1) || ncol(distance_data1) != 0 || nrow(distance_data1) != 0 || any(!is.na(distance_data1))) {
         if(exists("distance_data2")) {
           if(!is.null(distance_data2) || any(!is.na(distance_data2))) {
             if (!exists("distance_data3") || is.null(distance_data3) || any(is.na(distance_data3))) {
@@ -389,7 +389,7 @@ if (verbose) {
 
   if (!exists("distance_data")) {
     if (exists("distance_data1")) {
-      if(!is.null(distance_data1) || ncol(distance_data1) != 0 || nrow(distance_data1) != 0 || !is.na(distance_data1)) {
+      if(!is.null(distance_data1) || ncol(distance_data1) != 0 || nrow(distance_data1) != 0 || any(!is.na(distance_data1))) {
         if(exists("distance_data3")) {
           if(!is.null(distance_data3) || any(!is.na(distance_data3))) {
             if (!exists("distance_data2") || is.null(distance_data2) || any(is.na(distance_data2))) {
