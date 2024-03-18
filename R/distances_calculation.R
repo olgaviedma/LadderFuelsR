@@ -172,7 +172,8 @@ if (verbose) {
 
 ####################################
 
-  if(length(gap_cols) >= 1 & length(cbh_cols) == 0 && (!exists("distance_data") || is.null(distance_data) || ncol(distance_data) == 0 && nrow(distance_data) == 0 || is.na(distance_data)))  {
+  if(length(gap_cols) >= 1 & length(cbh_cols) == 0 && (!exists("distance_data") || is.null(distance_data) || ncol(distance_data) == 0 && nrow(distance_data) == 0 ||
+                                                       all(is.na(distance_data))))  {
 
     # Identify the first and last indices of the consecutive "gap" columns
     first_gap_index <- min(gap_cols)
@@ -694,7 +695,7 @@ if (verbose) {
   if (length(gap_cols) > 1 && length(cbh_cols) > 1 &&
       ((exists("distance_data") || !is.null(distance_data) ||
         (ncol(distance_data) != 0 && nrow(distance_data) != 0)) ||
-       !is.na(distance_data))) {
+       any(!is.na(distance_data)))) {
 
     if (length(gap_cols) > 1 && any(diff(gap_cols) > 1)) {
 
@@ -779,14 +780,15 @@ if (verbose) {
   }
 
 
-  if(exists("distance_data") && !is.null(distance_data) && ncol(distance_data) != 0 && nrow(distance_data) != 0 && !is.na(distance_data)
+  if(exists("distance_data") && !is.null(distance_data) && ncol(distance_data) != 0 && nrow(distance_data) != 0 &&  any(!is.na(distance_data))
      && all(distance_data==0)) {
 
     distance_data <-data.frame(c(NA))
     names(distance_data)= "dist_0"
   }
 
-  if (length(gap_cols) > 1 && length(cbh_cols) > 1 && ((!exists("distance_data") || is.null(distance_data) || (ncol(distance_data) == 0 && nrow(distance_data) == 0)) || is.na(distance_data))) {
+  if (length(gap_cols) > 1 && length(cbh_cols) > 1 && ((!exists("distance_data") || is.null(distance_data) || (ncol(distance_data) == 0 && nrow(distance_data) == 0)) ||
+                                                       all(is.na(distance_data)))) {
 
     diff2 <- max(kk_copy[, gap_cols]) - min(kk_copy[, gap_cols])
     Hdist6<-max(kk_copy[, gap_cols])
