@@ -407,10 +407,11 @@ if (verbose) {
     distance_data <- data.frame()
   }
 
-  if ((is.null(distance_data) || ncol(distance_data) == 0 || nrow(distance_data) == 0 || is.na(distance_data)) &&
-      (exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0 && !is.na(distance_data1)) &&
-      (exists("distance_data2") && !is.null(distance_data2) && ncol(distance_data2) != 0 && nrow(distance_data2) != 0 && !is.na(distance_data2))) {
+    condition1 <- is.null(distance_data) || ncol(distance_data) == 0 || nrow(distance_data) == 0 || any(is.na(distance_data))
+    condition2 <- exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0 && any(!is.na(distance_data1))
+    condition3 <- exists("distance_data2") && !is.null(distance_data2) && ncol(distance_data2) != 0 && nrow(distance_data2) != 0 && any(!is.na(distance_data2))
 
+    if (condition1 && condition2 && condition3) {
 
     # Get the column names with 'Hdist_' prefix from both data frames
     Hdist_cols_data1 <- grep("^Hdist", names(distance_data1), value = TRUE)
@@ -433,9 +434,12 @@ if (verbose) {
       distance_data <- data.frame()
     }
 
-    if ((is.null(distance_data) || ncol(distance_data) == 0 || nrow(distance_data) == 0 || is.na(distance_data)) &&
-        (exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0 && !is.na(distance_data1)) &&
-        (exists("distance_data2") && !is.null(distance_data2) && ncol(distance_data2) != 0 && nrow(distance_data2) != 0 && !is.na(distance_data2))) {
+    condition1 <- is.null(distance_data) || ncol(distance_data) == 0 || nrow(distance_data) == 0 || any(is.na(distance_data))
+    condition2 <- exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0 && any(!is.na(distance_data1))
+    condition3 <- exists("distance_data2") && !is.null(distance_data2) && ncol(distance_data2) != 0 && nrow(distance_data2) != 0 && any(!is.na(distance_data2))
+
+    if (condition1 && condition2 && condition3) {
+
 
       # Get the column names with 'Hdist_' prefix from both data frames
       Hdist_cols_data1 <- grep("^Hdist", names(distance_data1), value = TRUE)
@@ -485,9 +489,11 @@ if (verbose) {
     distance_data <- data.frame()
   }
 
-  if ((is.null(distance_data) || ncol(distance_data) == 0 || nrow(distance_data) == 0 || is.na(distance_data)) &&
-      (exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0 && !is.na(distance_data1)) &&
-      (exists("distance_data3") && !is.null(distance_data3) && ncol(distance_data3) != 0 && nrow(distance_data3) != 0 && !is.na(distance_data3))) {
+    condition1 <- is.null(distance_data) || ncol(distance_data) == 0 || nrow(distance_data) == 0 || any(is.na(distance_data))
+    condition2 <- exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0 && any(!is.na(distance_data1))
+    condition3 <- exists("distance_data3") && !is.null(distance_data3) && ncol(distance_data3) != 0 && nrow(distance_data3) != 0 && any(!is.na(distance_data3))
+
+    if (condition1 && condition2 && condition3) {
 
 
     # Get the column names with 'Hdist_' prefix from both data frames
@@ -511,9 +517,12 @@ if (verbose) {
       distance_data <- data.frame()
     }
 
-    if ((is.null(distance_data) || ncol(distance_data) == 0 || nrow(distance_data) == 0 || is.na(distance_data)) &&
-        (exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0 && !is.na(distance_data1)) &&
-        (exists("distance_data3") && !is.null(distance_data3) && ncol(distance_data3) != 0 && nrow(distance_data3) != 0 && !is.na(distance_data3))) {
+
+      condition1 <- is.null(distance_data) || ncol(distance_data) == 0 || nrow(distance_data) == 0 || any(is.na(distance_data))
+      condition2 <- exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0 && any(!is.na(distance_data1))
+      condition3 <- exists("distance_data3") && !is.null(distance_data3) && ncol(distance_data3) != 0 && nrow(distance_data3) != 0 && any(!is.na(distance_data3))
+
+      if (condition1 && condition2 && condition3) {
 
       # Get the column names with 'Hdist_' prefix from both data frames
       Hdist_cols_data1 <- grep("^Hdist", names(distance_data1), value = TRUE)
@@ -659,7 +668,8 @@ if (verbose) {
         }}}}
 
 
-  if (length(gap_cols) > 1 && length(cbh_cols) > 1 && ((exists("distance_data") || !is.null(distance_data) || (ncol(distance_data) != 0 && nrow(distance_data) != 0)) || !is.na(distance_data))) {
+  if (length(gap_cols) > 1 && length(cbh_cols) > 1 && ((exists("distance_data") || !is.null(distance_data) || (ncol(distance_data) != 0 &&
+  nrow(distance_data) != 0)) || !is.na(distance_data))) {
 
     height<-gaps_perc2$height
     percent2a <- gaps_perc2 %>% dplyr::filter(height < min(kk_copy[, cbh_cols]))
@@ -741,8 +751,11 @@ if (verbose) {
 
 
 
-  if ((exists("distance_data") && !is.null(distance_data) && ncol(distance_data) != 0 && nrow(distance_data) != 0 && !is.na(distance_data)) &&
-      (exists("distance_data4") && !is.null(distance_data4) && ncol(distance_data4) != 0 && nrow(distance_data4) != 0 && !is.na(distance_data4))) {
+    condition1 <- exists("distance_data") && !is.null(distance_data) && ncol(distance_data) != 0 && nrow(distance_data) != 0 && any(!is.na(distance_data))
+    condition2 <- exists("distance_data4") && !is.null(distance_data4) && ncol(distance_data4) != 0 && nrow(distance_data4) != 0 && any(!is.na(distance_data4))
+
+    if (condition1 && condition2) {
+
 
     # Get the column names with 'Hdist_' prefix from both data frames
     Hdist_cols_data <- grep("^Hdist", names(distance_data), value = TRUE)
