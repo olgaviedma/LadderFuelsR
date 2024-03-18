@@ -490,9 +490,8 @@ if(exists("last_depth") || any(!is.na(last_depth))) {
 
   if (nrow(depth_file) != 0 &&
       (length(depth_file11) == 0 || any(!is.na(depth_file11))) &&
-      (any(!is.na(depth_file12)) || length(depth_file12) == 0) &&
-      any(!is.na(last_depth)) && any(!is.na(depth_file12) &&
-      (any(!is.na(last_depth)) && any(!is.na(depth_file12))))) {
+      (any(!is.na(depth_file12)) || length(depth_file12) != 0) &&
+      any(!is.na(last_depth)) && any(!is.na(depth_file12))) {
 
     if (any(!is.na(depth_file11)) && depth_file11[,1] != depth_file12[,1] &&
         (any(!is.na(last_depth)) && last_depth != depth_file12[,1])) {
@@ -529,7 +528,7 @@ if ((any(is.na (depth_file))|| nrow(depth_file) == 0) &&
 
 if ((any(is.na (depth_file))||nrow(depth_file) == 0) &&
     (length(depth_file11) == 0 || any(is.na(depth_file11))) &&
-    (all(!is.na(depth_file12)) || length(depth_file12) > 0 || any(!is.na(depth_file12)))) {
+    (length(depth_file12) > 0 || any(!is.na(depth_file12)))) {
 
   if (any(!is.na(depth_file12))) {
     depth_file <- cbind.data.frame(depth_file,depth_file12)
