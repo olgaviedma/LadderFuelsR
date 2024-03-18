@@ -320,7 +320,7 @@ if (any(diff(cbh_cols) == 1)) {
 }
 
 # Check if there are any consecutive "cbh" columns
-if (!is.na(consec_cbh_vals) && length(gap_cols) > 1) {
+if (all(!is.na(consec_cbh_vals)) && length(gap_cols) > 1) {
 
   # Get the starting and ending values of the consecutive "cbh" columns
   consec_cbh_start <- min(consec_cbh_vals)
@@ -387,14 +387,14 @@ if (!exists("depth_file12")) {
 last_Hdepth_col_name <- tail(grep("Hdepth", names(depth_file), value = TRUE), 1)
 last_depth <- depth_file[, last_Hdepth_col_name]
 
-if(exists("last_depth") || !is.na(last_depth)) {
+if(exists("last_depth") || any(!is.na(last_depth))) {
 
   last_depth <- depth_file[, last_Hdepth_col_name]
 
   # All elements in depth_file are not equal to 0 or missing values
   if ((nrow(depth_file) != 0 && any(!is.na(depth_file))) &&
-      !is.na(depth_file11) && length(depth_file11) > 0 && any(!is.na(depth_file11)) &&
-      !is.na(depth_file12) && length(depth_file12) > 0 && exists("last_gap_vals")) {
+      length(depth_file11) > 0 && any(!is.na(depth_file11)) &&
+      any(!is.na(depth_file12)) && length(depth_file12) > 0 && exists("last_gap_vals")) {
 
     if(last_gap_vals != max(kk_copy[, gap_cols]) &&
        depth_file11[,1] != depth_file12[,1] &&
@@ -407,9 +407,9 @@ if(exists("last_depth") || !is.na(last_depth)) {
     }
   }
 
-  if (length(depth_file11) > 0 && any(!is.na(depth_file11)) && !is.na(last_depth) &&
+  if (length(depth_file11) > 0 && any(!is.na(depth_file11)) && any(!is.na(last_depth)) &&
       nrow(depth_file) != 0 &&
-      (is.na(depth_file12) || length(depth_file12) == 0)) {
+      (all(is.na(depth_file12)) || length(depth_file12) == 0)) {
 
     if(last_depth != depth_file11[,1]){
 
@@ -421,10 +421,10 @@ if(exists("last_depth") || !is.na(last_depth)) {
   }
 
   if ((length(depth_file11) > 0 || any(!is.na(depth_file11))) &&
-      (!is.na(depth_file12) || length(depth_file12) != 0)  &&
+      (any(!is.na(depth_file12)) || length(depth_file12) != 0)  &&
       nrow(depth_file) != 0 &&
-      (!is.na(last_depth) && !is.na(depth_file11) && last_depth !=  depth_file11[,1]) &&
-      (!is.na(last_depth) && !is.na(depth_file12) && last_depth !=  depth_file12[,1])) {
+      (any(!is.na(last_depth)) && any(!is.na(depth_file11)) && last_depth !=  depth_file11[,1]) &&
+      (any(!is.na(last_depth)) && any(!is.na(depth_file12)) && last_depth !=  depth_file12[,1])) {
 
     if(depth_file11[,1] == depth_file12[,1]){
 
@@ -437,8 +437,8 @@ if(exists("last_depth") || !is.na(last_depth)) {
 
 
   if ((nrow(depth_file) != 0 ) &&
-      (!is.na(depth_file11) && length(depth_file11) > 0 && any(!is.na(depth_file11))) &&
-      (!is.na(depth_file12) && length(depth_file12) > 0)) {
+      (length(depth_file11) > 0 && any(!is.na(depth_file11))) &&
+      (any(!is.na(depth_file12)) && length(depth_file12) > 0)) {
 
     if(depth_file11[,1] != depth_file12[,1]) {
 
@@ -451,9 +451,9 @@ if(exists("last_depth") || !is.na(last_depth)) {
 
 
   if ((nrow(depth_file) != 0 ) &&
-      (!is.na(depth_file11) || length(depth_file11) != 0 || any(!is.na(depth_file11))) &&
-      (is.na(depth_file12) || length(depth_file12) == 0) &&
-      any(!is.na(last_depth)) && !is.na(depth_file11)) {
+      (length(depth_file11) != 0 || any(!is.na(depth_file11))) &&
+      (all(is.na(depth_file12)) || length(depth_file12) == 0) &&
+      any(!is.na(last_depth)) && any(!is.na(depth_file11))) {
 
     if(last_depth !=  depth_file11[,1] && !("depth_file11" %in% colnames(depth_file))){
 
@@ -466,8 +466,8 @@ if(exists("last_depth") || !is.na(last_depth)) {
 
 
   if (nrow(depth_file) != 0 &&
-      (!is.na(depth_file11) || length(depth_file11) != 0 || any(!is.na(depth_file11))) &&
-      any(!is.na(last_depth)) && !is.na(depth_file11)) {
+      (length(depth_file11) != 0 || any(!is.na(depth_file11))) &&
+      any(!is.na(last_depth)) && any(!is.na(depth_file11))) {
 
     if ((last_gap_vals < consec_cbh_start && max(gaps_vals) < consec_cbh_tail) && !("depth_file11" %in% colnames(depth_file))) {
       depth_file <- cbind.data.frame(depth_file, depth_file11)
@@ -478,9 +478,9 @@ if(exists("last_depth") || !is.na(last_depth)) {
 
 
   if (nrow(depth_file) != 0 &&
-      (is.na(depth_file11) || length(depth_file11) == 0 || any(is.na(depth_file11))) &&
-      (!is.na(depth_file12) || length(depth_file12) != 0) &&
-      any(!is.na(last_depth)) && !is.na(depth_file12)) {
+      (length(depth_file11) == 0 || any(is.na(depth_file11))) &&
+      (any(!is.na(depth_file12)) || length(depth_file12) != 0) &&
+      any(!is.na(last_depth)) && any(!is.na(depth_file12))) {
 
     if (last_depth != depth_file12[,1]) {
       depth_file <- cbind.data.frame(depth_file, depth_file12)
@@ -489,13 +489,13 @@ if(exists("last_depth") || !is.na(last_depth)) {
 
 
   if (nrow(depth_file) != 0 &&
-      (!is.na(depth_file11) || length(depth_file11) == 0 || any(!is.na(depth_file11))) &&
-      (!is.na(depth_file12) || length(depth_file12) == 0) &&
-      any(!is.na(last_depth)) && !is.na(depth_file12) &&
-      (!is.na(last_depth) && !is.na(depth_file12))) {
+      (length(depth_file11) == 0 || any(!is.na(depth_file11))) &&
+      (any(!is.na(depth_file12)) || length(depth_file12) == 0) &&
+      any(!is.na(last_depth)) && any(!is.na(depth_file12) &&
+      (any(!is.na(last_depth)) && any(!is.na(depth_file12))))) {
 
     if (any(!is.na(depth_file11)) && depth_file11[,1] != depth_file12[,1] &&
-        (!is.na(last_depth) && last_depth != depth_file12[,1])) {
+        (any(!is.na(last_depth)) && last_depth != depth_file12[,1])) {
 
       depth_file <- cbind.data.frame(depth_file, depth_file12)
     } else {
@@ -504,10 +504,10 @@ if(exists("last_depth") || !is.na(last_depth)) {
   }
 
   if (nrow(depth_file) != 0 && length(gap_cols) > 1 &&
-      (is.na(depth_file11) || length(depth_file11) == 0 || any(is.na(depth_file11))) &&
-      (!is.na(depth_file12) || length(depth_file12) > 0 || any(!is.na(depth_file12)))) {
+      (length(depth_file11) == 0 || any(is.na(depth_file11))) &&
+      (length(depth_file12) > 0 || any(!is.na(depth_file12)))) {
 
-    if (!is.na(depth_file12) && last_depth == depth_file12[,1] && (max(kk_copy[,gap_cols]) < max(kk_copy[,cbh_cols]))) {
+    if (any(!is.na(depth_file12)) && last_depth == depth_file12[,1] && (max(kk_copy[,gap_cols]) < max(kk_copy[,cbh_cols]))) {
       depth_file <- cbind.data.frame(depth_file,depth_file12)
     } else {
       depth_file <- depth_file
@@ -516,19 +516,19 @@ if(exists("last_depth") || !is.na(last_depth)) {
 }
 
 
-if ((is.na (depth_file)|| nrow(depth_file) == 0) &&
-    (!is.na(depth_file11) || length(depth_file11) != 0 || any(!is.na(depth_file11))) &&
-    (!is.na(depth_file12) || length(depth_file12) > 0 || any(!is.na(depth_file12)))) {
+if ((any(is.na (depth_file))|| nrow(depth_file) == 0) &&
+    (length(depth_file11) != 0 || any(!is.na(depth_file11))) &&
+    (length(depth_file12) > 0 || any(!is.na(depth_file12)))) {
 
-  if (!is.na(depth_file11) && !is.na(depth_file12) && depth_file11[,1] != depth_file12[,1]) {
+  if (any(!is.na(depth_file11)) && any(!is.na(depth_file12)) && depth_file11[,1] != depth_file12[,1]) {
     depth_file <- cbind.data.frame(depth_file11, depth_file12)
   } else {
     depth_file <- depth_file11
   }
 }
 
-if ((is.na (depth_file)||nrow(depth_file) == 0) &&
-    (is.na(depth_file11) || length(depth_file11) == 0 || any(is.na(depth_file11))) &&
+if ((any(is.na (depth_file))||nrow(depth_file) == 0) &&
+    (length(depth_file11) == 0 || any(is.na(depth_file11))) &&
     (all(!is.na(depth_file12)) || length(depth_file12) > 0 || any(!is.na(depth_file12)))) {
 
   if (any(!is.na(depth_file12))) {
@@ -570,7 +570,7 @@ if (exists("depth_file") && !is.null(depth_file) && is.data.frame(depth_file) &&
 
   depth_file_transposed <- data.frame(t(depth_file))
 
-  if (!is.na(depth_file_transposed[1,1]) && depth_file_transposed[1,1] == 0) {
+  if (any(!is.na(depth_file_transposed[1,1])) && depth_file_transposed[1,1] == 0) {
 
     # Get the relevant columns from depth_file_transposed, skipping the rows where t.depth_file. is 0
     depth_file_col <- depth_file_transposed[depth_file_transposed$t.depth_file. != 0, "t.depth_file."]
@@ -689,7 +689,7 @@ if (any(diff(cbh_cols) == 1) && min(kk_copy[, cbh_cols]) >= 1.5 && min(kk_copy[,
 
 if (nrow(kk_copy) != 0 && length(gap_cols) != 0 && length(cbh_cols) != 0 && (!exists("depth0") || nrow(depth0) == 0)) {
 
-  if (!is.na(depth_file[, 1]) && depth_file[, 1] != 0 && !is.na(min(kk_copy[, gap_cols])) && !is.na(min(kk_copy[, cbh_cols])) &&
+  if (any(!is.na(depth_file[, 1])) && depth_file[, 1] != 0 && any(!is.na(min(kk_copy[, gap_cols]))) && any(!is.na(min(kk_copy[, cbh_cols]))) &&
       min(kk_copy[, gap_cols]) > min(kk_copy[, cbh_cols])) {
 
     if (any(min(kk_copy[, cbh_cols]) > 1.5) && any(min(kk_copy[, gap_cols]) > min(kk_copy[, cbh_cols]))) {
@@ -791,7 +791,7 @@ if (any(length(cbh_cols) == 1 && min(kk_copy[, cbh_cols]) == 1.5) && (!exists("d
   # if there is only one cbh column, calculate difference between it and first gap column
   cbh_col <- cbh_cols[1]
   first_gap_col <- min(gap_cols[gap_cols > cbh_col])
-  if (!is.na(cbh_col) && !is.na(first_gap_col)) {
+  if (any(!is.na(cbh_col)) && any(!is.na(first_gap_col))) {
     depth1 <- kk_copy[1, first_gap_col] - kk_copy[1, cbh_col]
     depth0 <- data.frame(depth1)
     names(depth0) <- "depth0"
