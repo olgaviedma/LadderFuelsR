@@ -33,4 +33,8 @@ Collate:
     'plot_effective_metrics.R'
     'renamed0_df.R'
     'renamed_df.R'
+    'foofy.R'
 BugReports: https://github.com/olgaviedma/LadderFuelsR/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
