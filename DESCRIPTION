@@ -35,6 +35,5 @@ Collate:
     'renamed_df.R'
     'foofy.R'
 BugReports: https://github.com/olgaviedma/LadderFuelsR/issues
-Suggests: 
-    testthat (>= 3.0.0)
+Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
