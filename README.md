@@ -907,7 +907,7 @@ ggplot() +
   <img src="https://github.com/olgaviedma/LadderFuelsR/blob/master/Readme/fig23.png">
 </p>
 
-<<<<<<< HEAD
+
 # Acknowledgements
 
 We gratefully acknowledge funding from project INFORICAM (PID2020-119402RB-I00), funded by the Spanish MCIN/AEI/ 10.13039/501100011033 and by the “European Union NextGenerationEU/PRTR”. Carlos Silva was supported by the NASA's Carbon Monitoring System funding (CMS, grant 22-CMS22-0015).
