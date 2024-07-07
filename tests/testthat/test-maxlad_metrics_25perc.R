@@ -6,56 +6,48 @@ trees_name2 <- factor(unique(trees_name1))
 test_data <- test_data |> dplyr::filter(treeID == "1_Eglin_zone1_CROWN")
 
 test_data1 <- data.frame(
-  treeID1 = factor("1", levels = "1"),
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  dist1 = 4,
-  dptf1 = 1,
-  dptf2 = 8,
+  treeID1 = 1,
+  treeID = "1_CROWN",
+  Hcbh1 = 5.5,
+  dptf1 = 9,
+  Hdptf1 = 14.5,
   effdist1 = 4,
-  Hcbh1 = 1.5,
-  Hcbh2 = 6.5,
-  Hdist1 = 5.5,
-  Hdptf1 = 1.5,
-  Hdptf2 = 14.5,
-  max_height = 15.5
+  dist1 = 4,
+  Hdist1 = 4.5,
+  max_height = 14.5
 )
 
-output <- suppressWarnings(get_layers_lad(test_data, test_data1, threshold=10))
+output <- suppressWarnings(get_layers_lad(test_data, test_data1, threshold=10, step = 1, min_height= 1.5))
 
 
 # Define the expected output for df1
 expected_df1 <- data.frame(
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  treeID1 = factor("1"),
+  treeID = "1_CROWN",
+  treeID1 = 1,
+  Hcbh1 = 5.5,
+  dptf1 = 9,
+  Hdptf1 = 14.5,
+  effdist1 = 4,
   dist1 = 4,
-  dptf1 = 1,
-  Hcbh1 = 1.5,
-  Hdptf1 = 1.5,
-  max1 = 15.5,
-  Hdist1 = 0.5,
-  effdist1 = 0,
-  effdist2 = 4,
-  dptf2 = 8,
-  Hcbh2 = 6.5,
-  Hdist2 = 5.5,
-  Hdptf2 = 14.5,
-  Hcbh1_Hdptf1 = 1.347012, # Adjusted to match precision
-  Hcbh2_Hdptf2 = 98.65299, # Adjusted to match precision
-  max_height = 15.5,
-  nlayers = 2
+  Hdist1 = 4.5,
+  max1 = 14.5,
+  Hcbh1_Hdptf1 = 98.65299,
+  max_height = 14.5,
+  nlayers = 1
 )
 
 # Define the expected output for df2
 expected_df2 <- data.frame(
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  treeID1 = factor("1"),
-  Hcbh1 = 6.5,
-  Hdist1 = 5.5,
-  dptf1 = 8,
+  treeID = "1_CROWN",
+  treeID1 = 1,
+  Hcbh1 = 5.5,
+  dptf1 = 9,
   Hdptf1 = 14.5,
-  Hcbh1_Hdptf1 = 98.65299, # Adjusted to match precision
-  effdist1 = 5,
-  max_height = 15.5,
+  effdist1 = 4,
+  Hdist1 = 4.5,
+  max1 = 14.5,
+  max_height = 14.5,
+  Hcbh1_Hdptf1 = 98.65299,
   nlayers = 1
 )
 

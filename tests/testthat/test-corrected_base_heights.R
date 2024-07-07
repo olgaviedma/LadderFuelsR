@@ -1,40 +1,27 @@
 
 test_data <- data.frame(
-  treeID1 = factor("1", levels = "1"),
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  cbh1 = 1.5,
-  gap1 = 2.5,
-  gap2 = 5.5,
-  cbh2 = 6.5,
-  cbh3 = 9.5,
-  cbh4 = 14.5,
+  cbh1 = 5.5,
+  depth1 = 9,
   dist1 = 4,
-  Hdist1 = 5.5,
-  max_height = 15.5,
-  Hdepth0 = 1.5,  # Adding Hdepth0, depth0, Hdepth1, and depth1 columns to expected_output
-  depth0 = 1,
   Hdepth1 = 14.5,
-  depth1 = 8
+  Hdist1 = 4.5,
+  max_height = 14.5,
+  treeID = "1_CROWN",
+  treeID1 = 1
 )
 
 # Call the function with the test data
-output <- get_real_fbh(test_data)
+output <- get_real_fbh(test_data, step= 1, number_steps = 1, min_height=1.5)
 
 expected_output <- data.frame(
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  treeID1 = factor("1"),
-  Hdepth1 = 1.5,
-  depth1 = 1,
+  Hcbh1 = 5.5,
+  depth1 = 9,
   dist1 = 4,
-  Hdist1 = 5.5,
-  Hdepth2 = 14.5,
-  depth2 = 8,
-  max1 = 15.5,
-  Hcbh1 = 1.5,
-  Hcbh2 = 6.5,
-  Hcbh3 = 6.5,
-  Hcbh4 = 6.5,
-  max_height=15.5
+  Hdepth1 = 14.5,
+  Hdist1 = 4.5,
+  treeID1 = 1,
+  treeID = "1_CROWN",
+  max_height = 14.5
 )
 
 

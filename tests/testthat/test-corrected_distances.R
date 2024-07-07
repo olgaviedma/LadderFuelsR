@@ -1,19 +1,16 @@
 
 test_data <- data.frame(
-  treeID1 = factor("1", levels = "1"),
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  Hcbh1 = 1.5,
-  Hcbh2 = 6.5,
-  dptf1 = 1,
-  dptf2 = 8,
-  Hdptf1 = 1.5,
-  Hdptf2 = 14.5,
+  treeID = "1_CROWN",
+  treeID1 = 1,
+  Hdptf1 = 14.5,
   dist1 = 4,
-  Hdist1 = 5.5,
-  max_height = 15.5
+  dptf1 = 9,
+  Hcbh1 = 5.5,
+  Hdist1 = 4.5,
+  max_height = 14.5
 )
 
-output <- get_effective_gap(test_data)
+output <- get_effective_gap(test_data, number_steps = 1, min_height= 1.5)
 
 original_column_names <- colnames(output)
 
@@ -36,18 +33,15 @@ output <- output[, new_order]
 
 
 expected_output <- data.frame(
-  treeID1 = factor("1", levels = "1"),
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  Hcbh1 = 1.5,
-  Hcbh2 = 6.5,
-  dptf1 = 1,
-  dptf2 = 8,
+  treeID = "1_CROWN",
+  treeID1 = 1,
+  Hcbh1 = 5.5,
+  dptf1 = 9,
   effdist1 = 4,
   dist1 = 4,
-  Hdist1 = 5.5,
-  Hdptf1 = 1.5,
-  Hdptf2 = 14.5,
-  max_height = 15.5
+  Hdist1 = 4.5,
+  Hdptf1 = 14.5,
+  max_height = 14.5
 )
 
 # Write the test

@@ -1,48 +1,51 @@
 
 test_data <- data.frame(
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  treeID1 = factor("1"),
-  Hcbh1 = 6.5,
-  Hdist1 = 5.5,
-  dptf1 = 8,
+  treeID1 = 1,
+  treeID = "1_CROWN",
+  Hdist1 = 4.5,
+  Hcbh1 = 5.5,
+  Hcbh1_Hdptf1 = 100,
+  effdist1 = 4,
+  dptf1 = 9,
   Hdptf1 = 14.5,
-  Hcbh1_Hdptf1 = 98.65299, # Adjusted to match precision
-  effdist1 = 5,
-  max_height = 15.5,
+  max1 = 14.5,
+  max_height = 14.5,
   nlayers = 1
 )
 
-output <- get_cbh_metrics(test_data)
+
+output <- get_cbh_metrics(test_data,min_height= 1.5)
 
 expected_output <- data.frame(
-  treeID1 = factor("1"),
-  Hcbh1 = 6.5,
-  Hdist1 = 5.5,
-  dptf1 = 8,
+  treeID1 = 1,
+  Hdist1 = 4.5,
+  Hcbh1 = 5.5,
+  effdist1 = 4,
+  dptf1 = 9,
   Hdptf1 = 14.5,
-  effdist1 = 5,
-  Hcbh1_Hdptf1 = 98.65299,
-  treeID = factor("1_Eglin_zone1_CROWN"),
-  max_height = 15.5,
+  max1 = 14.5,
+  Hcbh1_Hdptf1 = 100,
+  treeID = "1_CROWN",
+  max_height = 14.5,
   nlayers = 1,
-  maxlad_Hcbh = 6.5,
-  maxlad_Hdist = 5.5,
+  maxlad_Hcbh = 5.5,
+  maxlad_Hdist = 4.5,
   maxlad_Hdptf = 14.5,
-  maxlad_dptf = 8,
-  maxlad_effdist = 5,
-  maxlad_lad = 98.65299,
-  max_Hcbh = 6.5,
-  max_Hdist = 5.5,
+  maxlad_dptf = 9,
+  maxlad_effdist = 4,
+  maxlad_lad = 100,
+  max_Hcbh = 5.5,
+  max_Hdist = 4.5,
   max_Hdptf = 14.5,
-  max_dptf = 8,
-  max_effdist = 5,
-  max_lad = 98.65299,
-  last_Hcbh = 6.5,
-  last_Hdist = 5.5,
+  max_dptf = 9,
+  max_effdist = 4,
+  max_lad = 100,
+  last_Hcbh = 5.5,
+  last_Hdist = 4.5,
   last_Hdptf = 14.5,
-  last_dptf = 8,
-  last_effdist = 5,
-  last_lad = 98.65299
+  last_dptf = 9,
+  last_effdist = 4,
+  last_lad = 100
 )
 
 # Write the test
