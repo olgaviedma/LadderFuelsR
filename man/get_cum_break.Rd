@@ -4,7 +4,7 @@
 \alias{get_cum_break}
 \title{CBH estimation using the breaking point method and the LAD percentage below and above the CBH}
 \usage{
-get_cum_break(LAD_profiles, cbh_metrics, threshold=75, verbose=TRUE)
+get_cum_break(LAD_profiles, cbh_metrics, threshold=75, min_height= 1.5, verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
@@ -15,6 +15,8 @@ An object of the class data frame.}
 
 \item{threshold}{Numeric value of the LAD percentage below or above the breaking point to set the CBH (default 75).}
 
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
+
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
@@ -22,27 +24,27 @@ A data frame identifying the CBH of the vertical tree profile (VTP) based on the
 the percentage of LAD values below and above the identified CBH or breaking point.
 }
 \description{
-This function calculates the canopy base height (CBH) of the vertical tree profile (VTP) using a segmented regression model fitted
+This function calculates the crown base height (CBH) of the vertical tree profile (VTP) using a segmented regression model fitted
 to the cumulative LAD values as a function of height.The function also calculates the percentage of LAD values below and above the identified
 CBH or breaking point.
 }
 \details{
 # List of tree metrics:
 \itemize{
-\item treeID: tree ID with strings and numeric values
-\item treeID1: tree ID with only numeric values
-\item Hdist: Height of the distance between the ground and the CBH or breaking point (m)
-\item Hcbh_brpt: Height of the CBH based on the breaking point method (m)
-\item below_hcbhbp: Percentage of LAD values below the CBH or breaking point
-\item above_hcbhbp: Percentage of LAD values above the CBH or breaking point
-\item bp_hcbh: Height of the CBH based on the breaking point method or on the maximum LAD criterium if there is not breaking point (m)
-\item bp_Hdptf: Height of the canopy layer depth using the breaking point method or the maximum LAD criterium (m)
-\item bp_dptf: Depth of the CBH using the breaking point method or the maximum LAD criterium (m)
-\item bp_Hdist: Height of the distance between the CBH and the ground using the breaking point method or the maximum LAD criterium (m)
-\item bp_effdist: Distance between the CBH and the ground using the breaking point method or the maximum LAD criterium (m)
-\item bp_lad: Percentage of LAD comprised by the canopy layer
-\item cumlad: Cumulative LAD values at the CBH or breaking point
-\item max_height: Maximum height of the tree profile
+  \item treeID: tree ID with strings and numeric values
+  \item treeID1: tree ID with only numeric values
+  \item Hcbh_brpt: Height of the CBH based on the breaking point method (m)
+  \item below_hcbhbp: Percentage of LAD values below the CBH or breaking point
+  \item above_hcbhbp: Percentage of LAD values above the CBH or breaking point
+  \item bp_hcbh: Height of the CBH based on the breaking point method or on the maximum LAD criterium if there is not breaking point (m)
+  \item bp_Hdptf: Height of the canopy layer depth using the breaking point method or the maximum LAD criterium (m)
+  \item bp_dptf: Depth of the CBH using the breaking point method or the maximum LAD criterium (m)
+  \item bp_Hdist: Height of the distance between the CBH and the ground using the breaking point method or the maximum LAD criterium (m)
+  \item bp_effdist: Distance between the CBH and the ground using the breaking point method or the maximum LAD criterium (m)
+  \item bp_lad: Percentage of LAD comprised by the canopy layer
+  \item cumlad: Cumulative LAD values at the CBH or breaking point
+  \item nlayers - Number of effective fuel layers
+  \item max_height - Maximum height of the tree profile
 }
 }
 \examples{
@@ -72,7 +74,7 @@ tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
 tree2 <- cbh_metrics |> dplyr::filter(treeID == i)
 
 # Get cumulative LAD metrics for each tree
-cum_LAD_metrics <- get_cum_break(tree1, tree2, threshold=75, verbose=TRUE)
+cum_LAD_metrics <- get_cum_break(tree1, tree2, threshold=75, min_height= 1.5, verbose=TRUE)
 cum_LAD_metrics_list[[i]] <- cum_LAD_metrics
 }
 
@@ -84,5 +86,5 @@ cummulative_LAD <- dplyr::bind_rows(cum_LAD_metrics_list)
 \code{\link{get_cbh_metrics}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

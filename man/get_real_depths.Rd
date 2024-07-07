@@ -4,19 +4,23 @@
 \alias{get_real_depths}
 \title{Effective fuel layers depth}
 \usage{
-get_real_depths (effective_fbh, verbose=TRUE)
+get_real_depths (effective_fbh, step=1, min_height=1.5, verbose=TRUE)
 }
 \arguments{
-\item{effective_fbh}{tree metrics with the recalculated base height of fuel layers after considering distances > 1 m  (output of [get_real_fbh()] function).
-An object of the class text.}
+\item{effective_fbh}{tree metrics with the recalculated base height of fuel layers after considering distances greater than any number of height bin steps
+(output of [get_real_fbh()] function).An object of the class text.}
+
+\item{step}{Numeric value for the actual height bin step (in meters).}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame giving the fuel layers depth after removing distances = 1 m.
+A data frame giving new fuel layers depth after considering distances greater than the actual height bin step.
 }
 \description{
-This function recalculates fuel layers depth after removing distances = 1 m
+This function recalculates fuel layers depth after considering distances greater than the actual height bin step.
 }
 \details{
 # List of tree metrics:
@@ -25,9 +29,9 @@ This function recalculates fuel layers depth after removing distances = 1 m
 \item treeID1: tree ID with only numeric values
 \item dist: Distance between consecutive fuel layers (m)
 \item Hdist - Height of the distance between consecutive fuel layers (m)
-\item Hcbh - Height of the base of each fuel layer (m)
-\item dptf - Depth of fuel layers (m) after removing distances equal 1 m
-\item Hdptf - Height of the depth of fuel layers (m) after removing distances equal 1 m
+\item Hcbh - Base height of each fuel separated by a distance greater than the certain number of steps
+\item dptf - Depth of fuel layers (m) after considering distances greater than the actual height bin step
+\item Hdptf - Height of the depth of fuel layers (m) after considering distances greater than the actual height bin step
 \item max_height - Maximum height of the tree profile
 }
 }
@@ -50,7 +54,7 @@ for (i in levels(trees_name2)){
 # Filter data for each tree
 tree3 <- effective_fbh |> dplyr::filter(treeID == i)
 # Get real depths for each tree
-depth_metrics_corr <- get_real_depths(tree3, verbose=TRUE)
+depth_metrics_corr <- get_real_depths(tree3, step=1, min_height=1.5,verbose=TRUE)
 depth_metrics_corr_list[[i]] <- depth_metrics_corr
 }
 
@@ -84,5 +88,5 @@ effective_depth <- effective_depth[, new_order]
 \code{\link{get_real_fbh}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

@@ -2,9 +2,9 @@
 % Please edit documentation in R/plot_cbh_bpoint.R
 \name{get_plots_cbh_bp}
 \alias{get_plots_cbh_bp}
-\title{Plot of the Canopy Base Height (CBH) based on the breaking point method}
+\title{Plot of the Crown Base Height (CBH) based on the breaking point method}
 \usage{
-get_plots_cbh_bp(LAD_profiles, cummulative_LAD)
+get_plots_cbh_bp(LAD_profiles, cummulative_LAD, min_height = 1.5)
 }
 \arguments{
 \item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function from leafR package).
@@ -12,12 +12,14 @@ An object of the class text.}
 
 \item{cummulative_LAD}{tree metrics derived from using breaking points on cummulative LAD (output of [get_cum_break()] function).
 An object of the class text.}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 }
 \value{
-A plot of the Canopy Base Height (CBH) based on the breaking point method and Leaf Area Density (LAD) percentage of the canopy layer.
+A plot of the Crown Base Height (CBH) based on the breaking point method and Leaf Area Density (LAD) percentage of the canopy layer.
 }
 \description{
-This function plots the canopy base height (CBH) based on breaking point over the cummulative LAD values and gives the LAD percentage
+This function plots the crown base height (CBH) based on breaking point over the cummulative LAD values and gives the LAD percentage
 of the canopy layer
 }
 \examples{
@@ -35,12 +37,12 @@ cummulative_LAD <- get_cum_break()
 LadderFuelsR::cummulative_LAD$treeID <- factor(LadderFuelsR::cummulative_LAD$treeID)
 
 # Generate cumulative LAD plots
-plots_cbh_bp <- get_plots_cbh_bp(LAD_profiles, cummulative_LAD)
+plots_cbh_bp <- get_plots_cbh_bp(LAD_profiles, cummulative_LAD,min_height = 1.5)
 }
 }
 \seealso{
 \code{\link{get_cum_break}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

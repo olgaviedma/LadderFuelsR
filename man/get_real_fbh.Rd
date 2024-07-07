@@ -2,23 +2,29 @@
 % Please edit documentation in R/corrected_base_heights.R
 \name{get_real_fbh}
 \alias{get_real_fbh}
-\title{Fuels base height after removing distances = 1 m}
+\title{Fuels base height recalculation after after considering distances greater than any number of height bin steps}
 \usage{
-get_real_fbh(depth_metrics,verbose=TRUE)
+get_real_fbh(depth_metrics, step= 1, number_steps = 1, min_height=1.5, verbose=TRUE)
 }
 \arguments{
-\item{depth_metrics}{Tree metrics with gaps (distances), fuel base heights, and depths
+\item{depth_metrics}{Tree metrics with distances, fuel base heights, and depths
 (output of [get_depths()] function). An object of the class text.}
+
+\item{step}{Numeric value for the actual height bin step (in meters).}
+
+\item{number_steps}{Numeric value for the number of height bin steps that can be jumped to reshape fuels layers.}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame giving the first "base height" from those consecutive ones separated by a distance = 1.
-This value replaces the values of the next base heights if they are separated by a distance = 1.
+A data frame giving the first "base height" from those consecutive ones separated by the number of height bin steps indicated in the function.
+The function returns new fuel layers separated by distances greater than the indicated number of steps.
 }
 \description{
-This function recalculates fuels base height after removing distances = 1 m,
-keeping the first "base height" from those consecutive ones separated by a distance = 1.
+This function reshapes fuel layers after removing distances equal to any number of height bin steps,
+keeping the first "base height" from those consecutive ones separated by such distance.
 }
 \details{
 # List of tree metrics:
@@ -27,7 +33,7 @@ keeping the first "base height" from those consecutive ones separated by a dista
   \item treeID1: tree ID with only numeric values
   \item dist: Distance between consecutive fuel layers (m)
   \item Hdist - Height of the distance between consecutive fuel layers (m)
-  \item Hcbh - Height of the first base height from those ones separated by a distance = 1.
+  \item Hcbh - Base height of each fuel separated by a distance greater than the certain number of steps
   \item depth - Depth of fuel layers (m)
   \item Hdepth - Height of the depth of fuel layers (m)
   \item max_height - Maximum height of the tree profile
@@ -50,7 +56,7 @@ for (i in levels(trees_name2)){
 # Filter data for each tree
 tree3 <- depth_metrics |> dplyr::filter(treeID == i)
 # Get real fbh for each tree
-fbh_corr <- get_real_fbh(tree3, verbose=TRUE)
+fbh_corr <- get_real_fbh(tree3, step= 1, number_steps = 1, min_height=1.5, verbose=TRUE)
 # Store fbh values in a list
 fbh_corr_list[[i]] <- fbh_corr
 }
@@ -64,5 +70,5 @@ effective_fbh$treeID <- factor(effective_fbh$treeID)
 \code{\link{get_depths}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

@@ -2,9 +2,9 @@
 % Please edit documentation in R/plot_cbh_lastdist.R
 \name{get_plots_cbh_lastdist}
 \alias{get_plots_cbh_lastdist}
-\title{Plots the Canopy Base Height (CBH) based on the last distance criterium}
+\title{Plots the Crown Base Height (CBH) based on the last distance criterium}
 \usage{
-get_plots_cbh_lastdist(LAD_profiles, cbh_metrics)
+get_plots_cbh_lastdist(LAD_profiles, cbh_metrics, min_height=1.5)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
@@ -13,9 +13,11 @@ An object of the class text.}
 \item{cbh_metrics}{CBH metrics based on three criteria: maximum LAD percentage, maximum distance and last distance.
 (output of [get_cbh_metrics()] function).
 An object of the class text.}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 }
 \value{
-A plot drawing the Canopy Base Height (CBH) of the fuel layer located at the last distance.
+A plot drawing the Crown Base Height (CBH) of the fuel layer located at the last distance.
 }
 \description{
 This function plots the CBH of a segmented tree based on the fuel layer located at the last distance.
@@ -38,12 +40,12 @@ trees_name1 <- as.character(cbh_metrics$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
 # Generate plots for CBH based on the fuel layer at the last distance
-plots_cbh_lastdist <- get_plots_cbh_lastdist(LAD_profiles, cbh_metrics)
+plots_cbh_lastdist <- get_plots_cbh_lastdist(LAD_profiles, cbh_metrics, min_height=1.5)
 }
 }
 \seealso{
 \code{\link{get_cbh_metrics}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

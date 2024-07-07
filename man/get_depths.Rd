@@ -4,7 +4,7 @@
 \alias{get_depths}
 \title{Fuels depth in meters}
 \usage{
-get_depths (LAD_profiles, distance_metrics,verbose=TRUE)
+get_depths (LAD_profiles, distance_metrics,step= 1,min_height= 1.5, verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
@@ -13,13 +13,17 @@ An object of the class text.}
 \item{distance_metrics}{tree metrics with gaps (distances) and fuel base heights (output of [get_distance()] function).
 An object of the class text.}
 
+\item{step}{Numeric value for the actual height bin step (in meters).}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
+
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
 A data frame giving fuel layers depth and the height of the depths in meters.
 }
 \description{
-This function calculates fuels depth as the difference between gaps interleaved between fuel layers minus 1 if the fuel depths are greater than 1.
+This function calculates fuels depth as the difference between gaps interleaved between fuel layers minus one step if the fuel depths are greater than one step.
 }
 \details{
 # List of tree metrics:
@@ -53,7 +57,7 @@ tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
 tree2 <- distance_metrics |> dplyr::filter(treeID == i)
 
 # Get depths for each tree
-metrics_depth <- get_depths(tree1, tree2,verbose=TRUE)
+metrics_depth <- get_depths(tree1, tree2,step= 1,min_height= 1.5, verbose=TRUE)
 metrics_depth_list[[i]] <- metrics_depth
 }
 
@@ -65,5 +69,5 @@ depth_metrics <- dplyr::bind_rows(metrics_depth_list)
 \code{\link{get_distance}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

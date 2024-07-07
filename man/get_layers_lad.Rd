@@ -4,16 +4,21 @@
 \alias{get_layers_lad}
 \title{Leaf Area Density (LAD) percentage comprised in each effective fuel layer}
 \usage{
-get_layers_lad(LAD_profiles, effective_distances, threshold=25, verbose=TRUE)
+get_layers_lad(LAD_profiles, effective_distances,
+threshold=10, step = 1, min_height= 1.5, verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 An object of the class text.}
 
-\item{effective_distances}{Tree metrics of fuel layers separated by distances greater than 1 m (output of [get_effective_gap()] function).
-An object of the class text.}
+\item{effective_distances}{Tree metrics of fuel layers giving the effective distances (> any number of steps) between consecutive fuel layers
+(output of [get_effective_gap()] function). An object of the class text.}
 
-\item{threshold}{Numeric value for the minimum required LAD percentage in a fuel layer. The default threshold is 25.}
+\item{threshold}{Numeric value for the minimum required LAD percentage in a fuel layer. The default threshold is 10.}
+
+\item{step}{Numeric value for the actual height bin step (in meters).}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
@@ -22,21 +27,21 @@ A data frame identifying the fuel layers with their corresponding LAD percentage
 }
 \description{
 This function calculates the percentage of Leaf Area Density (LAD) within each fuel layer (first output)
-and removes those fuel layers with LAD percentage less than a specified threshold, recalculating the distances and
+and removes those fuel layers with LAD percentage less than a specified threshold (default 10%), recalculating the distances and
 the depth of the remaining ones (second output).
 }
 \details{
 \itemize{
-\item treeID: tree ID with strings and numeric values
-\item treeID1: tree ID with only numeric values
-\item Hcbh - Height of the base of each effective fuel layer (m)
-\item Hdist - Height of the distance between consecutive fuel layers (m)
-\item effdist - Distance between consecutive fuel layers (m)
-\item dptf - Depth of the effective fuel layers (m) at distances greater than 1 m
-\item Hdptf - Height of the depth of fuel layers (m) at distances greater than 1 m
-\item Hcbh_Hdptf - Percentage of LAD values comprised in each effective fuel layer
-\item max_height - Maximum height of the tree profile
-\item nlayers - Number of effective fuel layers
+  \item treeID: tree ID with strings and numeric values
+  \item treeID1: tree ID with only numeric values
+  \item dptf: Depth of fuel layers (m) after considering distances greater than the actual height bin step
+  \item effdist: Effective distance between consecutive fuel layers (m) after considering distances greater than any number of steps
+  \item Hcbh: Base height of each fuel separated by a distance greater than the certain number of steps
+  \item Hdptf: Height of the depth of fuel layers (m) after considering distances greater than the actual step
+  \item Hdist: Height of the distance (> any number of steps) between consecutive fuel layers (m)
+  \item Hcbh_Hdptf - Percentage of LAD values comprised in each effective fuel layer
+  \item max_height - Maximum height of the tree profile
+  \item nlayers - Number of effective fuel layers
 }
 }
 \examples{
@@ -67,7 +72,11 @@ tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
 tree2 <- effective_distances |> dplyr::filter(treeID == i)
 
 # Get LAD metrics for each tree
-LAD_metrics <- get_layers_lad(tree1, tree2, threshold=25, verbose=TRUE)
+LAD_metrics <- get_layers_lad(tree1, tree2,
+threshold=10,
+step = 1,min_height= 1.5,
+verbose=TRUE)
+
 LAD_metrics1[[i]] <- LAD_metrics$df1
 LAD_metrics2[[i]] <- LAD_metrics$df2
 }
@@ -80,9 +89,7 @@ effective_LAD <- dplyr::bind_rows(LAD_metrics2)
 \code{\link{get_renamed_df}}
 
 \code{\link{get_effective_gap}}
-
-\code{\link{remove_no_flayer_noconsec}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

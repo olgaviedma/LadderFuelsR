@@ -4,19 +4,23 @@
 \alias{get_effective_gap}
 \title{Effective Distances between fuel layers}
 \usage{
-get_effective_gap(effective_depth, verbose=TRUE)
+get_effective_gap(effective_depth, number_steps = 1, min_height= 1.5, verbose=TRUE)
 }
 \arguments{
-\item{effective_depth}{Tree metrics with the recalculated depth values considering distances > 1 m (output of [get_real_depths()] function).
-An object of the class data frame.}
+\item{effective_depth}{Tree metrics with the recalculated depth values after considering distances greater than the actual height bin step (output of [get_real_depths()]
+function). An object of the class data frame.}
+
+\item{number_steps}{Numeric value for the number of height bin steps that can be jumped to reshape fuels layers.}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame giving the effective distances (> 1 m) between consecutive fuel layers.
+A data frame giving the effective distances (> any number of steps) between consecutive fuel layers.
 }
 \description{
-This function recalculates the distance between fuel layers after removing distances = 1 m.
+This function recalculates the distance between fuel layers after considering distances greater than any number of height bin steps.
 }
 \details{
 List of tree metrics:
@@ -24,11 +28,11 @@ List of tree metrics:
   \item treeID: tree ID with strings and numeric values
   \item treeID1: tree ID with only numeric values
   \item dist: Distance between consecutive fuel layers (m)
-  \item dptf: Depth of fuel layers (m) after removing distances equal to 1 m
-  \item effdist: Effective distance between consecutive fuel layers (m) (> 1 m)
-  \item Hcbh: Height of the base of each fuel layer (m)
-  \item Hdist: Height of the distance between consecutive fuel layers (m)
-  \item Hdptf: Height of the depth of fuel layers (m) after removing distances equal to 1 m
+  \item dptf: Depth of fuel layers (m) after considering distances greater than the actual height bin step
+  \item effdist: Effective distance between consecutive fuel layers (m) after considering distances greater than any number of steps
+  \item Hcbh: Base height of each fuel separated by a distance greater than the certain number of steps
+  \item Hdist: Height of the distance (> any number of steps) between consecutive fuel layers (m)
+  \item Hdptf: Height of the depth of fuel layers (m) after considering distances greater than the actual step
   \item max_height: Maximum height of the tree
 }
 }
@@ -49,7 +53,7 @@ corr_distance_metrics_list <- list()
 
 for (i in levels(trees_name2)) {
 tree1 <- effective_depth |> dplyr::filter(treeID == i)
-corr_distance_metrics <- get_effective_gap(tree1, verbose=TRUE)
+corr_distance_metrics <- get_effective_gap(tree1, number_steps = 1, min_height= 1.5, verbose=TRUE)
 corr_distance_metrics_list[[i]] <- corr_distance_metrics
 }
 
@@ -81,5 +85,5 @@ effective_distances <- effective_distances[, new_order]
 \code{\link{get_real_depths}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

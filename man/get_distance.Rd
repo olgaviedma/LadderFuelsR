@@ -4,7 +4,7 @@
 \alias{get_distance}
 \title{Distances between fuel layers}
 \usage{
-get_distance (gap_cbh_metrics,gaps_perc,verbose=TRUE)
+get_distance (gap_cbh_metrics,gaps_perc,step=1,min_height=1.5,verbose=TRUE)
 }
 \arguments{
 \item{gap_cbh_metrics}{data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
@@ -12,6 +12,10 @@ An object of the class text.}
 
 \item{gaps_perc}{data frame with Leaf Area Density (LAD) percentiles for each height values (output of [calculate_gaps_perc()] function).
 An object of the class text.}
+
+\item{step}{Numeric value for the actual height bin step (in meters).}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
@@ -58,7 +62,7 @@ for (i in levels(trees_name2)) {
 tree1 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
 tree2 <- gaps_perc |> dplyr::filter(treeID == i)
 # Get distance metrics for each tree
-metrics_distance <- get_distance(tree1, tree2)
+metrics_distance <- get_distance(tree1, tree2, step=1, min_height=1.5)
 metrics_distance_list[[i]] <- metrics_distance
 }
 # Combine the individual data frames
@@ -71,5 +75,5 @@ distance_metrics <- dplyr::bind_rows(metrics_distance_list)
 \code{\link{calculate_gaps_perc}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

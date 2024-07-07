@@ -4,14 +4,16 @@
 \alias{get_plots_gap_fbh}
 \title{Plots of tree profiles with gaps and fuel layers base height (fbh)}
 \usage{
-get_plots_gap_fbh (LAD_profiles,depth_metrics)
+get_plots_gap_fbh (LAD_profiles,gap_cbh_metrics,min_height=1.5)
 }
 \arguments{
 \item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 An object of the class text}
 
-\item{depth_metrics}{tree metrics with gaps (distances), fuel base heights and depths (output of [get_depths()] function).
-An object of the class text}
+\item{gap_cbh_metrics}{data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
+An object of the class text.}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 }
 \value{
 A plot drawing by lines the height of gaps and fuel layers bases in tiff format.
@@ -28,18 +30,18 @@ LAD_profiles <- read.table(system.file("extdata", "LAD_profiles.txt", package = 
 header = TRUE)
 LAD_profiles$treeID <- factor(LAD_profiles$treeID)
 
-# Before running this example, make sure to run get_depths().
+# Before running this example, make sure to run get_gaps_fbhs().
 if (interactive()) {
-depth_metrics <- get_depths()
-LadderFuelsR::depth_metrics$treeID <- factor(LadderFuelsR::depth_metrics$treeID)
+gap_cbh_metrics <- get_gaps_fbhs()
+LadderFuelsR::gap_cbh_metrics$treeID <- factor(LadderFuelsR::gap_cbh_metrics$treeID)
 
 # Generate plots for gaps and fbhs
-plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, depth_metrics)
+plots_gaps_fbhs <- get_plots_gap_fbh(LAD_profiles, gap_cbh_metrics, min_height=1.5)
 }
 }
 \seealso{
-\code{\link{get_depths}}
+\code{\link{get_gaps_fbhs}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

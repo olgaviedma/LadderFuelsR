@@ -2,9 +2,9 @@
 % Please edit documentation in R/plot_cbh_maxlad.R
 \name{get_plots_cbh_LAD}
 \alias{get_plots_cbh_LAD}
-\title{Plots the Canopy Base Height (CBH) based on the maximum LAD percentage criterium}
+\title{Plots the Crown Base Height (CBH) based on the maximum LAD percentage criterium}
 \usage{
-get_plots_cbh_LAD(LAD_profiles, cbh_metrics)
+get_plots_cbh_LAD(LAD_profiles,cbh_metrics,min_height=1.5)
 }
 \arguments{
 \item{LAD_profiles}{Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
@@ -13,9 +13,11 @@ An object of the class text.}
 \item{cbh_metrics}{CBH metrics based on three criteria: maximum LAD percentage, maximum distance and last distance.
 (output of [get_cbh_metrics()] function).
 An object of the class text.}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 }
 \value{
-A plot drawing the Canopy Base Height (CBH) of the fuel layer with the maximum Leaf Area Density (LAD) percentage.
+A plot drawing the Crown Base Height (CBH) of the fuel layer with the maximum Leaf Area Density (LAD) percentage.
 }
 \description{
 This function plots the CBH of a segmented tree based on the fuel layer with the maximum LAD percentage.
@@ -38,12 +40,12 @@ trees_name1 <- as.character(cbh_metrics$treeID)
 trees_name2 <- factor(unique(trees_name1))
 
 # Generate plots for fuels LAD metrics
-plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, cbh_metrics)
+plots_trees_LAD <- get_plots_cbh_LAD(LAD_profiles, cbh_metrics, min_height=1.5)
 }
 }
 \seealso{
 \code{\link{get_layers_lad}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

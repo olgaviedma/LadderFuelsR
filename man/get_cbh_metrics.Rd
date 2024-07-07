@@ -2,19 +2,21 @@
 % Please edit documentation in R/cbh_metrics.R
 \name{get_cbh_metrics}
 \alias{get_cbh_metrics}
-\title{Methods to estimated the canopy Base Height of a tree: maximum LAD percentage, maximum distance and the last distance}
+\title{Methods to estimated the Crown Base Height of a tree: maximum LAD percentage, maximum distance and the last distance}
 \usage{
-get_cbh_metrics(effective_LAD, verbose=TRUE)
+get_cbh_metrics(effective_LAD, min_height= 1.5, verbose=TRUE)
 }
 \arguments{
-\item{effective_LAD}{Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than a threshold.
+\item{effective_LAD}{Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than a threshold (10%).
 (output of [get_layers_lad()] function).
 An object of the class text.}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
-A data frame giving the Canopy Base Height (CBH) of a tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
+A data frame giving the Crown Base Height (CBH) of a tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
 }
 \description{
 This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
@@ -24,12 +26,12 @@ List of tree metrics:
 \itemize{
   \item treeID: tree ID with strings and numeric values
   \item treeID1: tree ID with only numeric values
-  \item dist: Distance between consecutive fuel layers (m)
-  \item Hdist: Height of the distance between consecutive fuel layers (m)
-  \item Hcbh: Height of the base of each fuel layer (m)
-  \item effdist: Effective distance between consecutive fuel layers (m) (> 1 m)
-  \item dptf: Depth of fuel layers (m) at distances greater than 1 m
-  \item Hdptf: Height of the depth of fuel layers (m) at distances greater than 1 m
+  \item dptf: Depth of fuel layers (m) after considering distances greater than the actual height bin step
+  \item effdist: Effective distance between consecutive fuel layers (m) after considering distances greater than any number of steps
+  \item Hcbh: Base height of each fuel separated by a distance greater than the certain number of steps
+  \item Hdptf: Height of the depth of fuel layers (m) after considering distances greater than the actual step
+  \item Hdist: Height of the distance (> any number of steps) between consecutive fuel layers (m)
+  \item Hcbh_Hdptf - Percentage of LAD values comprised in each effective fuel layer
   \item maxlad_Hcbh - Height of the CBH of the segmented tree based on the maximum LAD percentage
   \item max_Hcbh - Height of the CBH of the segmented tree based on the maximum distance found in its profile
   \item last_Hcbh - Height of the CBH of the segmented tree based on the last distance found in its profile
@@ -57,7 +59,7 @@ cbh_dist_list <- list()
 
 for (i in levels(trees_name2)) {
 tree1 <- effective_LAD |> dplyr::filter(treeID == i)
-cbh_dist_metrics <- get_cbh_metrics(tree1, verbose=TRUE)
+cbh_dist_metrics <- get_cbh_metrics(tree1, min_height= 1.5, verbose=TRUE)
 cbh_dist_list[[i]] <- cbh_dist_metrics
 }
 
@@ -91,5 +93,5 @@ cbh_metrics <- cbh_metrics[, new_order]
 \code{\link{get_layers_lad}}
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

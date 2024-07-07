@@ -4,11 +4,13 @@
 \alias{calculate_gaps_perc}
 \title{Compute the percentile value of each height}
 \usage{
-calculate_gaps_perc (LAD_profiles)
+calculate_gaps_perc (LAD_profiles,min_height=1.5)
 }
 \arguments{
 \item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 An object of the class text}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
 }
 \value{
 A data frame giving the percentile value of each height.
@@ -32,7 +34,7 @@ percentile_list1<-list()
 
 for (i in levels(trees_name2)) {
 tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-percentiles <- calculate_gaps_perc(tree1)
+percentiles <- calculate_gaps_perc (tree1,min_height=1.5)
 percentile_list1[[i]] <- percentiles
 }
 gaps_perc <- dplyr::bind_rows(percentile_list1)
@@ -40,5 +42,5 @@ gaps_perc$treeID <- factor(gaps_perc$treeID)
 
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }

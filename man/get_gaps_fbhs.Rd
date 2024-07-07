@@ -4,11 +4,20 @@
 \alias{get_gaps_fbhs}
 \title{Gaps and Fuel layers Base Height (FBH)}
 \usage{
-get_gaps_fbhs (LAD_profiles, verbose=TRUE)
+get_gaps_fbhs (LAD_profiles, step=1, min_height=1.5,
+perc_gap= 25, perc_base= 25, verbose=TRUE)
 }
 \arguments{
 \item{LAD_profiles}{original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 An object of the class text.}
+
+\item{step}{Numeric value for the actual height bin step (in meters).}
+
+\item{min_height}{Numeric value for the actual minimum base height (in meters).}
+
+\item{perc_gap}{Numeric value of the percentile threshold used to identify gaps (default percentile 25th).}
+
+\item{perc_base}{Numeric value of the percentile threshold used to identify fuels layers base height (default percentile 25th).}
 
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
@@ -49,7 +58,10 @@ metrics_precentile_list1<-list()
 
 for (i in levels(trees_name2)) {
 tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-metrics_precentil <- get_gaps_fbhs(tree1, verbose=TRUE)
+metrics_precentil <- get_gaps_fbhs(tree1, step=1,
+min_height=1.5,
+perc_gap= 25,perc_base= 25,
+verbose=TRUE)
 metrics_precentile_list1[[i]] <- metrics_precentil
 }
 
@@ -74,5 +86,5 @@ gap_cbh_metrics <- metrics_all_percentil
 }
 }
 \author{
-Olga Viedma, Carlos Silva and JM Moreno
+Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 }
