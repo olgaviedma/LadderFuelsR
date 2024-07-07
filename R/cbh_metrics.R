@@ -1,6 +1,8 @@
 #' Methods to estimated the Crown Base Height of a tree: maximum LAD percentage, maximum distance and the last distance
 #' @description
-#' This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
+#' This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance. In
+#' the case of maximum LAD, if the first fuel layer meets the condition, then the function will be select the next fuel layer to avoid confusing
+#' with the understory vegetation.
 #' @usage
 #' get_cbh_metrics(effective_LAD, min_height= 1.5, verbose=TRUE)
 #' @param effective_LAD

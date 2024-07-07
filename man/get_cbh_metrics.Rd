@@ -19,7 +19,9 @@ An object of the class text.}
 A data frame giving the Crown Base Height (CBH) of a tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
 }
 \description{
-This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
+This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance. In
+the case of maximum LAD, if the first fuel layer meets the condition, then the function will be select the next fuel layer to avoid confusing
+with the understory vegetation.
 }
 \details{
 List of tree metrics:
