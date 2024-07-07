@@ -1,16 +1,17 @@
 #' Effective Distances between fuel layers
 #' @description
-#' This function recalculates the distance between fuel layers after removing distances = 1 m.
+#' This function recalculates the distance between fuel layers after considering distances greater than any number of height bin steps.
 #' @usage
-#' get_effective_gap(effective_depth, verbose=TRUE)
+#' get_effective_gap(effective_depth, number_steps = 1, min_height= 1.5, verbose=TRUE)
 #' @param effective_depth
-#' Tree metrics with the recalculated depth values considering distances > 1 m (output of [get_real_depths()] function).
-#' An object of the class data frame.
+#' Tree metrics with the recalculated depth values after considering distances greater than the actual height bin step (output of [get_real_depths()]
+#' function). An object of the class data frame.
+#' @param number_steps Numeric value for the number of height bin steps that can be jumped to reshape fuels layers.
+#' @param min_height Numeric value for the actual minimum base height (in meters).
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
-#' A data frame giving the effective distances (> 1 m) between consecutive fuel layers.
-#' @author
-#' Olga Viedma, Carlos Silva and JM Moreno
+#' A data frame giving the effective distances (> any number of steps) between consecutive fuel layers.
+#' @author Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 #'
 #' @details
 #' List of tree metrics:
@@ -18,11 +19,11 @@
 #'   \item treeID: tree ID with strings and numeric values
 #'   \item treeID1: tree ID with only numeric values
 #'   \item dist: Distance between consecutive fuel layers (m)
-#'   \item dptf: Depth of fuel layers (m) after removing distances equal to 1 m
-#'   \item effdist: Effective distance between consecutive fuel layers (m) (> 1 m)
-#'   \item Hcbh: Height of the base of each fuel layer (m)
-#'   \item Hdist: Height of the distance between consecutive fuel layers (m)
-#'   \item Hdptf: Height of the depth of fuel layers (m) after removing distances equal to 1 m
+#'   \item dptf: Depth of fuel layers (m) after considering distances greater than the actual height bin step
+#'   \item effdist: Effective distance between consecutive fuel layers (m) after considering distances greater than any number of steps
+#'   \item Hcbh: Base height of each fuel separated by a distance greater than the certain number of steps
+#'   \item Hdist: Height of the distance (> any number of steps) between consecutive fuel layers (m)
+#'   \item Hdptf: Height of the depth of fuel layers (m) after considering distances greater than the actual step
 #'   \item max_height: Maximum height of the tree
 #' }
 #'
@@ -43,7 +44,7 @@
 #'
 #' for (i in levels(trees_name2)) {
 #' tree1 <- effective_depth |> dplyr::filter(treeID == i)
-#' corr_distance_metrics <- get_effective_gap(tree1, verbose=TRUE)
+#' corr_distance_metrics <- get_effective_gap(tree1, number_steps = 1, min_height= 1.5, verbose=TRUE)
 #' corr_distance_metrics_list[[i]] <- corr_distance_metrics
 #' }
 #'
@@ -77,7 +78,7 @@
 #' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
 #' @importFrom utils tail
 #' @importFrom tidyselect starts_with everything one_of
-#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom stringr str_extract str_match str_detect str_remove_all
 #' @importFrom tibble tibble
 #' @importFrom tidyr pivot_longer fill
 #' @importFrom gdata startsWith
@@ -85,7 +86,11 @@
 #' theme element_text xlab ylab ggplot
 #' @seealso \code{\link{get_real_depths}}
 #' @export
-get_effective_gap <- function(effective_depth, verbose = TRUE) {
+get_effective_gap <- function(effective_depth, number_steps = 1, min_height= 1.5, verbose = TRUE) {
+
+  if(min_height==0){
+    min_height <-0.5
+  }
 
   df <- effective_depth
 
@@ -125,77 +130,89 @@ if (verbose) {
   dist_cols <- sort(grep("^dist", names(df5b), value = TRUE))
   dist_vals <- df5b[1, dist_cols, drop = FALSE]
 
-  if (length(dist_cols) == 0) {
-    df5b$dist1 <- 0
-  }
 
+  #############################################################33
+  # Check if there's only one dist column
+  dist_cols <- grep("^dist", names(df5b))
+  if (length(dist_cols) == 1) {
+    # If there's only one dist column, set effective_dist1 to dist1
+    effective_dist1 <- data.frame(effdist = df5b[1, dist_cols])
+    colnames(effective_dist1) <- "effdist1"
+  } else {
+    # Initialize effdist with zeros
+    effdist <- numeric(ncol(df5b[grep("dist", names(df5b))]))
 
-  # Initialize effdist with zeros
-  effdist <- numeric(ncol(df5b[grep("Hcbh", names(df5b))]))
+    hcbh_vals <- df5b[grep("^Hcbh", names(df5b))]
+    dist_vals <- df5b[grep("^dist", names(df5b))]
 
-  hcbh_vals <- df5b[grep("^Hcbh", names(df5b))]
-  dist_vals <- df5b[grep("^dist", names(df5b))]
+    if (ncol(hcbh_vals) > 1) {
+      # Adjust the iteration limit based on the number of columns in hcbh_vals
+      end_col <- ncol(hcbh_vals) - 1
 
-  if (ncol(hcbh_vals) > 1) {
-
-    # Adjust the iteration limit based on the number of columns in hcbh_vals
-    end_col <- ncol(hcbh_vals) - 1
-
-    # Start iterating from the first column
-    for (i in 1:end_col) {
-      # Check if neither of the values is NA before comparing
-      if (!is.na(hcbh_vals[1, i]) && !is.na(hcbh_vals[1, i + 1])) {
-        # Compare consecutive Hcbh columns
-        if (hcbh_vals[1, i] != hcbh_vals[1, i + 1] && dist_vals[1, i] > 1) {
-          effdist[i] <- dist_vals[1, i]
+      # Start iterating from the first column
+      for (i in 1:end_col) {
+        # Check if neither of the values is NA before comparing
+        if (!is.na(hcbh_vals[1, i]) && !is.na(hcbh_vals[1, i + 1])) {
+          # Compare consecutive Hcbh columns
+          if (hcbh_vals[1, i] != hcbh_vals[1, i + 1]) {
+            if (i == 1 && dist_vals[1, i] <= number_steps) {
+              effdist[i] <- 0  # Set to 0 if the first dist value <= number_steps
+              effdist[i + 1] <- dist_vals[1, i + 1]  # Proceed with the next dist value
+            } else if (dist_vals[1, i] > number_steps && dist_vals[1, i + 1] > number_steps) {
+              effdist[i] <- dist_vals[1, i]
+              effdist[i + 1] <- dist_vals[1, i + 1]
+            }
+          }
         }
+      }
+
+      # If only one dist and Hcbh column, assign the dist value to effdist if dist > 1
+      if (ncol(dist_vals) == 1 && dist_vals[1, 1] > number_steps) {
+        effdist[1] <- dist_vals[1, 1]
       }
     }
 
-    # For the last column, take the dist value if there are no more paired Hcbh values
-    if (dist_vals[1, ncol(dist_vals)] > 1) {
-      effdist[ncol(hcbh_vals)] <- dist_vals[1, ncol(dist_vals)]
-    }
-  } else {
-    # If only one dist and Hcbh column, assign the dist value to effdist if dist > 1
-    if (dist_vals[1, 1] > 1) {
-      effdist[1] <- dist_vals[1, 1]
-    }
+    # Remove trailing zeros and keep only the relevant distances
+    effdist <- effdist[effdist > 0]
+
+    # Get the numeric suffixes of the original dist columns analyzed
+    dist_suffixes <- which(dist_vals > number_steps)
+    dist_suffixes <- gsub("dist", "", names(dist_vals)[dist_suffixes])
+
+    # Create a data frame for the effective distances
+    effective_dist1 <- data.frame(t(effdist))
+
+    # Name the columns of effective_dist1 with "effdist" and the numeric suffixes
+    colnames(effective_dist1) <- paste0("effdist", dist_suffixes)
   }
 
-  effective_dist1 <- data.frame(t(effdist))
-  # Assign column names
-  colnames(effective_dist1) <- paste0("effdist", 1:ncol(effective_dist1))
+    ################################################
 
-  df6 <- cbind.data.frame(df5b, effective_dist1)
+  if (exists("effective_dist1") && ncol(effective_dist1) > 0) {
+    df6 <- cbind.data.frame(df5b, effective_dist1)
+  }
 
+  if (length(effective_dist1) == 0 && ncol(hcbh_vals) ==1 && ncol(dist_vals) ==1) {
 
-  # 1. Remove `effdist` values that are 0
-  #effdist_cols <- grep("^effdist", names(df6), value = TRUE)
-  #df6 <- df6[, !(names(df6) %in% effdist_cols[df6[effdist_cols] == 0])]
+    effdist1 <-data.frame(df5b$dist1)
+    names(effdist1)<-"effdist1"
+    effective_dist1 <- effdist1
+    df6 <- cbind.data.frame(df5b, effective_dist1)
+  }
 
-  Hcbh_cols <- grep("^Hcbh", names(df6), value = TRUE)
-  hcbh_data <- df6[Hcbh_cols]
+  if(!exists ("df6")){
+    df6<-df5b
+  }
 
-  # Transpose, remove duplicates, and transpose back
-  hcbh_data_cleaned <- t(unique(t(hcbh_data)))
+  # Check if dist1 <= number_steps, if so, set effdist1 to 0
+  if (df6$dist1 < number_steps) {
+    df6$effdist1 <- 0
+  }
 
-  original_colnames <- colnames(hcbh_data)
-  cleaned_colnames <- colnames(hcbh_data_cleaned)
+  if(!"effdist1" %in% colnames(df6) && "dist1" %in% colnames(df6)){
+    df6$effdist1 <- ceiling(df6$Hcbh1 - min_height)
 
-  # Determine which columns to replace
-  cols_to_replace <- original_colnames[original_colnames %in% cleaned_colnames]
-
-  # Replace in the original df
-  df6[cols_to_replace] <- hcbh_data_cleaned
-
-  df6 <- df6[, !names(df6) %in% original_colnames[!original_colnames %in% cleaned_colnames]]
-
-  # Select "Hdepth" columns
-  Hdepth_cols <- names(df6)[str_detect(names(df6), "^Hdptf")]
-
-  # Replace 0s with NAs in "Hdepth" columns
-  df6[Hdepth_cols] <- lapply(df6[Hdepth_cols], function(x) ifelse(x == 0, NA, x))
+  }
 
   ######################################################
 
@@ -227,27 +244,114 @@ if (verbose) {
   }
 
 
+  # Check if Hdist column exists and create it if it doesn't
+  if (!"Hdist1" %in% colnames(df6a)) {
+    df6a <- df6a %>%
+      mutate(Hdist1 = min_height)
+  }
+
   # Extracting column names
   col_names <- names(df6a)
 
-  # Finding indices of Hdist, Hdptf, and effdist columns
+  # Finding indices of relevant columns
   hdist_indices <- grep("^Hdist[0-9]*$", col_names)
   hdptf_indices <- grep("^Hdptf[0-9]*$", col_names)
   hcbh_indices <- grep("^Hcbh[0-9]*$", col_names)
   effdist_indices <- grep("^effdist[0-9]*$", col_names)
   dist_indices <- grep("^dist[0-9]*$", col_names)
 
+  # Convert effdist columns to numeric
+  df6a[, effdist_indices] <- lapply(df6a[, effdist_indices], as.numeric)
 
-  # Remove the columns
-  if (df6a$Hcbh1 == 1.5 && length(hdist_indices) == length(hcbh_indices)) {
-    cols_to_remove <- c(tail(effdist_indices, 1), tail(hdist_indices, 1), tail(dist_indices, 1))
-    df6a <- df6a[, -cols_to_remove, drop = FALSE]
-  }
 
-  if (df6a$Hcbh1 > 1.5 && length(hdist_indices) > length(hcbh_indices)) {
-    cols_to_remove <- c(tail(effdist_indices, 1), tail(hdist_indices, 1), tail(dist_indices, 1))
-    df6a <- df6a[, -cols_to_remove, drop = FALSE]
-  }
+  # Check condition and modify columns if TRUE
+  if (df6a$Hcbh1 == min_height && (df6a$Hdist1 > df6a$Hcbh1)) {
+    # Create a new data frame with updated column names
+    df6a_updated <- df6a
+
+    # Create a list to store new column names
+    new_col_names <- col_names
+
+    # Rename Hdist columns with incremented suffixes
+    for (i in hdist_indices) {
+      old_name <- col_names[i]
+      # Extract the suffix, handle NA case
+      old_suffix <- as.numeric(sub("Hdist", "", old_name))
+      new_suffix <-  old_suffix + 1
+      new_name <- paste0("Hdist", new_suffix)
+
+      # Rename column if the new name is valid (not NA)
+      if (!is.na(new_suffix)) {
+        new_col_names[i] <- new_name
+      }
+    }
+
+    # Remove "Hdist" if it exists in the new column names list
+    if ("Hdist" %in% new_col_names) {
+      new_col_names <- new_col_names[new_col_names != "Hdist"]
+    }
+
+    colnames(df6a_updated) <- new_col_names
+
+    new_col_names1 <- colnames(df6a_updated)
+
+    # Rename Hdist columns with incremented suffixes
+    for (i in dist_indices) {
+      old_name <- colnames(df6a_updated)[i]
+      # Extract the suffix, handle NA case
+      old_suffix <- as.numeric(sub("dist", "", old_name))
+      new_suffix <- ifelse(is.na(old_suffix), NA, old_suffix + 1)
+      new_name <- paste0("dist", new_suffix)
+
+      # Rename column if the new name is valid (not NA)
+      if (!is.na(new_suffix)) {
+        new_col_names1[i] <- new_name
+      }
+    }
+
+    colnames(df6a_updated) <- new_col_names1
+
+     new_col_names2 <-  colnames(df6a_updated)
+
+    # Rename Hdist columns with incremented suffixes
+    for (i in effdist_indices) {
+      old_name <-  colnames(df6a_updated)[i]
+      # Extract the suffix, handle NA case
+      old_suffix <- as.numeric(sub("effdist", "", old_name))
+      new_suffix <- ifelse(is.na(old_suffix), NA, old_suffix + 1)
+      new_name <- paste0("effdist", new_suffix)
+
+      # Rename column if the new name is valid (not NA)
+      if (!is.na(new_suffix)) {
+        new_col_names2[i] <- new_name
+      }
+    }
+
+    colnames(df6a_updated) <- new_col_names2
+
+
+    # Check if 'dist' exists in the new column names list
+    if (!("effdist1" %in%  colnames(df6a_updated) )) {
+      if(df6a_updated$Hcbh1 == min_height) {
+      df6a <- df6a_updated %>%
+        mutate(effdist1 =0)
+    }}
+
+    # Check if 'dist' exists in the new column names list
+    if (!("Hdist1" %in%  colnames(df6a))) {
+      if(df6a_updated$Hcbh1 == min_height) {
+      df6a <- df6a %>%
+        mutate(Hdist1 = min_height)
+    }}
+
+    # Check if 'dist' exists in the new column names list
+    if (!("dist1" %in% colnames(df6a))) {
+      if(df6a_updated$Hcbh1 == min_height) {
+      df6a <- df6a %>%
+        mutate(dist1 = 0)
+    }}
+}
+
 
   if (length(effdist_indices) > length(hdist_indices)) {
     cols_to_remove <- c(tail(effdist_indices, 1))
@@ -277,9 +381,10 @@ if (verbose) {
     treeID2 <-df6f$treeID2
     df6f <- df6f %>%
       dplyr::rename(
-        treeID= treeID2,
-        treeID1 = treeID1)
+        treeID1= treeID2,
+        treeID = treeID1)
   }
+
   cols_to_exclude1 <- grep("max1", names(df6f), value = TRUE)
   df6f <- df6f[ , !(names(df6f) %in% cols_to_exclude1)]
 

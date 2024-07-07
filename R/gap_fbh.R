@@ -1,12 +1,17 @@
 #' Gaps and Fuel layers Base Height (FBH)
 #' @description This function calculates gaps and fuel layers base height (FBH) as the difference in percentiles between consecutive LAD values along the vertical tree profile (VTP).
 #' Negative differences are linked to gaps and positive differences to fuel base height.
-#' @usage get_gaps_fbhs (LAD_profiles, verbose=TRUE)
+#' @usage get_gaps_fbhs (LAD_profiles, step=1, min_height=1.5,
+#' perc_gap= 25, perc_base= 25, verbose=TRUE)
 #' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
 #' An object of the class text.
+#' @param step Numeric value for the actual height bin step (in meters).
+#' @param min_height Numeric value for the actual minimum base height (in meters).
+#' @param perc_gap Numeric value of the percentile threshold used to identify gaps (default percentile 25th).
+#' @param perc_base Numeric value of the percentile threshold used to identify fuels layers base height (default percentile 25th).
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return A data frame giving the height of gaps and fuel layers bases in meters.
-#' @author Olga Viedma, Carlos Silva and JM Moreno
+#' @author Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 #'
 #'@details
 #' # List of tree metrics:
@@ -38,7 +43,10 @@
 #'
 #' for (i in levels(trees_name2)) {
 #' tree1 <- LAD_profiles |> dplyr::filter(treeID == i)
-#' metrics_precentil <- get_gaps_fbhs(tree1, verbose=TRUE)
+#' metrics_precentil <- get_gaps_fbhs(tree1, step=1,
+#' min_height=1.5,
+#' perc_gap= 25,perc_base= 25,
+#' verbose=TRUE)
 #' metrics_precentile_list1[[i]] <- metrics_precentil
 #' }
 #'
@@ -62,22 +70,51 @@
 #' gap_cbh_metrics <- metrics_all_percentil
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
-#' across matches row_number all_of vars
+#' across matches row_number all_of vars bind_cols case_when left_join mutate if_else lag n_distinct
 #' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
 #' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
 #' @importFrom utils tail
 #' @importFrom tidyselect starts_with everything one_of
-#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom stringr str_extract str_match str_detect str_remove_all
 #' @importFrom tibble tibble
-#' @importFrom tidyr pivot_longer fill
+#' @importFrom tidyr pivot_longer fill pivot_wider replace_na
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
-#' theme element_text xlab ylab ggplot
+#' theme element_text xlab ylab ggplot xlim
 #' @export
-get_gaps_fbhs<- function (LAD_profiles, verbose=TRUE) {
+get_gaps_fbhs<- function (LAD_profiles, step=1,
+                          min_height=1.5,
+                          perc_gap= 25,perc_base= 25,
+                          verbose=TRUE) {
 
-    df <- LAD_profiles
+  df <- LAD_profiles
+
+
+  if(min_height==0){
+    min_height <-0.5
+
+    # Ensure the column starts with a negative value
+    if (df_orig$height[1] < min_height) {
+      # Calculate the shift value
+      shift_value <- abs(df_orig$height[1])
+
+      # Adjust the column to start from 0
+      df_orig$height <- df_orig$height + shift_value
+    }
+
+
+    # Ensure the column starts with a negative value
+    if (df_orig$height[1] > min_height) {
+      # Calculate the shift value
+      shift_value1 <- abs(df_orig$height[1])
+
+      # Adjust the column to start from 0
+      df_orig$height <- df_orig$height - shift_value1
+    }
+  }
+
+
 
     treeID <- "treeID"
 
@@ -114,17 +151,34 @@ get_gaps_fbhs<- function (LAD_profiles, verbose=TRUE) {
 
 } else {
 
+  # Calculate percentiles for each treeID
   PERCENTIL_Z <- df %>%
     dplyr::group_by(treeID) %>%
-    dplyr::summarise(
-      P5 = quantile(lad, probs = 0.05, na.rm = TRUE),
-      P25 = quantile(lad, probs = 0.25, na.rm = TRUE),
-      P50 = quantile(lad, probs = 0.50, na.rm = TRUE),
-      P75 = quantile(lad, probs = 0.75, na.rm = TRUE),
-      P90 = quantile(lad, probs = 0.90, na.rm = TRUE),
-      P95 = quantile(lad, probs = 0.95, na.rm = TRUE),
-      P99 = quantile(lad, probs = 0.99, na.rm = TRUE)
-    )
+    dplyr::summarise(across(lad, list(
+      P5 = ~ quantile(.x, probs = 0.05, na.rm = TRUE),
+      P10 = ~ quantile(.x, probs = 0.10, na.rm = TRUE),
+      P15 = ~ quantile(.x, probs = 0.15, na.rm = TRUE),
+      P20 = ~ quantile(.x, probs = 0.20, na.rm = TRUE),
+      P25 = ~ quantile(.x, probs = 0.25, na.rm = TRUE),
+      P30 = ~ quantile(.x, probs = 0.30, na.rm = TRUE),
+      P35 = ~ quantile(.x, probs = 0.35, na.rm = TRUE),
+      P40 = ~ quantile(.x, probs = 0.40, na.rm = TRUE),
+      P45 = ~ quantile(.x, probs = 0.45, na.rm = TRUE),
+      P50 = ~ quantile(.x, probs = 0.50, na.rm = TRUE),
+      P55 = ~ quantile(.x, probs = 0.55, na.rm = TRUE),
+      P60 = ~ quantile(.x, probs = 0.60, na.rm = TRUE),
+      P65 = ~ quantile(.x, probs = 0.65, na.rm = TRUE),
+      P70 = ~ quantile(.x, probs = 0.70, na.rm = TRUE),
+      P75 = ~ quantile(.x, probs = 0.75, na.rm = TRUE),
+      P80 = ~ quantile(.x, probs = 0.80, na.rm = TRUE),
+      P85 = ~ quantile(.x, probs = 0.85, na.rm = TRUE),
+      P90 = ~ quantile(.x, probs = 0.90, na.rm = TRUE),
+      P95 = ~ quantile(.x, probs = 0.95, na.rm = TRUE),
+      P99 = ~ quantile(.x, probs = 0.99, na.rm = TRUE)
+    ))) %>%
+    dplyr::ungroup()
+
+  #print(PERCENTIL_Z)
 
   x1 <- df$height
   y1 <- df$lad
@@ -137,202 +191,226 @@ get_gaps_fbhs<- function (LAD_profiles, verbose=TRUE) {
     x <- x1[!missing_x & !missing_y]
     y <- y1[!missing_x & !missing_y]
 
-    fit <- smooth.spline(x, y)  # Fit a smoothing spline
-    y_second_deriv <- predict(fit, fit$x, deriv = 2)  # Calculate the second derivative
+    # Fit a smoothing spline to the data
+    fit <- smooth.spline(x, y)
 
-    base_2drivative <- data.frame(do.call(cbind, y_second_deriv))  # convert the list into a dataframe
-    base_2drivative$y <- round(base_2drivative$y, digits = 10)
+    # Calculate the second derivative for all original x values
+    y_second_deriv <- predict(fit, x, deriv = 2)
 
+    # Convert the second derivative results into a data frame
+    base_2drivative <- data.frame(x = y_second_deriv$x, y = round(y_second_deriv$y, digits = 10))
+
+    # Merge the second derivative with the original data frame
     critical_points <- base_2drivative[, 2]  # Extract the values of the second derivative
     base_2drivative2 <- cbind.data.frame(df[, c(1:3)], critical_points)
 
-    gaps_perc <- with(base_2drivative2,
-                      ifelse(lad <= PERCENTIL_Z$P5 , "5",
-                             ifelse(lad > PERCENTIL_Z$P5 & lad <= PERCENTIL_Z$P25, "25",
-                                    ifelse(lad > PERCENTIL_Z$P25 & lad <= PERCENTIL_Z$P50, "50",
-                                           ifelse(lad > PERCENTIL_Z$P50 & lad <= PERCENTIL_Z$P75, "75",
-                                                  ifelse(lad > PERCENTIL_Z$P75 & lad <= PERCENTIL_Z$P90, "90",
-                                                         ifelse(lad > PERCENTIL_Z$P90 & lad <= PERCENTIL_Z$P95, "95",
-                                                                ifelse(lad > PERCENTIL_Z$P95 & lad <= PERCENTIL_Z$P99, "99",
-                                                                       ifelse(lad >  PERCENTIL_Z$P99, "100", NA)) )))))))
+    # Calculate gaps_perc using dplyr::case_when
+    gaps_perc <- df %>%
+      mutate(
+        gaps_perc = case_when(
+          lad <= PERCENTIL_Z$lad_P5 ~ "5",
+          lad > PERCENTIL_Z$lad_P5 & lad <= PERCENTIL_Z$lad_P10 ~ "10",
+          lad > PERCENTIL_Z$lad_P10 & lad <= PERCENTIL_Z$lad_P15 ~ "15",
+          lad > PERCENTIL_Z$lad_P15 & lad <= PERCENTIL_Z$lad_P20 ~ "20",
+          lad > PERCENTIL_Z$lad_P20 & lad <= PERCENTIL_Z$lad_P25 ~ "25",
+          lad > PERCENTIL_Z$lad_P25 & lad <= PERCENTIL_Z$lad_P30 ~ "30",
+          lad > PERCENTIL_Z$lad_P30 & lad <= PERCENTIL_Z$lad_P35 ~ "35",
+          lad > PERCENTIL_Z$lad_P35 & lad <= PERCENTIL_Z$lad_P40 ~ "40",
+          lad > PERCENTIL_Z$lad_P40 & lad <= PERCENTIL_Z$lad_P45 ~ "45",
+          lad > PERCENTIL_Z$lad_P45 & lad <= PERCENTIL_Z$lad_P50 ~ "50",
+          lad > PERCENTIL_Z$lad_P50 & lad <= PERCENTIL_Z$lad_P55 ~ "55",
+          lad > PERCENTIL_Z$lad_P55 & lad <= PERCENTIL_Z$lad_P60 ~ "60",
+          lad > PERCENTIL_Z$lad_P60 & lad <= PERCENTIL_Z$lad_P65 ~ "65",
+          lad > PERCENTIL_Z$lad_P65 & lad <= PERCENTIL_Z$lad_P70 ~ "70",
+          lad > PERCENTIL_Z$lad_P70 & lad <= PERCENTIL_Z$lad_P75 ~ "75",
+          lad > PERCENTIL_Z$lad_P75 & lad <= PERCENTIL_Z$lad_P80 ~ "80",
+          lad > PERCENTIL_Z$lad_P80 & lad <= PERCENTIL_Z$lad_P85 ~ "85",
+          lad > PERCENTIL_Z$lad_P85 & lad <= PERCENTIL_Z$lad_P90 ~ "90",
+          lad > PERCENTIL_Z$lad_P90 & lad <= PERCENTIL_Z$lad_P95 ~ "95",
+          lad > PERCENTIL_Z$lad_P95 & lad <= PERCENTIL_Z$lad_P99 ~ "99",
+          lad > PERCENTIL_Z$lad_P99 ~ "100",
+          TRUE ~ NA_character_
+        )
+      )
 
-    gaps_perc1 <- data.frame(percentil = as.numeric(gaps_perc))
-    gaps_perc2 <- cbind.data.frame(base_2drivative2, gaps_perc1)
-
-
-percentil<-gaps_perc2$percentil
-
-#######################################
-##GAPS
-#######################################
-
-diffs <- diff(percentil)  # calculate differences between adjacent elements
-ind <- which(diffs < 0) + 1  # get indices of elements with a difference less than 0, add 1 to get indices of the corresponding consecutive elements
-
-group <- cumsum(c(1, diff(ind) != 1)) # Use cumsum() to create a grouping variable for consecutive values
-split_x <- split(ind, group)# split the vector into a list of vectors based on the grouping variable
-
-gaps1 <- lapply(split_x, function (x) gaps_perc2[x,]) ## extract values from original df
-gaps2<-do.call(rbind,gaps1)
-
-#####
-varname <- "lad"# define the variable to use for subsetting: minimum LAD
-minvals <- lapply(gaps1, function(df) {
-  if (length(df$lad) > 0 && any(!is.na(df$lad))) {
-    min(df$lad[is.finite(df$lad)])
-  } else {
-    NA
-  }
-})
-
-subsetlist <- lapply(gaps1, function(df) {
-  minval <- min(df$lad[is.finite(df$lad)])
-  subset(df, df$lad == minval)
-}) # subset the list with the min LAD
-
-gaps5<-do.call(rbind,subsetlist)
-gaps5a<-data.frame(t(gaps5))
-
-# Subset the dataframe based on the condition
-
-gaps5b<-dplyr::filter(gaps5, percentil <= 25)
-
-# filter only percentil == 5
-  gaps_perc_5 <- gaps_perc2 %>%
-    dplyr::filter(percentil == 5)
-
-# Create an empty list to store the subsetted data frames
-subset_list <- list()
-
-# Identify consecutive groups based on the "height" column
-consecutive_groups <- cumsum(c(TRUE, diff(gaps_perc_5$height) != 1))
-
-# Iterate over each consecutive group
-for (group in unique(consecutive_groups)) {
-  # Subset the current group
-  group_subset <- gaps_perc_5[consecutive_groups == group, ]
-
-  # Add the first and last rows of the subset to the list
-  subset_list[[group]] <- rbind(group_subset[1, ], group_subset[nrow(group_subset), ])
-}
-
-# Combine the subsetted data frames into a single data frame
-result <- do.call(rbind, subset_list)
-result_unique <- unique(result)
+    # Check the distribution of gaps_perc
+   #print(table(gaps_perc$gaps_perc))
 
 
-  ############################################
+    # Combine results into final data frame
+    gaps_perc1 <- gaps_perc %>% mutate(percentil = as.numeric(gaps_perc))
+    gaps_perc2 <- bind_cols(base_2drivative2, percentil = gaps_perc1$percentil)
 
-# filter only percentil <= 25
-  gaps_perc_25 <- gaps_perc2 %>%
-  dplyr::filter(percentil <= 25)
+    percentil <- gaps_perc2$percentil
 
-# Create an empty list to store the subsetted data frames
-subset_list1 <- list()
+    #######################################
+    ##GAPS
+    #######################################
 
-# Identify consecutive groups based on the "height" column
-consecutive_groups1 <- cumsum(c(TRUE, diff(gaps_perc_25$height) != 1))
+    diffs <- diff(percentil)  # calculate differences between adjacent elements
+    ind <- which(diffs < 0)+1 # get indices of elements with a difference less than 0, add 1 to get indices of the corresponding consecutive elements
 
-# Iterate over each consecutive group
-for (group in unique(consecutive_groups1)) {
-  # Subset the current group
-  group_subset1 <- gaps_perc_25[consecutive_groups1 == group, ]
+    group <- cumsum(c(1, diff(ind) != 1)) # Use cumsum() to create a grouping variable for consecutive values
+    split_x <- split(ind, group)# split the vector into a list of vectors based on the grouping variable
 
-  # Add the first and last rows of the subset to the list
-  subset_list1[[group]] <- rbind(group_subset1[1, ], group_subset1[nrow(group_subset1), ])
-}
+    gaps1 <- lapply(split_x, function (x) gaps_perc2[x,]) ## extract values from original df
+    gaps2<-do.call(rbind,gaps1)
 
-# Combine the subsetted data frames into a single data frame
-result1 <- do.call(rbind, subset_list1)
-result_unique1 <- unique(result1)
+    subsetlist <- lapply(gaps1, function(df) {
+      minval <- min(df$lad[is.finite(df$lad)])
+      subset(df, df$lad == minval)
+    }) # subset the list with the min LAD
 
-############################################
+    gaps5<-do.call(rbind,subsetlist)
+    gaps5a<-data.frame(t(gaps5))
 
-    gaps5i<-rbind.data.frame(gaps5b,result_unique,result_unique1)
+    # Subset the dataframe based on the condition
 
-     gaps5j <- gaps5i[!duplicated(gaps5i), ]
-gaps5k<-gaps5j[with(gaps5j, order(height)), ]
+    perc_gap_value <-perc_gap ## default 25
 
-   gaps6<-data.frame(t(gaps5k))
+    gaps5b<-dplyr::filter(gaps5, percentil <= perc_gap_value)
 
+        ############################################
 
-#######################################
-##CROWNS-BASE
-#######################################
+    # filter only percentil == 5
+    gaps_perc_5 <- gaps_perc2 %>%
+      dplyr::filter(percentil == 5)
 
-diffs <- diff(percentil)  # calculate differences between adjacent elements
-diff_vec <- c(percentil[1], diff(percentil))
+    # Create an empty list to store the subsetted data frames
+    subset_list <- list()
 
-ind1 <- which(diff_vec > 0)  # get indices of elements with a difference greater than 0, add 1 to get indices of the corresponding consecutive elements
+    # Identify consecutive groups based on the "height" column
+    consecutive_groups <- cumsum(c(TRUE, diff(gaps_perc_5$height) != step))
 
-group1 <- cumsum(c(1, diff(ind1) != 1)) # Use cumsum() to create a grouping variable for consecutive values
-split_y <- split(ind1, group1)# split the vector into a list of vectors based on the grouping variable
+    # Iterate over each consecutive group
+    for (group in unique(consecutive_groups)) {
+      # Subset the current group
+      group_subset <- gaps_perc_5[consecutive_groups == group, ]
 
-crown1 <- lapply(split_y, function (x) df[x,]) ## extract values from original df
-crown2<-do.call(rbind,crown1)
+      # Add the first and last rows of the subset to the list
+      subset_list[[group]] <- rbind(group_subset[1, ], group_subset[nrow(group_subset), ])
+    }
 
-crown2a <- lapply(split_y, function (x) gaps_perc2[x,]) ## extract values from original df
-crown2b<-do.call(rbind,crown2a)
-
-#######################################
-
-subset_crown2a <- lapply(crown2a, function(x) x[x$percentil > 5, ])
-
-crown3<-do.call(rbind,subset_crown2a)
-crown3a<-data.frame(t(crown3))
-
-varname <- "lad"# define the variable to use for subsetting: minimum LAD
-minvals1 <- lapply(gaps1, function(df) {
-  if (length(df$lad) > 0 && any(!is.na(df$lad))) {
-    min(df$lad[is.finite(df$lad)])
-  } else {
-    NA
-  }
-})
-
-subsetlist1 <- lapply(subset_crown2a, function(df) {
-  if (any(is.finite(df$lad) & !is.na(df$lad))) {
-    minval1 <- min(df$lad[is.finite(df$lad)])
-    subset(df, df$lad == minval1)
-  } else {
-    NULL  # or any other value that indicates no valid subset
-  }
-}) # subset the list with the minimum LAD
-crown3b<-do.call(rbind,subsetlist1)
-crown3c<-data.frame(t(crown3b))
+    # Combine the subsetted data frames into a single data frame
+    result <- do.call(rbind, subset_list)
+    result_unique <- unique(result)
 
 
-# filter only percentil > 5
-perc_5 <- gaps_perc2 %>%
-  dplyr::filter(percentil > 5)
+    ############################################
+    # filter only percentil <= 25
+    gaps_perc_25 <- gaps_perc2 %>%
+      dplyr::filter(percentil <= perc_gap_value)
+
+    # Create an empty list to store the subsetted data frames
+    subset_list1 <- list()
+
+    # Identify consecutive groups based on the "height" column
+    consecutive_groups1 <- cumsum(c(TRUE, diff(gaps_perc_25$height) != step))
+
+    # Iterate over each consecutive group
+    for (group in unique(consecutive_groups1)) {
+      # Subset the current group
+      group_subset1 <- gaps_perc_25[consecutive_groups1 == group, ]
+
+      # Add the first and last rows of the subset to the list
+      subset_list1[[group]] <- rbind(group_subset1[1, ], group_subset1[nrow(group_subset1), ])
+    }
+
+    # Combine the subsetted data frames into a single data frame
+    result1 <- do.call(rbind, subset_list1)
+    result_unique1 <- unique(result1)
+
+    ############################################
+
+    gaps5i<-rbind.data.frame(gaps5b,result_unique, result_unique1)
+
+    gaps5j <- gaps5i[!duplicated(gaps5i), ]
+    gaps5k<-gaps5j[with(gaps5j, order(height)), ]
+
+    gaps6<-data.frame(t(gaps5k))
 
 
-if (any(diff(perc_5$height) == 1)) {
+    #######################################
+    ##CROWNS-BASE
+    #######################################
 
-# find the first and last consecutive rows based on the "height" column
-consecutive_rows1 <- which(diff(perc_5$height) == 1)
-first_consecutive_row1 <- min(consecutive_rows1)
-last_consecutive_row1 <- max(consecutive_rows1)
+    diffs <- diff(percentil)  # calculate differences between adjacent elements
+    #diff_vec <- c(percentil[1], diff(percentil))
+    #ind1 <- which(diff_vec > 5)  # (before was 0) get indices of elements with a difference greater than 0
 
-# subset the original data frame using the first and last consecutive rows
-crown_first_last <- perc_5[c(first_consecutive_row1, last_consecutive_row1), ]
+    ind1 <- which(diffs > 5) + 1
 
-crown3c<-rbind.data.frame(crown3b,crown_first_last)
-crown3d <- crown3c[!duplicated(crown3c), ]
-crown3e<-crown3d[with(crown3d, order(height)), ]
+    group1 <- cumsum(c(1, diff(ind1) != 1)) # Use cumsum() to create a grouping variable for consecutive values
+    split_y <- split(ind1, group1)# split the vector into a list of vectors based on the grouping variable
 
-crown4<-data.frame(t(crown3e))
+    crown1 <- lapply(split_y, function (x) df[x,]) ## extract values from original df
+    crown2<-do.call(rbind,crown1)
 
-} else {
+    crown2a <- lapply(split_y, function (x) gaps_perc2[x,]) ## extract values from original df
+    crown2b<-do.call(rbind,crown2a)
 
-  crown4<-data.frame(t(crown3b))
-}
+    subsetlist1 <- lapply(crown2a, function(df) {
+      if (any(is.finite(df$lad) & !is.na(df$lad))) {
+        minval1 <- min(df$lad[is.finite(df$lad)])
+        subset(df, df$lad == minval1)
+      } else {
+        NULL  # or any other value that indicates no valid subset
+      }
+    }) # subset the list with the minimum LAD
 
-############ ADAPT THE GAPS TO THE CBH (PREFEReNCE THE CBHs because there are some problems with distance calculus)
+    crown2c<-do.call(rbind,subsetlist)
 
-if (exists("crown3e") && !is.null(crown3e) && length(crown3e) > 0) {
+    ################################
+
+    perc_base_value <-perc_base ## default 5
+
+    subset_crown2a <- lapply(subsetlist1, function(x) x[x$percentil > perc_base_value, ])
+
+    crown3<-do.call(rbind,subset_crown2a)
+
+
+  ####################################################################
+        # filter only percentil > 5
+
+    perc_base_value <-perc_base ## default 5
+
+    perc_5 <- gaps_perc2 %>%
+      dplyr::filter(percentil > perc_base_value)
+
+      # Create an empty list to store the subsetted data frames
+    subset_list2 <- list()
+
+    # Identify consecutive groups based on the "height" column
+    consecutive_groups2 <- cumsum(c(TRUE, diff(perc_5$height) != step))
+
+    # Iterate over each consecutive group
+    for (group in unique(consecutive_groups2)) {
+      # Subset the current group
+      group_subset2 <- perc_5[consecutive_groups2 == group, ]
+
+      # Add the first and last rows of the subset to the list
+      subset_list2[[group]] <- rbind(group_subset2[1, ], group_subset2[nrow(group_subset2), ])
+    }
+
+    # Combine the subsetted data frames into a single data frame
+    result2 <- do.call(rbind, subset_list2)
+    result_unique2 <- unique(result2)
+
+    ################################################3
+
+    crown3b<-rbind.data.frame(crown3,result_unique2)
+
+    crown3b <- crown3b[!duplicated(crown3b), ]
+    crown3b<-crown3b[with(crown3b, order(height)), ]
+
+       crown4<-data.frame(t(crown3b))
+
+
+  ############ ADAPT THE GAPS TO THE CBH (PREFEReNCE THE CBHs because there are some problems with distance calculus)
+
+if (exists("crown3b") && !is.null(crown3b) && length(crown3b) > 0) {
 # Select heights in gaps5k that are not in crown3e
-gaps5l <- setdiff(gaps5k$height, crown3e$height)
+gaps5l <- setdiff(gaps5k$height, crown3b$height)
 gaps5m <- df[df$height %in% gaps5l, ]
  gaps6<-data.frame(t(gaps5m))
 
@@ -450,6 +528,15 @@ names(max_height)="max_height"
     gap_cbh_metrics <- dplyr::arrange(gap_cbh_metrics, treeID1)
 
     treeID1<-unique(factor(df$treeID1))
+
+    # Apply the code
+    round_columns <- grep("^(cbh|gap)", names(gap_cbh_metrics), value = TRUE)
+    numeric_columns <- sapply(gap_cbh_metrics[round_columns], is.numeric)
+    numeric_round_columns <- round_columns[numeric_columns]
+
+    gap_cbh_metrics[numeric_round_columns] <- lapply(gap_cbh_metrics[numeric_round_columns], floor)
+
+
 }
 
 return(gap_cbh_metrics)

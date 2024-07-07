@@ -1,18 +1,22 @@
-#' Fuels base height after removing distances = 1 m
+# Declare global variables to avoid R CMD check warnings
+utils::globalVariables(c("treeID2", "max1"))
+#' Fuels base height recalculation after after considering distances greater than any number of height bin steps
 #' @description
-#' This function recalculates fuels base height after removing distances = 1 m,
-#' keeping the first "base height" from those consecutive ones separated by a distance = 1.
+#' This function reshapes fuel layers after removing distances equal to any number of height bin steps,
+#' keeping the first "base height" from those consecutive ones separated by such distance.
 #' @usage
-#' get_real_fbh(depth_metrics,verbose=TRUE)
+#' get_real_fbh(depth_metrics, step= 1, number_steps = 1, min_height=1.5, verbose=TRUE)
 #' @param depth_metrics
-#' Tree metrics with gaps (distances), fuel base heights, and depths
+#' Tree metrics with distances, fuel base heights, and depths
 #' (output of [get_depths()] function). An object of the class text.
+#' @param step Numeric value for the actual height bin step (in meters).
+#' @param number_steps Numeric value for the number of height bin steps that can be jumped to reshape fuels layers.
+#' @param min_height Numeric value for the actual minimum base height (in meters).
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
-#' A data frame giving the first "base height" from those consecutive ones separated by a distance = 1.
-#' This value replaces the values of the next base heights if they are separated by a distance = 1.
-#' @author
-#' Olga Viedma, Carlos Silva and JM Moreno
+#' A data frame giving the first "base height" from those consecutive ones separated by the number of height bin steps indicated in the function.
+#' The function returns new fuel layers separated by distances greater than the indicated number of steps.
+#' @author Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 #'
 #' @details
 #' # List of tree metrics:
@@ -21,7 +25,7 @@
 #'   \item treeID1: tree ID with only numeric values
 #'   \item dist: Distance between consecutive fuel layers (m)
 #'   \item Hdist - Height of the distance between consecutive fuel layers (m)
-#'   \item Hcbh - Height of the first base height from those ones separated by a distance = 1.
+#'   \item Hcbh - Base height of each fuel separated by a distance greater than the certain number of steps
 #'   \item depth - Depth of fuel layers (m)
 #'   \item Hdepth - Height of the depth of fuel layers (m)
 #'   \item max_height - Maximum height of the tree profile
@@ -44,7 +48,7 @@
 #' # Filter data for each tree
 #' tree3 <- depth_metrics |> dplyr::filter(treeID == i)
 #' # Get real fbh for each tree
-#' fbh_corr <- get_real_fbh(tree3, verbose=TRUE)
+#' fbh_corr <- get_real_fbh(tree3, step= 1, number_steps = 1, min_height=1.5, verbose=TRUE)
 #' # Store fbh values in a list
 #' fbh_corr_list[[i]] <- fbh_corr
 #' }
@@ -54,26 +58,43 @@
 #' effective_fbh$treeID <- factor(effective_fbh$treeID)
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
-#' across matches row_number all_of vars
+#' across matches row_number all_of vars bind_cols case_when left_join mutate if_else lag n_distinct
 #' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
 #' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
 #' @importFrom utils tail
 #' @importFrom tidyselect starts_with everything one_of
-#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom stringr str_extract str_match str_detect str_remove_all
 #' @importFrom tibble tibble
-#' @importFrom tidyr pivot_longer fill
+#' @importFrom tidyr pivot_longer fill pivot_wider replace_na
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
-#' theme element_text xlab ylab ggplot
+#' theme element_text xlab ylab ggplot xlim
 #' @seealso \code{\link{get_depths}}
 #' @export
-get_real_fbh <- function (depth_metrics, verbose = TRUE) {
+get_real_fbh <- function (depth_metrics, step= 1, number_steps = 1, min_height=1.5,verbose = TRUE) {
 
-  df<- depth_metrics
-  df <- df[, !colSums(is.na(df)) > 0]
+  if(min_height==0){
+    min_height <-0.5
+  }
 
-       for (i in 1:nrow(df)) {
+    df<- depth_metrics
+
+    remove_cols <- function(df) {
+      cols_to_remove <- colSums(is.na(df)) > 0
+      df <- df[, !cols_to_remove, drop = FALSE]
+      return(df)
+    }
+
+    df<-remove_cols(df)
+
+if (verbose) {
+  message("Unique treeIDs:", paste(unique(df$treeID), collapse = ", "))
+}
+
+###################################################
+
+  for (i in 1:nrow(df)) {
 
     effective_fbh <- NULL  # Initialize to NULL for each row
 
@@ -95,45 +116,20 @@ get_real_fbh <- function (depth_metrics, verbose = TRUE) {
     # Make column names unique for the rest of the columns
     colnames(current_row) <- make.names(colnames(current_row))
 
-    hgap_cols <- grep("^gap\\d+$", colnames(current_row))
+    hHdist_cols <- grep("^Hdist\\d+$", colnames(current_row))
     hcbh_cols <- grep("^cbh\\d+$", colnames(current_row))
 
-    hgap_na <- is.na(current_row[hgap_cols])
+    hHdist_na <- is.na(current_row[hHdist_cols])
     hcbh_na <- is.na(current_row[hcbh_cols])
 
-    # If all values in current row for Hgap and Hcbh columns are NA, skip this iteration
-    if (all(hgap_na) && all(hcbh_na)) {
+    # If all values in current row for HHdist and Hcbh columns are NA, skip this iteration
+    if (all(hHdist_na) && all(hcbh_na)) {
       next
     }
 
     df2 <- current_row
 
-    if (verbose) {
-      message("Unique treeIDs:", paste(unique(df2$treeID), collapse = ", "))
-    }
-
-    ###################  rename columns
-
-    # Exclude columns with prefixes: last_, max_, treeID
-    cols_to_exclude <- grep("^(max_|treeID)", names(df2), value = TRUE)
-
-    df2 <- df2[ , !(names(df2) %in% cols_to_exclude)]
-
-    # Extract unique prefixes
-    prefixes <- unique(gsub("([a-zA-Z]+).*", "\\1", names(df2)))
-
-    # Rename the columns based on the extracted prefixes
-    for (prefix in prefixes) {
-      # Identify columns with the current prefix
-      cols <- grep(paste0("^", prefix), names(df2))
-
-      # Generate new column names with consecutive suffixes
-      new_names <- paste0(prefix, 1:length(cols))
-
-      # Assign new names to the columns
-      names(df2)[cols] <- new_names
-    }
-
+  ################################################3
 
     # Get the column names that start with "Hcbh" followed by a number
     hcbh_cols <- grep("^cbh[0-9]+$", names(df2), value = TRUE)
@@ -154,152 +150,201 @@ get_real_fbh <- function (depth_metrics, verbose = TRUE) {
 
     # Remove columns with only NA values
     df2 <- df2[, colSums(!is.na(df2)) > 0]
-    #df2[is.na(df2)] <- 0
 
     dist_cols <- grep("^dist", names(df2), value = TRUE)
     if (length(dist_cols)==0) {
-      df2$dist1<- 0
-    }
-
-    # Identify the columns named with 'Hdepth' prefix and values of 0
-    cols_to_remove <- grep("^Hdepth", names(df2))[df2[1, grep("^Hdepth", names(df2))] == 0]
-
-    # Check if any columns are identified for removal
-    if(length(cols_to_remove) > 0) {
-      df2 <- df2[, -cols_to_remove, drop = FALSE]
+      df2$dist0<- 0
     }
 
     # Find columns starting with "Hdist"
-    hdist_cols <- (grep("^Hdist", names(df2), value = TRUE))
-    hdist_vals <- df2[, hdist_cols]
+    hdist_cols <- grep("^Hdist", names(df2), value = TRUE)
+    hdist_vals <- df2 %>% dplyr::select(all_of(hdist_cols))
 
+    # Find columns starting with "cbh"
     hcbh_cols <- grep("^cbh", names(df2), value = TRUE)
-    hcbh_vals <- df2[, hcbh_cols]
+    hcbh_vals <- df2 %>% dplyr::select(all_of(hcbh_cols))
 
-    dist_cols <- grep("^dist", names(df2), value = TRUE)
-    dist_vals <- df2[, dist_cols]
-
-    hdepth_cols <- grep("^Hdepth", names(df2), value = TRUE)
-    hdepth_vals <- df2[, hdepth_cols]
-
-    depth_cols <- grep("^depth", names(df2), value = TRUE)
-    depth_vals <- df2[, depth_cols]
-
-
-    ###################  rename columns
-    # Extract unique prefixes
-    prefixes <- unique(gsub("([a-zA-Z]+).*", "\\1", names(df2)))
-
-    # Rename the columns based on the extracted prefixes
-    for (prefix in prefixes) {
-      # Identify columns with the current prefix
-      cols <- grep(paste0("^", prefix), names(df2))
-
-      # Generate new column names with consecutive suffixes
-      new_names <- paste0(prefix, 1:length(cols))
-
-      # Assign new names to the columns
-      names(df2)[cols] <- new_names
+    # Check if the first cbh value is 0 and replace it with min_height
+    if (hcbh_vals[[1]] <= min_height) {
+      hcbh_vals[[1]] <- min_height
+      df2$cbh1 <- min_height
     }
-
-    hdist_cols <- (grep("^Hdist", names(df2), value = TRUE))
-    hdist_vals <- df2[, hdist_cols]
-
-    hcbh_cols <- grep("^cbh", names(df2), value = TRUE)
-    hcbh_vals <- df2[, hcbh_cols]
-
-    dist_cols <- grep("^dist", names(df2), value = TRUE)
-    dist_vals <- df2[, dist_cols]
-
-    hdepth_cols <- grep("^Hdepth", names(df2), value = TRUE)
-    hdepth_vals <- df2[, hdepth_cols]
-
-    depth_cols <- grep("^depth", names(df2), value = TRUE)
-    depth_vals <- df2[, depth_cols]
-
-    if (hcbh_vals[[1]] > 1.5 && hdepth_vals [[1]] == 0.5) {
-      hdepth_vals [[1]]  <- NULL
-      depth_vals [[1]]  <- NULL
-    }
+    hcbh_vals <- df2 %>% dplyr::select(all_of(hcbh_cols))
 
 
     #####################################################
-    # Convert vector to one-row data frame if necessary
-    if (is.vector(hcbh_vals)) hcbh_vals <- as.data.frame(t(hcbh_vals))
-    if (is.vector(hdist_vals)) hdist_vals <- as.data.frame(t(hdist_vals))
-    if (is.vector(dist_vals)) dist_vals <- as.data.frame(t(dist_vals))
+    hdist_cols <- (grep("^Hdist", names(df2), value = TRUE))
+    hdist_vals <- df2[, hdist_cols]
+
+    hcbh_cols <- grep("^cbh", names(df2), value = TRUE)
+    hcbh_vals <- df2[, hcbh_cols]
+
+    dist_cols <- grep("^dist", names(df2), value = TRUE)
+    dist_vals <- df2[, dist_cols]
+
+    hdepth_cols <- grep("^Hdepth", names(df2), value = TRUE)
+    hdepth_vals <- df2[, hdepth_cols]
+
+    depth_cols <- grep("^depth", names(df2), value = TRUE)
+    depth_vals <- df2[, depth_cols]
 
     # Convert any dist values of 0 to 1
-    dist_vals[dist_vals == 0] <- 1
+   # dist_vals[dist_vals == 0] <- number_steps
 
-    new_Hcbh <- rep(hcbh_vals[1, 1], ncol(hcbh_vals))
 
-    # Check if all dist values are 1
-    if(!all(dist_vals == 1)) {
-      for (i in 1:ncol(hdist_vals)) {
-        current_hdist <- hdist_vals[1, i]
+    # Function to extract numeric part and order column names correctly
+    order_columns <- function(cols) {
+      # Extract numeric part from the column names
+      num_part <- as.numeric(sub("^[^0-9]+", "", cols))
+      # Order the columns based on the numeric part
+      ordered_cols <- cols[order(num_part)]
+      return(ordered_cols)
+    }
 
-        # Find the closest Hcbh value that's greater than the current Hdist
-        idx <- which(hcbh_vals[1, ] > current_hdist)[1]
 
-        # Check if idx is valid
-        if (!is.null(idx) && !is.na(idx) && idx > 0) {
+    update_hcbh_values <- function(df, number_steps) {
+      hcbh_cols <- grep("^cbh", names(df), value = TRUE)
+      dist_cols <- grep("^dist", names(df), value = TRUE)
+      hdist_cols <- grep("^Hdist", names(df), value = TRUE)
 
-          # If we're at the first position, use the first hcbh value
-          if (idx == 1) {
-            prev_value <- hcbh_vals[1, 1]
-          } else {
-            prev_value <- new_Hcbh[idx - 1]
+      # #print column names for debugging
+      #print(paste("hcbh_cols:", paste(hcbh_cols, collapse = ", ")))
+      #print(paste("dist_cols:", paste(dist_cols, collapse = ", ")))
+      #print(paste("hdist_cols:", paste(hdist_cols, collapse = ", ")))
+
+      # Check if the first Hdist column value is less than the first hcbh column value
+      first_Hdist_col <- hdist_cols[1]
+      first_hcbh_col <- hcbh_cols[1]
+      min_height <- 0  # Define min_height if it is not defined elsewhere
+
+      if (df[, first_Hdist_col] <= df[, first_hcbh_col] && df[, first_Hdist_col] > min_height) {
+        start_index <- 1  # Start from index 1
+      } else {
+        start_index <- 2  # Start from Hdist2
+      }
+
+      # Define new_Hcbh using cbh columns
+      new_Hcbh <- df[, hcbh_cols, drop = FALSE]
+
+      # Ensure hdist_cols and dist_cols have the same length as hcbh_cols
+      if (length(hdist_cols) > length(hcbh_cols)) {
+        hdist_cols <- hdist_cols[1:length(hcbh_cols)]
+        dist_cols <- dist_cols[1:length(hcbh_cols)]
+      }
+
+      for (i in start_index:length(hdist_cols)) {
+        current_hdist_col <- hdist_cols[i]
+
+        # Debug: #print the current hdist column being accessed
+        #print(paste("Accessing column:", current_hdist_col))
+
+        current_hdist_value <- df[, current_hdist_col]
+
+        # Find hcbh columns that are greater than or equal to current_hdist_value
+        relevant_hcbh_cols <- hcbh_cols[sapply(df[, hcbh_cols, drop = FALSE], function(x) any(x >= current_hdist_value))]
+
+        if (length(relevant_hcbh_cols) > 0) {
+          corresponding_dist_col <- dist_cols[i]
+          current_dist <- df[, corresponding_dist_col]
+
+          # Update the corresponding Hcbh column if dist is greater than number_steps
+          match_found <- FALSE
+          for (hcbh_col in relevant_hcbh_cols) {
+            if (df[hcbh_col] >= current_hdist_value && current_dist > number_steps) {
+              new_Hcbh[[hcbh_col]] <- df[[hcbh_col]]  # Update the corresponding Hcbh column
+              match_found <- TRUE
+              break
+            }
           }
 
-          # If dist value is 1, propagate the last recorded Hcbh value
-          if (dist_vals[1, i] == 1) {
-            new_Hcbh[idx] <- prev_value
+          # If no match found, use the last updated hcbh column
+          if (!match_found && i > 1) {
+            new_Hcbh[[hcbh_cols[i]]] <- new_Hcbh[[hcbh_cols[i - 1]]]  # Use the last updated Hcbh column
           }
-          # If dist value is >1 and hdist is < the next Hcbh value, update new_Hcbh and propagate
-          else if (hdist_vals[1, i] < hcbh_vals[1, idx]) {
-            new_Hcbh[idx:ncol(hcbh_vals)] <- hcbh_vals[1, idx]
-          }
+        } else if (i > 1) {
+          new_Hcbh[[hcbh_cols[i]]] <- new_Hcbh[[hcbh_cols[i - 1]]]  # Use the last updated Hcbh column
         }
-      }}
+      }
 
-    # Transpose the dataframe
-    transposed_df <- as.data.frame(new_Hcbh)
-    # Remove duplicated rows
-    #distinct_df <- transposed_df %>% distinct()
-    # Transpose back
-    new_transposed_df <- as.data.frame(t(transposed_df))
+      # Update the original dataframe with the new Hcbh values
+      for (col in hcbh_cols) {
+        if (col %in% names(df)) {
+          df[[col]] <- new_Hcbh[[col]]
+        }
+      }
 
-    colnames(new_transposed_df) <- paste0("Hcbh", seq_len(ncol(new_transposed_df)))
-    new_Hcbh_df<-new_transposed_df
+      return(df)
+    }
+
+    # Apply the function to the dataframe
+    updated_df2 <- update_hcbh_values(df2, number_steps = number_steps)
 
 
-    #################################################3
 
-    prefixes <- c("treeID", "Hdist", "Hdepth", "dist", "depth", "max_height")
-    df_subset <- df %>%
-      dplyr::select(matches(paste0("^", paste(prefixes, collapse = "|"))))
+    #############################
+    # Identify cbh columns with suffixes greater than the last Hdist suffix
 
-    # Extract numeric suffixes from column names
-    numeric_suffixes <- as.numeric(gsub("\\D", "", colnames(df_subset)))
-    # Identify non-numeric columns and replace their numeric_suffixes with Inf
-    non_numeric_cols <- is.na(numeric_suffixes)
-    numeric_suffixes[non_numeric_cols] <- Inf
-    # Order columns by numeric suffix, placing non-numeric columns at the end
-    ordered_cols <- order(numeric_suffixes)
-    # Reorder the dataframe columns
-    df_subset <- df_subset[, ordered_cols]
-    # Make column names unique for the rest of the columns
+    # Get the names of columns starting with "Hdist"
+    hdist_cols <- grep("^Hdist", names(updated_df2), value = TRUE)
 
-    colnames(df_subset) <- make.names(colnames(df_subset))
+    # Extract the numeric suffix from the last Hdist column
+    last_hdist_suffix <- as.numeric(gsub("Hdist", "", tail(hdist_cols, 1)))
 
-    if (exists("new_Hcbh_df")) {
-      effective_fbh <- cbind.data.frame(df_subset, new_Hcbh_df)
+    # Get the names of columns starting with "cbh" with numeric suffixes
+    cbh_cols <- grep("^cbh\\d+$", names(updated_df2), value = TRUE)
+
+    # Extract the numeric suffixes from the cbh columns
+    cbh_suffixes <- as.numeric(gsub("cbh", "", cbh_cols))
+
+    # Identify cbh columns with suffixes greater than the last Hdist suffix
+    cbh_cols_remove <- cbh_cols[cbh_suffixes > last_hdist_suffix]
+
+    # Remove the identified cbh columns from the dataframe
+    updated_df2 <- updated_df2[, !names(updated_df2) %in% cbh_cols_remove]
+
+    ###########################  CORRECT HDIST ####################
+
+    # Find the number of Hdist columns
+    num_columns <- grep("^Hdist", names(updated_df2), value = TRUE)
+
+    if (length(num_columns) > 2){
+    # Iterate through each Hdist column except the first one
+    for (i in 2:length(num_columns)) {
+      Hdist_col <- num_columns[i]
+      Hcbh_col <- sub("Hdist", "cbh", Hdist_col)
+
+      # Replace Hdisti with previous Hdist value if Hdisti > Hcbhi
+      updated_df2[[Hdist_col]] <- ifelse(
+        updated_df2[[Hdist_col]] > updated_df2[[Hcbh_col]],
+        ifelse(
+          is.na(updated_df2[[num_columns[i - 1]]]),
+          updated_df2[[Hdist_col]],
+          updated_df2[[num_columns[i - 1]]]
+        ),
+        updated_df2[[Hdist_col]]
+      )
+    }
+    }
+
+       #################################################3
+
+    if (exists("updated_df2")) {
+      effective_fbh <- updated_df2
     } else {
-      effective_fbh <- df_subset
+      effective_fbh <- df2
     }
 
     effective_fbh <- effective_fbh[, colSums(!is.na(effective_fbh)) > 0]
+
+    rename_cbh_columns <- function(df) {
+      cbh_cols <- grep("^cbh", names(df), value = TRUE)
+      new_names <- sub("^cbh", "Hcbh", cbh_cols)
+      names(df)[names(df) %in% cbh_cols] <- new_names
+      return(df)
+    }
+
+    # Apply the renaming function to the dataframe
+    effective_fbh <- rename_cbh_columns(effective_fbh)
 
     # Extract columns that start with 'Hcbh'
     Hcbh_cols <- grep("^Hcbh", names(effective_fbh), value = TRUE)
@@ -308,7 +353,7 @@ get_real_fbh <- function (depth_metrics, verbose = TRUE) {
     first_value <- effective_fbh[1, Hcbh_cols[1]]
     subsequent_values <- effective_fbh[1, Hcbh_cols[-1]]
 
-    condition1 <- any(first_value == subsequent_values + 1)
+    condition1 <- any(first_value == subsequent_values + number_steps)
     condition2 <- length(unique(as.numeric(subsequent_values))) == 1
 
     if(condition1 && condition2) {
@@ -316,22 +361,10 @@ get_real_fbh <- function (depth_metrics, verbose = TRUE) {
       effective_fbh[1, Hcbh_cols] <- first_value
     }
 
-    if ("Hdepth0" %in% colnames (effective_fbh) && "depth0" %in% colnames (effective_fbh)) {
-      if(any(effective_fbh$Hdepth0 == 0.5) && any(effective_fbh$depth0 == 0)) {
-        effective_fbh$Hdepth0 <-NULL
-        effective_fbh$depth0 <-NULL
-      }}
-
-    effective_fbh <- effective_fbh[, apply(effective_fbh, 2, function(x) x != 0)]
 
     ##################  rename columns
 
-    # Exclude columns with prefixes: last_, max_, treeID
-    cols_to_exclude <- grep("^(sum_dist_|treeID)", names(effective_fbh), value = TRUE)
-
-    effective_fbh <- effective_fbh[ , !(names(effective_fbh) %in% cols_to_exclude)]
-
-    # Extract unique prefixes
+      # Extract unique prefixes
     prefixes <- unique(gsub("([a-zA-Z]+).*", "\\1", names(effective_fbh)))
 
     # Rename the columns based on the extracted prefixes
@@ -346,45 +379,16 @@ get_real_fbh <- function (depth_metrics, verbose = TRUE) {
       names(effective_fbh)[cols] <- new_names
     }
 
+    effective_fbh$treeID <- effective_fbh$treeID2
+    effective_fbh$treeID1 <- sub("_.*", "", effective_fbh$treeID)
+    effective_fbh$treeID1 <- as.numeric(effective_fbh$treeID1)
+    effective_fbh$max_height <- effective_fbh$max1
 
-    treeID<-unique(factor(df$treeID))
-    if(!"treeID" %in% colnames(effective_fbh)) {
-      effective_fbh <- cbind(df[c("treeID","treeID1")],effective_fbh )
-    }
-
-    max_height<-data.frame(df$max_height)
-    names(max_height)<-"max_height"
-
-    if(!"max_height" %in% colnames(effective_fbh)) {
-      effective_fbh <- cbind(effective_fbh, df[c("max_height")])
-    }
+    effective_fbh <- effective_fbh %>%
+      dplyr::select(-treeID2, -max1)
 
 
-    hdist_cols <- (grep("^Hdist", names(effective_fbh), value = TRUE))
-    hcbh_cols <- grep("^Hcbh", names(effective_fbh), value = TRUE)
-    dist_cols <- grep("^dist", names(effective_fbh), value = TRUE)
-    hdepth_cols <- grep("^Hdepth", names(effective_fbh), value = TRUE)
-    depth_cols <- grep("^depth", names(effective_fbh), value = TRUE)
-
-
-    # Convert all relevant columns into numeric vectors
-    effective_fbh[hcbh_cols] <- lapply(effective_fbh[hcbh_cols], as.numeric)
-    effective_fbh[hdist_cols] <- lapply(effective_fbh[hdist_cols], as.numeric)
-    effective_fbh[hdepth_cols] <- lapply(effective_fbh[hdepth_cols], as.numeric)
-    effective_fbh[depth_cols] <- lapply(effective_fbh[depth_cols], as.numeric)
-
-    # Iterate over Hcbh columns
-    for (hcbh_col in hcbh_cols) {
-      # Iterate over Hdist columns
-      for (hdist_col in hdist_cols) {
-        # Check if the Hcbh value is equal to any Hdist value
-        if (effective_fbh[[hcbh_col]] == effective_fbh[[hdist_col]]) {
-          effective_fbh[[hcbh_col]] <- effective_fbh[[hcbh_col]] + 1
-        }
-      }
-    }
-
-    if(!exists("effective_fbh")) {
+      if(!exists("effective_fbh")) {
       next  # skip the current iteration if effective_fbh is not generated
     }
   }

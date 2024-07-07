@@ -1,14 +1,16 @@
 #' Distances between fuel layers
 #' @description This function calculates distances (and their heights) between fuel layers as the difference between consecutive gaps and fuel bases
 #' (the gap height always must be lower than the fuel base height).
-#' @usage get_distance (gap_cbh_metrics,gaps_perc,verbose=TRUE)
+#' @usage get_distance (gap_cbh_metrics,gaps_perc,step=1,min_height=1.5,verbose=TRUE)
 #' @param gap_cbh_metrics data frame with gaps (distances) and fuel base heights (output of [get_gaps_fbhs()] function).
 #' An object of the class text.
 #' @param gaps_perc data frame with Leaf Area Density (LAD) percentiles for each height values (output of [calculate_gaps_perc()] function).
 #' An object of the class text.
+#' @param step Numeric value for the actual height bin step (in meters).
+#' @param min_height Numeric value for the actual minimum base height (in meters).
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return A data frame giving distances (and their heights) between fuel layers in meters.
-#' @author Olga Viedma, Carlos Silva and JM Moreno
+#' @author Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 #'
 #'@details
 #' # List of tree metrics:
@@ -46,29 +48,32 @@
 #' tree1 <- gap_cbh_metrics |> dplyr::filter(treeID == i)
 #' tree2 <- gaps_perc |> dplyr::filter(treeID == i)
 #' # Get distance metrics for each tree
-#' metrics_distance <- get_distance(tree1, tree2)
+#' metrics_distance <- get_distance(tree1, tree2, step=1, min_height=1.5)
 #' metrics_distance_list[[i]] <- metrics_distance
 #' }
 #' # Combine the individual data frames
 #' distance_metrics <- dplyr::bind_rows(metrics_distance_list)
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
-#' across matches row_number all_of vars
+#' across matches row_number all_of vars bind_cols case_when left_join mutate if_else lag n_distinct
 #' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
 #' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
 #' @importFrom utils tail
 #' @importFrom tidyselect starts_with everything one_of
-#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom stringr str_extract str_match str_detect str_remove_all
 #' @importFrom tibble tibble
-#' @importFrom tidyr pivot_longer fill
+#' @importFrom tidyr pivot_longer fill pivot_wider replace_na
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
-#' theme element_text xlab ylab ggplot
+#' theme element_text xlab ylab ggplot xlim
 #' @seealso \code{\link{get_gaps_fbhs}}
 #' @seealso \code{\link{calculate_gaps_perc}}
 #' @export
-get_distance <- function (gap_cbh_metrics,gaps_perc, verbose = TRUE) {
+get_distance <- function (gap_cbh_metrics,gaps_perc, step=1, min_height=1.5, verbose = TRUE) {
+
+  if(min_height==0){
+    min_height <-0.5}
 
     gaps_perc2<-gaps_perc
     df <- gap_cbh_metrics
@@ -76,10 +81,12 @@ get_distance <- function (gap_cbh_metrics,gaps_perc, verbose = TRUE) {
     gaps_perc2$treeID <- factor(gaps_perc2$treeID)
     df$treeID <- factor(df$treeID)
 
-if (verbose) {
-    message("Unique treeIDs:", paste(unique(gaps_perc2$treeID), collapse = ", "))
-  }
+    if (verbose) {
+      message("Unique treeIDs:", paste(unique(gaps_perc2$treeID), collapse = ", "))
+    }
+
     treeID<-factor(df$treeID)
+    treeID1<-factor(df$treeID1)
 
     df <- df %>%
     dplyr::mutate_at(
@@ -169,6 +176,8 @@ if (verbose) {
       distance_data <- as.data.frame(diff_col_names)  # construct data frame after the loop
     }
   }
+
+ #####################################
 
 ####################################
 
@@ -334,13 +343,14 @@ if (verbose) {
     gap_difference1 <- last_value - first_value
     distance_data3 <- as.data.frame(gap_difference1)
     Hdist4<-last_value
+  }
 
     # Add Hdist4 column to the data frame if it exists and is not empty
-    if (exists("Hdist4") && !is.null(Hdist4) && ncol(Hdist4) != 0 && nrow(Hdist4) != 0 && any(!is.na(Hdist4))) {
+    if (exists("Hdist4") && exists("distance_data3") && !is.null(Hdist4) && ncol(Hdist4) != 0 && nrow(Hdist4) != 0 && any(!is.na(Hdist4))) {
       distance_data3 <- cbind(distance_data3,Hdist4)
       colnames(distance_data3)<-c("dist", "Hdist")
     }
-  }
+
 
   ###############################
 
@@ -353,7 +363,6 @@ if (verbose) {
 
             distance_data <-data.frame(distance_data1)
           }}}}}
-
 
 
   if (!exists("distance_data")) {
@@ -666,7 +675,8 @@ if (verbose) {
               distance_data <- distance_data
             }
           }
-        }}}}
+        }}}
+    }
 
 
   if (length(gap_cols) > 1 && length(cbh_cols) > 1 && ((exists("distance_data") || !is.null(distance_data) || (ncol(distance_data) != 0 &&
@@ -675,8 +685,10 @@ if (verbose) {
     height<-gaps_perc2$height
     percent2a <- gaps_perc2 %>% dplyr::filter(height < min(kk_copy[, cbh_cols]))
 
+    # Check the conditions and remove the first column if they are met
     if (nrow(percent2a) != 0 && any(!is.na(percent2a)) && any(percent2a$percentil > 25)) {
-      distance_data <- as.data.frame(distance_data[,-1])
+      distance_data <- distance_data %>%
+        dplyr::select(-1)  # Remove the first column
     }
   }
 
@@ -797,36 +809,7 @@ if (verbose) {
 
 
 
-  if(all(!is.na(distance_data))){
-
-    Hdist_cols <- grep("^(Hdist)", names(distance_data), value = TRUE)
-    Hdist_vals <- distance_data[, Hdist_cols, drop = FALSE]
-
-    # Convert the dataframe into a vector
-    vec <- unlist(Hdist_vals)
-
-    # Identify duplicated values
-    dups <- unique(vec[duplicated(vec)])
-
-    # For each duplicated value, remove the last occurrence
-    for (dup in dups) {
-      # Get the indices of the duplicated values
-      indices <- which(vec == dup)
-      # Remove the last occurrence
-      vec[tail(indices, n=1)] <- NA
-    }
-
-    # Convert the vector back to a dataframe
-    Hdist_vals_clean <- as.data.frame(t(vec))
-    Hdist_vals_clean <- Hdist_vals_clean[, !apply(is.na(Hdist_vals_clean), 2, all)]
-
-    distance_data_p <- distance_data[,-which(names(distance_data) %in% Hdist_cols)]
-    distance_data<-cbind(distance_data_p,Hdist_vals_clean)
-
-  }
-
-
-  if(all(is.na(distance_data)) && all(!is.na(distance_data1)) && (!exists("distance_data3") && !exists("distance_data4"))){
+  if(exists("distance_data") && exists("distance_data1") && all(is.na(distance_data)) && all(!is.na(distance_data1)) && (!exists("distance_data3") && !exists("distance_data4"))){
     Hdist_cols <- grep("^(Hdist)", names(distance_data1), value = TRUE)
     distance_data <- distance_data1[Hdist_cols]
   }
@@ -836,66 +819,949 @@ if (verbose) {
     names(distance_data)="dist0"
   }
 
+ ##################################
+    hdist_columns <- grep("^Hdist", names(distance_data), value = TRUE)
+    max_value <- max(unlist(distance_data[hdist_columns]), na.rm = TRUE)
 
-  # Check if distance_data is not empty
-  if (length(distance_data) != 0) {
+    cbh_cols <- grepl("^cbh", names(kk_copy))
+    max_cbh_value <- max(kk_copy[, cbh_cols])
 
-    distance_data <- data.frame(distance_data)
+    # Check if all values in Hdist columns are greater than max_cbh_value
+    all_greater <- all(distance_data[, hdist_columns] > max_cbh_value)
 
-    old_names_distance_data <- colnames(distance_data)
-    new_names_distance_data <- vector(mode="character", length=length(old_names_distance_data))  # initialize new_names_distance_data
+    if (all_greater) {
+      distance_data<-NA
+    }
 
-    # Initialize counters for 'dist' and 'Hdist' column indices
-    dist_index <- 1
-    Hdist_index <- 1
+  #######################################################
 
-    for (i in seq_along(old_names_distance_data)) {
-      if (startsWith(old_names_distance_data[i], "gap")) {
-        new_names_distance_data[i] <- paste("dist", dist_index, sep="")
-        dist_index <- dist_index + 1
-      } else if (startsWith(old_names_distance_data[i], "Hdist")) {
-        new_names_distance_data[i] <- paste("Hdist", Hdist_index, sep="")
-        Hdist_index <- Hdist_index + 1
-      } else if (startsWith(old_names_distance_data[i], "dist")) {
-        new_names_distance_data[i] <- paste("dist", dist_index, sep="")
-        dist_index <- dist_index + 1
+    # Check if distance_data is not empty
+    if (length(distance_data) != 0 && any(!is.na(distance_data))) {
+
+     # Function to remove columns if Hdist > last cbh column value
+    remove_hdist_if_greater_than_cbh <- function(distance_data, kk_copy) {
+
+      # Find the value of the last cbh column in kk_copy
+      cbh_cols <- grep("^cbh", names(kk_copy), value = TRUE)
+      last_cbh_value <- kk_copy[[cbh_cols[length(cbh_cols)]]]
+
+      # Get column names in distance_data
+      col_names <- colnames(distance_data)
+
+      # Find columns to remove
+      cols_to_remove <- c()
+
+      for (col in col_names) {
+        if (startsWith(col, "Hdist")) {
+          # Get the numeric suffix
+          suffix <- gsub("\\D", "", col)
+          dist_col <- paste0("gap", suffix)
+
+          if (any(distance_data[[col]] > last_cbh_value)) {
+            cols_to_remove <- c(cols_to_remove, col, dist_col)
+          }
+        }
       }
 
-      colnames(distance_data) <- new_names_distance_data
+      # Remove columns
+      distance_data <- distance_data[, !colnames(distance_data) %in% cols_to_remove, drop = FALSE]
+
+      return(distance_data)
     }
-  }
+
+    # Apply the function
+    distance_data_prueba <- remove_hdist_if_greater_than_cbh(distance_data, kk_copy)
+
+    distance_data<-distance_data_prueba
+
+  ##############################################################
+
+    pair_cbh_Hdist <- function(df) {
+      # Identify cbh and Hdist columns
+      cbh_cols <- grep("^cbh", names(df), value = TRUE)
+      Hdist_cols <- grep("^Hdist", names(df), value = TRUE)
+
+      # Debug ##print initial column lists
+      # cat("Initial cbh columns:", cbh_cols, "\n")
+      # cat("Initial Hdist columns:", Hdist_cols, "\n")
+
+      # Initialize lists to store paired columns
+      paired_cbh_cols <- list()
+      paired_hdist_cols <- list()
+
+      # Handle Hdist columns with values greater than 0
+      df_with_values <- df
+      for (hdist_col in Hdist_cols) {
+        hdist_values <- df_with_values[[hdist_col]]
+        if (any(hdist_values > 0)) {
+          #  cat("Processing", hdist_col, "with values:", hdist_values[hdist_values > 0], "\n")
+
+          matched <- FALSE
+          for (cbh_col in cbh_cols) {
+            cbh_values <- df_with_values[[cbh_col]]
+            for (i in which(hdist_values > 0)) {
+              hdist_value <- hdist_values[i]
+              if (cbh_values[i] >= hdist_value) {
+                # Rename Hdist column with the suffix of matched cbh column
+                suffix <- gsub("^cbh", "", cbh_col)
+                new_hdist_col <- paste0("Hdist", suffix)
+
+                # Check if the new Hdist column name already exists
+                if (new_hdist_col %in% names(df_with_values)) {
+                  # Rename the current Hdist column to HdistX (incremental number)
+                  new_hdist_col <- make.unique(new_hdist_col, sep = "_")
+                }
+
+                # cat("Renaming", hdist_col, "to", new_hdist_col, "\n")
+
+                names(df_with_values)[names(df_with_values) == hdist_col] <- new_hdist_col
+
+                # Store paired columns
+                paired_cbh_cols[[new_hdist_col]] <- cbh_col
+                paired_hdist_cols[[new_hdist_col]] <- new_hdist_col
+
+                # Remove from remaining Hdist columns
+                Hdist_cols <- setdiff(Hdist_cols, hdist_col)
+
+                # Mark as matched
+                matched <- TRUE
+                break
+              }
+            }
+            if (matched) break
+          }
+
+          if (!matched) {
+            # If no match found, rename with the original suffix
+            suffix <- gsub("^Hdist", "", hdist_col)
+            new_hdist_col <- paste0("Hdist", suffix)
+
+            # Check if the new Hdist column name already exists
+            if (new_hdist_col %in% names(df_with_values)) {
+              # Rename the current Hdist column to HdistX (incremental number)
+              new_hdist_col <- make.unique(new_hdist_col, sep = "_")
+            }
+
+            #  cat("Renaming", hdist_col, "to", new_hdist_col, "\n")
+
+            names(df_with_values)[names(df_with_values) == hdist_col] <- new_hdist_col
+
+            # Store paired columns
+            paired_hdist_cols[[new_hdist_col]] <- new_hdist_col
+
+            # Remove from remaining Hdist columns
+            Hdist_cols <- setdiff(Hdist_cols, hdist_col)
+          }
+        }
+      }
+
+      # Debug ##print paired columns
+      #cat("Paired cbh columns:", unlist(paired_cbh_cols), "\n")
+      #cat("Paired Hdist columns:", unlist(paired_hdist_cols), "\n")
+
+      # Create a new dataframe for remaining Hdist columns with values equal to 0
+      remaining_cbh_cols <- setdiff(cbh_cols, unlist(paired_cbh_cols))
+      df_remaining <- df_with_values[, c(remaining_cbh_cols, Hdist_cols)]
+
+      if(length(df_remaining > 0)) {
+
+        # Rename remaining Hdist columns sequentially with the remaining cbh columns
+        for (i in seq_along(Hdist_cols)) {
+          hdist_col <- Hdist_cols[i]
+          if (i <= length(remaining_cbh_cols)) {
+            cbh_col <- remaining_cbh_cols[i]
+            # Rename Hdist column with the suffix of remaining cbh column
+            suffix <- gsub("^cbh", "", cbh_col)
+            new_hdist_col <- paste0("Hdist", suffix)
+
+            # Check if the new Hdist column name already exists
+            if (new_hdist_col %in% names(df_remaining)) {
+              # Rename the current Hdist column to HdistX (incremental number)
+              new_hdist_col <- make.unique(new_hdist_col, sep = "_")
+            }
+
+            names(df_remaining)[names(df_remaining) == hdist_col] <- new_hdist_col
+
+            #cat("Renaming", hdist_col, "to", new_hdist_col, "\n")
+          }
+        }
+
+        # ##print remaining columns for debugging
+        #cat("Remaining Hdist columns with values 0:", Hdist_cols, "\n")
+        #cat("Remaining cbh columns:", remaining_cbh_cols, "\n")
+
+        # Return the modified dataframe with values and the cleaned dataframe
+        return(list(df_with_values, df_remaining))
+
+      } else {
+
+        return(list(df_with_values))
+      }
+        # Return the modified dataframe with values and the cleaned dataframe
+      return(list(df_with_values, df_remaining))
+    }
 
 
-  treeID<-unique(factor(df$treeID))
-  treeID1<-unique(factor(df$treeID1))
+    treeID<-unique(factor(df$treeID))
+    treeID1<-unique(factor(df$treeID1))
 
-  max_height<-data.frame(df$max_height)
-  names(max_height)<-"max_height"
+    max_height<-data.frame(df$max_height)
+    names(max_height)<-"max_height"
 
-distance_metrics <- cbind.data.frame(treeID1,treeID, kk_copy, distance_data,max_height)
 
-# Find columns with the highest suffix number for Hdist and dist
-Hdist_cols <- grep("^Hdist", colnames(distance_metrics), value=TRUE)
-last_Hdist_col <- Hdist_cols[length(Hdist_cols)]
-last_Hdist_values <- distance_metrics[, last_Hdist_col]
+    ##################################################3
 
-dist_cols <- grep("^dist", colnames(distance_metrics), value=TRUE)
-last_dist_col <- dist_cols[length(dist_cols)]
-last_dist_values <- distance_metrics[, last_dist_col]
+    distance_data1<-distance_data
 
-cbh_cols <- grep("^cbh", colnames(distance_metrics), value=TRUE)
-last_cbh_col <- cbh_cols[length(cbh_cols)]
-last_cbh_values <- distance_metrics[, last_cbh_col]
+    # Extract the names of the columns
+    col_names <- names(distance_data1)
 
-#print(Hdist_value)
-#print(last_cbh_values)
+    # Identify columns starting with "gap" and containing "cbh"
+    gap_cbh_cols <- grep("^gap.*cbh", colnames(distance_data1))
 
-if (!any(is.na(last_Hdist_values)) && !any(is.na(last_cbh_values)) && last_Hdist_values > last_cbh_values) {
-  # Replace the last dist and Hdist values with 0
-  distance_metrics[, last_dist_col] <- 0
-  distance_metrics[, last_Hdist_col] <- 0
+    # Check if any columns match the pattern
+    if (length(gap_cbh_cols) > 0) {
+      # Extract the numeric suffix from the "cbh" part and create new names
+      new_col_names <- col_names
+      for (col in gap_cbh_cols) {
+        num_suffix <- gsub("^gap.*_cbh(\\d+)$", "\\1", col_names[col])
+        new_col_names[col] <- paste0("dist", num_suffix)
+      }
+
+      # Rename the columns in the dataframe
+      names(distance_data1) <- new_col_names
+    }
+    distance_data2 <-distance_data1
+
+
+    # Identify columns named "gap" with only a numeric suffix
+    gap_numeric_cols <- grep("^gap\\d+$", colnames(distance_data2))
+    col_names <- names(distance_data2)
+
+    # Check if any columns match the pattern
+    if (length(gap_numeric_cols) > 0) {
+      # Extract the numeric suffix from the "gap" part and create new names
+      new_col_names <- col_names
+      for (col in gap_numeric_cols) {
+        num_suffix <- gsub("^gap(\\d+)$", "\\1", col_names[col])
+        new_col_names[col] <- paste0("dist", num_suffix)
+      }
+
+      # Rename the columns in the dataframe
+      names(distance_data2) <- new_col_names
+    }
+
+      distance_data1 <- distance_data2
+
+    ###############################################
+
+    # Identify columns starting with "gap_"
+    gap_cols <- grep("^gap_", colnames(distance_data1))
+
+    # Check if any columns match the pattern
+    if (length(gap_cols) > 0) {
+      # Extract the numeric suffix from the "gap_" part and create new names
+      new_col_names <- colnames(distance_data1)
+      for (col in gap_cols) {
+        num_suffix <- gsub("^gap_(\\D*)(\\d+)$", "\\2", colnames(distance_data1)[col])
+        new_col_names[col] <- paste0("dist", num_suffix)
+      }
+
+      # Rename the columns in the dataframe
+      names(distance_data1) <- new_col_names
+
+      # Remove original "gap_" columns
+      distance_data1 <- distance_data1[, !grepl("^gap_", colnames(distance_data1))]
+    }
+
+    ###############################################
+
+      # Check if there are any Hdist_gap columns
+      Hdist_gap_cols <- grep("^Hdist_gap", colnames(distance_data1))
+
+      # If Hdist_gap columns are found, proceed with renaming
+      if (length(Hdist_gap_cols) > 0) {
+
+        # Function to rename Hdist_gap columns
+        rename_hdist_gap_columns <- function(df) {
+          # Get column names
+          col_names <- colnames(df)
+
+          # Initialize new names vector
+          new_col_names <- col_names
+
+          # Iterate over columns
+          for (i in seq_along(col_names)) {
+            col <- col_names[i]
+            if (startsWith(col, "Hdist_gap")) {
+              # Find the preceding dist column
+              prev_dist_col_index <- which(col_names == col) - 1
+
+              # Check if the preceding column is a dist column
+              if (prev_dist_col_index > 0 && startsWith(col_names[prev_dist_col_index], "dist")) {
+                # Extract numeric suffix from the dist column
+                suffix <- gsub("\\D", "", col_names[prev_dist_col_index])
+
+                # Rename Hdist_gap column to Hdist with the same suffix as the preceding dist column
+                new_col_name <- paste0("Hdist", suffix)
+                new_col_names[i] <- new_col_name
+              } else {
+               # warning(paste0("No corresponding dist column found for ", col, ". Skipping renaming."))
+              }
+            }
+          }
+
+          # Rename columns in the dataframe
+          colnames(df) <- new_col_names
+
+          return(df)
+        }
+
+        # Apply the function
+        distance_data_kk <- rename_hdist_gap_columns(distance_data1)
+      }
+
+      if (exists("distance_data_kk")) {
+
+      distance_data_kk1<-distance_data_kk
+
+      Hdist_gap_cols1 <- grep("^Hdist_gap", colnames(distance_data_kk1), value =T)
+
+      # Check if there is exactly one Hdist_gap column, no "dist" column exists, and gap1 > cbh1
+
+      if ((length(Hdist_gap_cols1) == 1) && (!any(grepl("^dist1", colnames(distance_data_kk1)))) && (min(kk_copy$gap1) > min(kk_copy$cbh1))) {
+
+        # Extract the value from Hdist column in distance_data_kk1
+        hdist_value <- distance_data_kk1[, Hdist_gap_cols1]
+
+        # Find the cbh columns in kk_copy
+        cbh_cols <- grep("^cbh", colnames(kk_copy), value = TRUE)
+
+        # Find the closest cbh value that is greater than the hdist_value
+        closest_cbh_col <- cbh_cols[which.min(ifelse(kk_copy[, cbh_cols] > hdist_value, kk_copy[, cbh_cols], Inf))]
+
+        # Extract the suffix from the closest cbh column
+        suffix <- gsub("\\D", "", closest_cbh_col)
+
+        # Rename the Hdist_gap column in distance_data_kk1 with the new name
+        new_hdist_col <- paste0("Hdist", suffix)
+        colnames(distance_data_kk1)[colnames(distance_data_kk1) == Hdist_gap_cols1] <- new_hdist_col
+
+
+        # Find the cbh columns in kk_copy
+        cbh_cols <- grep("^cbh", colnames(kk_copy), value = TRUE)
+
+        # Find the closest cbh value that is less than the hdist_value
+        closest_cbh_col <- cbh_cols[which.max(ifelse(kk_copy[, cbh_cols] < hdist_value, kk_copy[, cbh_cols], -Inf))]
+        closest_cbh_col_value <-kk_copy[, closest_cbh_col]
+
+        # Check if the corresponding dist column does not exist
+        dist_col_name <- paste0("dist", suffix)
+        if (!dist_col_name %in% colnames(distance_data_kk1)) {
+          # Create the corresponding dist column with the same suffix and value equal to floor of Hdist column
+          distance_data_kk1[[dist_col_name]] <- floor(hdist_value - closest_cbh_col_value)
+        }
+
+        # #print the updated distance_data_kk
+        #print(distance_data_kk1)
+      }
+      }
+
+      if (exists("distance_data_kk1")){
+      # Function to order columns
+      order_columns <- function(df) {
+        col_names <- colnames(df)
+
+        # Extract Hdist and dist columns
+        hdist_cols <- grep("^Hdist", col_names, value = TRUE)
+        dist_cols <- grep("^dist", col_names, value = TRUE)
+
+        # Extract numeric suffixes
+        hdist_suffixes <- as.numeric(gsub("\\D", "", hdist_cols))
+        dist_suffixes <- as.numeric(gsub("\\D", "", dist_cols))
+
+        # Create a named vector for sorting
+        all_suffixes <- sort(unique(c(hdist_suffixes, dist_suffixes)))
+
+        # Initialize an empty vector for ordered column names
+        ordered_cols <- character(0)
+
+        # Loop through each suffix and add corresponding Hdist and dist columns
+        for (suffix in all_suffixes) {
+          hdist_col <- paste0("Hdist", suffix)
+          dist_col <- paste0("dist", suffix)
+
+          if (hdist_col %in% col_names) {
+            ordered_cols <- c(ordered_cols, hdist_col)
+          }
+          if (dist_col %in% col_names) {
+            ordered_cols <- c(ordered_cols, dist_col)
+          }
+        }
+
+        # Reorder the dataframe columns
+        df <- df[, ordered_cols, drop = FALSE]
+
+        return(df)
+      }
+
+      # Apply the function
+      distance_data_kk1 <- order_columns(distance_data_kk1)
+      }
+
+      if (!exists("distance_data_kk") && !exists("distance_data_kk1")) {
+      # If Hdist_gap columns are found, proceed with renaming
+      if (length(Hdist_gap_cols) == 1 && ("dist" %in% colnames(distance_data1))) {
+
+        rename_hdist_gap_columns1 <- function(df) {
+          # Get column names
+          col_names <- colnames(df)
+
+          # Initialize new names vector
+          new_col_names <- col_names
+
+          # Iterate over columns
+          for (i in seq_along(col_names)) {
+            col <- col_names[i]
+            if (startsWith(col, "Hdist_gap")) {
+              # Find the corresponding dist column
+              dist_col_index <- which(startsWith(col_names, "dist"))
+
+              if (length(dist_col_index) > 0) {
+                # Extract numeric suffix from the dist column
+                dist_col <- col_names[dist_col_index[1]]
+                suffix <- gsub("\\D", "", dist_col)
+
+                # Rename Hdist_gap column to Hdist with the same suffix as the dist column
+                new_col_name <- paste0("Hdist", suffix)
+                new_col_names[i] <- new_col_name
+              } else {
+               # warning(paste0("No corresponding dist column found for ", col, ". Skipping renaming."))
+              }
+            }
+          }
+
+          # Rename columns in the dataframe
+          colnames(df) <- new_col_names
+
+          return(df)
+        }
+
+        # Apply the function
+        distance_data_kk2 <- rename_hdist_gap_columns1(distance_data1)
+      }
+      }
+
+      if (!exists("distance_data_kk") && !exists("distance_data_kk1") && !exists("distance_data_kk2")) {
+      if (length(Hdist_gap_cols) == 1 && (!"dist" %in% colnames(distance_data1))) {
+
+         # Function to rename Hdist_gap column and create corresponding dist column
+      rename_and_create_dist_column <- function(df) {
+        col_names <- colnames(df)
+
+        # Find the Hdist_gap column
+        hdist_gap_col <- grep("^Hdist_gap", col_names, value = TRUE)
+
+        if (length(hdist_gap_col) == 1) {
+          # Extract numeric suffix from the Hdist_gap column
+          suffix <- gsub("\\D", "", hdist_gap_col)
+
+          # Rename Hdist_gap column to Hdist with the same suffix
+          new_col_name <- paste0("Hdist", suffix)
+          colnames(df)[colnames(df) == hdist_gap_col] <- new_col_name
+
+          # Create the corresponding dist column with the same suffix and value equal to floor of Hdist column
+          dist_col_name <- paste0("dist", suffix)
+          df[[dist_col_name]] <- floor(df[[new_col_name]])
+        } else {
+         # warning("There is more than one Hdist_gap column or none found.")
+        }
+
+        return(df)
+      }
+      # Apply the function
+      distance_data_kk3 <- rename_and_create_dist_column(distance_data1)
+
+      }
+      }
+
+
+      if (!exists("distance_data_kk") && !exists("distance_data_kk1") && !exists("distance_data_kk2") && !exists("distance_data_kk3")) {
+
+         Hdist_cols <- grep("^Hdist", colnames(distance_data1))
+
+        if (length(Hdist_cols) == 1 && (!"dist" %in% colnames(distance_data1))) {
+
+          # Function to rename Hdist_gap column and create corresponding dist column
+          rename_and_create_dist_column <- function(df) {
+            col_names <- colnames(df)
+
+            # Find the Hdist_gap column
+            hdist_col <- grep("^Hdist", col_names, value = TRUE)
+
+            if (length(hdist_col) == 1) {
+              # Extract numeric suffix from the Hdist_gap column
+              suffix <- gsub("\\D", "", hdist_col)
+
+              # Rename Hdist_gap column to Hdist with the same suffix
+              new_col_name <- paste0("Hdist", suffix)
+              colnames(df)[colnames(df) == hdist_col] <- new_col_name
+
+              # Create the corresponding dist column with the same suffix and value equal to floor of Hdist column
+              dist_col_name <- paste0("dist", suffix)
+              df[[dist_col_name]] <- floor(df[[new_col_name]])
+            } else {
+              # warning("There is more than one Hdist_gap column or none found.")
+            }
+
+            return(df)
+          }
+          # Apply the function
+          distance_data_kk4 <- rename_and_create_dist_column(distance_data1)
+
+        }
+      }
+
+
+      if (exists("distance_data_kk") && !exists("distance_data_kk1")) {
+        distance_data <-distance_data_kk
+      }
+
+      if (exists("distance_data_kk") && exists("distance_data_kk1")) {
+        distance_data <-distance_data_kk1
+      }
+
+      if (exists("distance_data_kk2")) {
+        distance_data <-distance_data_kk2
+      }
+
+      if (exists("distance_data_kk3")) {
+        distance_data <-distance_data_kk3
+      }
+
+      if (exists("distance_data_kk4")) {
+        distance_data <-distance_data_kk4
+      }
+
+      if (!exists("distance_data_kk") && !exists("distance_data_kk1") && !exists("distance_data_kk2") && !exists("distance_data_kk3")  && !exists("distance_data_kk4")) {
+        distance_data <-distance_data1
+      }
+
+   ########################################
+
+
+      if (min(kk_copy$cbh1) <= min_height) {
+
+        distance_data$Hdist1 <-kk_copy$cbh1
+        distance_data$dist1 <- 0
+      }
+
+      # Find the first cbh value in kk_copy
+      first_cbh <- kk_copy$cbh1
+
+      # Check if there is any Hdist column with a value less than the first cbh
+      hdist_cols <- grep("^Hdist", colnames(distance_data), value = TRUE)
+      any_hdist_less_than_first_cbh <- any(sapply(distance_data[, hdist_cols, drop = FALSE], function(x) x < first_cbh))
+
+      # If no Hdist column has a value less than the first cbh, create new columns Hdist1 and dist1
+      if (!any_hdist_less_than_first_cbh && first_cbh > min_height) {
+        distance_data$Hdist1 <- first_cbh -step
+        distance_data$dist1 <- floor(distance_data$Hdist1)
+      }
+
+      if((distance_data$Hdist1 <= min_height) && (distance_data$dist1 > distance_data$Hdist1)) {
+        distance_data$Hdist1<- (distance_data$Hdist1 +distance_data$dist1) -step
+      }
+
+      if((distance_data$dist1 > floor(distance_data$Hdist1))) {
+        distance_data$dist1<- distance_data$dist1 -step
+      }
+
+
+    # Filter out "Hdist" columns with values greater than max_cbh_value
+
+    cbh_cols <- grepl("^cbh", names(kk_copy))
+
+    # Extract the maximum value from the "cbh" columns
+    max_cbh_value <- max(kk_copy[, cbh_cols])
+
+    # Identify columns starting with "Hdist_gap"
+    hdist_cols <- grepl("^Hdist", names(distance_data))
+    dist_cols <- grepl("^dist", names(distance_data))
+
+    # Filter out "Hdist_gap" columns with values greater than max_cbh_value
+    cols_to_keep <- !(hdist_cols & distance_data[1, ] > max_cbh_value)
+
+    # Subset the dataframe to keep only the required columns
+    distance_data <- distance_data[, cols_to_keep]
+
+   ##################################
+    # Identify columns starting with "dist" and "Hdist"
+    dist_cols <- grep("^dist", names(distance_data), value = TRUE)
+    Hdist_cols <- grep("^Hdist", names(distance_data), value = TRUE)
+
+    # Extract numeric suffixes from dist and Hdist columns
+    dist_suffixes <- gsub("\\D", "", dist_cols)
+    Hdist_suffixes <- gsub("\\D", "", Hdist_cols)
+
+    # Find dist columns where suffixes do not match with Hdist columns
+    dist_to_remove <- dist_cols[!(dist_suffixes %in% Hdist_suffixes)]
+
+    # Remove mismatched dist columns
+    distance_data_df <- distance_data[, !(names(distance_data) %in% dist_to_remove)]
+
+    ##################################
+     ########################################################
+
+    # Extract column names
+    dist_columns <- names(distance_data_df)[grepl("^dist", names(distance_data_df))]
+    Hdist_columns <- names(distance_data_df)[grepl("^Hdist", names(distance_data_df))]
+
+    # Extract numeric suffixes
+    dist_suffixes <- sub("^dist", "", dist_columns)
+    Hdist_suffixes <- sub("^Hdist", "", Hdist_columns)
+
+    # Create a mapping for Hdist suffixes to match dist suffixes
+    suffix_mapping <- match(dist_suffixes, Hdist_suffixes)
+    new_Hdist_columns <- paste0("Hdist", dist_suffixes)
+
+    # Rename Hdist columns
+    names(distance_data_df)[grepl("^Hdist", names(distance_data_df))] <- new_Hdist_columns
+
+    ########################################
+
+distance_metrics <- cbind.data.frame(treeID1,treeID, kk_copy, distance_data_df,max_height)
+
+# List of columns to be rounded
+dist_columns <- grep("^dist", names(distance_metrics), value = TRUE)
+
+# Apply round function to the selected columns
+distance_metrics[dist_columns] <- lapply(distance_metrics[dist_columns], floor)
+
+########################################
+distance_metrics1<-distance_metrics
+
+# Extract column names
+cbh_cols <- grep("^cbh", names(distance_metrics1), value = TRUE)
+
+# Function to determine if any Hdist <= cbh value
+check_hdist_le_cbh <- function(hdist_values, cbh_value) {
+  any(!is.na(hdist_values) & hdist_values <= cbh_value)
 }
 
-return(distance_metrics)
+# Iterate over cbh columns
+for (cbh_col in cbh_cols) {
+  hdist_col_suffix <- sub("^cbh", "", cbh_col)
+  hdist_col <- paste0("Hdist", hdist_col_suffix)
+  dist_col_suffix <- sub("^cbh", "", cbh_col)
+  dist_col <- paste0("dist", hdist_col_suffix)
+
+  # Check if hdist_col exists
+  if (hdist_col %in% names(distance_metrics1)) {
+    cbh_values <- distance_metrics1[[cbh_col]]
+    hdist_values <- distance_metrics1[[hdist_col]]
+    dist_values <- distance_metrics1[[dist_col]]
+
+    # Check if any Hdist value is <= cbh value
+    if (any(hdist_values <= cbh_values)) {
+      # Update Hdist column
+      distance_metrics1[[hdist_col]] <- hdist_values
+    }
+  } else {
+    # Create new Hdist column with 0 if hdist_col doesn't exist
+    distance_metrics1[[hdist_col]] <- 0
+  }
+
+  # Check if dist_col exists
+  if (dist_col %in% names(distance_metrics1)) {
+    dist_values <- distance_metrics1[[dist_col]]
+
+    # Check if any dist value is >= 0
+    if (any(dist_values >= 0)) {
+      # Update dist column
+      distance_metrics1[[dist_col]] <- dist_values
+    }
+  } else {
+    # Create new dist column with 0 if dist_col doesn't exist
+    distance_metrics1[[dist_col]] <- 0
+  }
+}
+
+
+##########################################################
+#df<- distance_metrics1
+
+## remove Hdist values > max(cbh) and the last gap and cbh
+# Identify columns starting with "cbh" and calculate their maximum
+cbh_cols <- grep("^cbh", names(distance_metrics1), value = TRUE)
+max_cbh <- max(unlist(distance_metrics1[cbh_cols]))
+
+# Identify columns starting with "Hdist"
+remove_cols <- grep("^Hdist", names(distance_metrics1), value = TRUE)
+
+# Keep the columns that should not be removed
+remove_cols_to_keep <- character()
+
+for (col in remove_cols) {
+  # Check if any value in the column is less than or equal to max_cbh
+  if (any(distance_metrics1[[col]] <= max_cbh)) {
+    remove_cols_to_keep <- c(remove_cols_to_keep, col)
+  }
+}
+
+# Columns to remove
+cols_to_remove <- setdiff(remove_cols, remove_cols_to_keep)
+
+if (length(cols_to_remove) > 0) {
+# Remove the identified columns
+distance_metrics2 <- distance_metrics1[, !(names(distance_metrics1) %in% cols_to_remove)]
+} else {
+  distance_metrics2 <- distance_metrics1
+}
+
+# Extract the number and names of cbh columns to match the length of Hdist cols
+
+cbh_columns <- grep("^cbh", names(distance_metrics2), value = TRUE)
+hdist_columns <- grep("^Hdist", names(distance_metrics2), value = TRUE)
+
+if (length(cbh_columns) > length(hdist_columns)) {
+
+# Determine the number of cbh columns
+num_cbh_cols <- length(cbh_columns)
+
+# Generate a new Hdist column name
+new_Hdist_col <- paste0("Hdist", num_cbh_cols + 1)
+
+# Add Hdist column with initial value 0
+distance_metrics2[[new_Hdist_col]] <- rep(0, nrow(distance_metrics2))
+
+}
+
+###################################################
+#Let's refine the approach to ensure that each Hdist column with a value greater than 0 is correctly paired with its corresponding cbh column,
+#and then rename the remaining Hdist columns (with a value of 0) with the suffixes of the unpaired cbh columns.
+
+result <- pair_cbh_Hdist(distance_metrics2)
+
+# Extract the modified dataframe with values
+distance_metrics_modified <- result[[1]]
+
+# Function to retain Hdist columns where at least one value is non-zero
+
+retain_non_zero_hdist_columns <- function(df) {
+  hdist_cols <- grepl("^Hdist", names(df))  # Identify columns starting with 'Hdist'
+
+  # Subset dataframe to retain only Hdist columns with at least one non-zero value
+  df <- df[, c(names(df)[!hdist_cols], names(df)[hdist_cols][colSums(df[hdist_cols]) != 0])]
+
+  return(df)
+}
+
+# Apply the function to your dataframe
+distance_metrics_modified1 <- retain_non_zero_hdist_columns(distance_metrics_modified)
+
+#############################
+
+# Check how many elements in the result list are data frames
+num_dfs <- sum(sapply(result, is.data.frame))
+
+# Perform actions based on the number of data frames
+if (num_dfs > 1) {
+
+# Extract the cleaned dataframe with remaining columns
+distance_metrics_remaining <- result[[2]]
+
+distance_metrics_remaining1 <- distance_metrics_remaining %>% dplyr::select(matches("^Hdist"))
+
+distance_metrics_def<-data.frame(distance_metrics_modified1,distance_metrics_remaining1)
+
+
+} else {
+
+  distance_metrics_def<-data.frame(distance_metrics_modified1)
+  }
+
+  } else {
+
+      if (min(kk_copy$cbh1) > min_height) {
+
+        kk_copy$Hdist1 <- min(kk_copy$cbh1) -step
+        kk_copy$dist1 <- floor(kk_copy$Hdist1)
+      }
+
+      if (min(kk_copy$cbh1) <= min_height) {
+
+        kk_copy$Hdist1 <-kk_copy$cbh1
+        kk_copy$dist1 <- 0
+      }
+
+
+    # Extract column names
+    cbh_cols <- grep("^cbh", names(kk_copy), value = TRUE)
+
+    # Function to determine if any Hdist <= cbh value
+    check_hdist_le_cbh <- function(hdist_values, cbh_value) {
+      any(!is.na(hdist_values) & hdist_values <= cbh_value)
+    }
+
+    # Iterate over cbh columns
+    for (cbh_col in cbh_cols) {
+      hdist_col_suffix <- sub("^cbh", "", cbh_col)
+      hdist_col <- paste0("Hdist", hdist_col_suffix)
+      dist_col_suffix <- sub("^cbh", "", cbh_col)
+      dist_col <- paste0("dist", hdist_col_suffix)
+
+      # Check if hdist_col exists
+      if (hdist_col %in% names(kk_copy)) {
+        cbh_values <- kk_copy[[cbh_col]]
+        hdist_values <- kk_copy[[hdist_col]]
+        dist_values <- kk_copy[[dist_col]]
+
+        # Check if any Hdist value is <= cbh value
+        if (any(hdist_values <= cbh_values)) {
+          # Update Hdist column
+          kk_copy[[hdist_col]] <- hdist_values
+        }
+      } else {
+        # Create new Hdist column with 0 if hdist_col doesn't exist
+        kk_copy[[hdist_col]] <- 0
+      }
+
+      # Check if dist_col exists
+      if (dist_col %in% names(kk_copy)) {
+        dist_values <- kk_copy[[dist_col]]
+
+        # Check if any dist value is >= 0
+        if (any(dist_values >= 0)) {
+          # Update dist column
+          kk_copy[[dist_col]] <- dist_values
+        }
+      } else {
+        # Create new dist column with 0 if dist_col doesn't exist
+        kk_copy[[dist_col]] <- 0
+      }
+    }
+
+
+    treeID<-unique(factor(df$treeID))
+    treeID1<-unique(factor(df$treeID1))
+
+    max_height<-data.frame(df$max_height)
+    names(max_height)<-"max_height"
+
+    distance_metrics_def <- cbind.data.frame(treeID, treeID1, kk_copy, max_height)
+
+  }
+
+ ##########################################################
+
+    # Identify the columns for cbh and gap values
+    cbh_cols <- grep("^cbh", colnames(distance_metrics_def), value = TRUE)
+    gap_cols <- grep("^gap", colnames(distance_metrics_def), value = TRUE)
+
+    # Initialize a data frame to store the results
+    results <- data.frame(gap = numeric(), cbh = numeric())
+
+    # Loop through each gap value
+    for (gap_col in gap_cols) {
+      gap_value <- distance_metrics_def[, gap_col]
+
+      # Find all cbh values greater than the current gap value
+      valid_cbhs <- distance_metrics_def[, cbh_cols][distance_metrics_def[, cbh_cols] > gap_value]
+
+      if (length(valid_cbhs) > 0) {
+        # Find the smallest cbh value that is greater than the gap value
+        closest_cbh <- min(valid_cbhs)
+
+        # Add the result to the data frame
+        results <- rbind(results, data.frame(gap = gap_value, cbh = closest_cbh))
+      } else {
+        # In case no cbh value is greater than the gap value
+        results <- rbind(results, data.frame(gap = gap_value, cbh = NA))
+      }
+    }
+
+    # Compute the difference and store it in a new column called dist
+    # Calculate the new 'dist' variable and keep only one row per duplicated cbh
+    results1 <- results %>%
+      dplyr::group_by(cbh) %>%
+      dplyr::filter(gap == min(gap)) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(dist = cbh - gap)
+
+    results2 <- results %>%
+      dplyr::group_by(cbh) %>%
+      dplyr::filter(gap == max(gap)) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(Hdist = gap)
+
+    # Extract the desired columns
+    cbh <- results1$cbh
+    dist <- results1$dist
+    Hdist <- results2$Hdist
+
+    # Combine the columns into a new data frame
+    resultsfi <- cbind.data.frame(cbh, dist, Hdist)
+
+
+
+    # Loop through each result
+    for (i in 1:nrow(resultsfi)) {
+      Hdist_value <- resultsfi$Hdist[i]
+      cbh_value <- resultsfi$cbh[i]
+      dist_value <- resultsfi$dist[i]
+
+      if (!is.na(cbh_value)) {
+        # Find the corresponding Hdist column name based on cbh_value
+        hdist_col <- paste0("Hdist", which(distance_metrics_def[1, grep("^cbh", names(distance_metrics_def))] == cbh_value))
+        dist_col <- paste0("dist", sub("Hdist", "", hdist_col))
+
+        # Check if the gap_value is already in the Hdist column
+        if (!(Hdist_value %in% distance_metrics_def[, hdist_col])) {
+          # Add the gap value to the Hdist column
+          distance_metrics_def[, hdist_col] <- Hdist_value
+          distance_metrics_def[, dist_col] <- dist_value
+        }
+      }
+    }
+
+
+#####################################################################
+
+    # Find the cbh and Hdist columns: Update Hdist values
+    cbh_cols <- grep("^cbh", colnames(distance_metrics_def), value = TRUE)
+    hdist_cols <- grep("^Hdist", colnames(distance_metrics_def), value = TRUE)
+
+    # Iterate over cbh columns
+    for (cbh_col in cbh_cols) {
+      # Extract the numeric suffix
+      suffix <- sub("^cbh", "", cbh_col)
+
+      # Find the corresponding Hdist column
+      hdist_col <- paste0("Hdist", suffix)
+
+      # Check if the Hdist column exists
+      if (hdist_col %in% colnames(distance_metrics_def) ) {
+        if(any(distance_metrics_def[[hdist_col]] > min_height)) {
+        # Update Hdist values
+        distance_metrics_def[[hdist_col]] <- ifelse(distance_metrics_def[[hdist_col]] != distance_metrics_def[[cbh_col]] - step,
+                                                    distance_metrics_def[[cbh_col]] - step,
+                                                    distance_metrics_def[[hdist_col]])
+        }
+      }
+    }
+
+    if(distance_metrics_def$cbh1 > min_height) {
+      distance_metrics_def$Hdist1 <-distance_metrics_def$cbh1 -step
+      distance_metrics_def$dist1 <-floor(distance_metrics_def$Hdist1)
+    }
+
+    if(distance_metrics_def$cbh1 <= min_height) {
+      distance_metrics_def$Hdist1 <-min_height
+      distance_metrics_def$dist1 <-0
+    }
+
+
+return(distance_metrics_def)
 }
 

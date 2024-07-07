@@ -1,29 +1,29 @@
-#' Methods to estimated the canopy Base Height of a tree: maximum LAD percentage, maximum distance and the last distance
+#' Methods to estimated the Crown Base Height of a tree: maximum LAD percentage, maximum distance and the last distance
 #' @description
 #' This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
 #' @usage
-#' get_cbh_metrics(effective_LAD, verbose=TRUE)
+#' get_cbh_metrics(effective_LAD, min_height= 1.5, verbose=TRUE)
 #' @param effective_LAD
-#' Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than a threshold.
+#' Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than a threshold (10%).
 #' (output of [get_layers_lad()] function).
 #' An object of the class text.
+#' @param min_height Numeric value for the actual minimum base height (in meters).
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
-#' A data frame giving the Canopy Base Height (CBH) of a tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
-#' @author
-#' Olga Viedma, Carlos Silva and JM Moreno
+#' A data frame giving the Crown Base Height (CBH) of a tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
+#' @author Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 #'
 #' @details
 #' List of tree metrics:
 #' \itemize{
 #'   \item treeID: tree ID with strings and numeric values
 #'   \item treeID1: tree ID with only numeric values
-#'   \item dist: Distance between consecutive fuel layers (m)
-#'   \item Hdist: Height of the distance between consecutive fuel layers (m)
-#'   \item Hcbh: Height of the base of each fuel layer (m)
-#'   \item effdist: Effective distance between consecutive fuel layers (m) (> 1 m)
-#'   \item dptf: Depth of fuel layers (m) at distances greater than 1 m
-#'   \item Hdptf: Height of the depth of fuel layers (m) at distances greater than 1 m
+#'   \item dptf: Depth of fuel layers (m) after considering distances greater than the actual height bin step
+#'   \item effdist: Effective distance between consecutive fuel layers (m) after considering distances greater than any number of steps
+#'   \item Hcbh: Base height of each fuel separated by a distance greater than the certain number of steps
+#'   \item Hdptf: Height of the depth of fuel layers (m) after considering distances greater than the actual step
+#'   \item Hdist: Height of the distance (> any number of steps) between consecutive fuel layers (m)
+#'   \item Hcbh_Hdptf - Percentage of LAD values comprised in each effective fuel layer
 #'   \item maxlad_Hcbh - Height of the CBH of the segmented tree based on the maximum LAD percentage
 #'   \item max_Hcbh - Height of the CBH of the segmented tree based on the maximum distance found in its profile
 #'   \item last_Hcbh - Height of the CBH of the segmented tree based on the last distance found in its profile
@@ -51,7 +51,7 @@
 #'
 #' for (i in levels(trees_name2)) {
 #' tree1 <- effective_LAD |> dplyr::filter(treeID == i)
-#' cbh_dist_metrics <- get_cbh_metrics(tree1, verbose=TRUE)
+#' cbh_dist_metrics <- get_cbh_metrics(tree1, min_height= 1.5, verbose=TRUE)
 #' cbh_dist_list[[i]] <- cbh_dist_metrics
 #' }
 #'
@@ -81,21 +81,25 @@
 #' cbh_metrics <- cbh_metrics[, new_order]
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
-#' across matches row_number all_of vars last
+#' across matches row_number all_of vars bind_cols case_when left_join mutate if_else lag n_distinct
 #' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
 #' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
 #' @importFrom utils tail
 #' @importFrom tidyselect starts_with everything one_of
-#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom stringr str_extract str_match str_detect str_remove_all
 #' @importFrom tibble tibble
-#' @importFrom tidyr pivot_longer fill
+#' @importFrom tidyr pivot_longer fill pivot_wider replace_na
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
-#' theme element_text xlab ylab ggplot
+#' theme element_text xlab ylab ggplot xlim
 #' @seealso \code{\link{get_layers_lad}}
 #' @export
-get_cbh_metrics <- function(effective_LAD, verbose=TRUE) {
+get_cbh_metrics <- function(effective_LAD, min_height= 1.5, verbose=TRUE) {
+
+  if(min_height==0){
+    min_height <-0.5
+  }
 
 df6a<- effective_LAD
 
@@ -117,6 +121,12 @@ if (!("Hdist1" %in% colnames(df6a))) {
   df6a$Hdist1 <- 0.5
 }
 
+if(all(is.na(df6a$effdist1)) && df6a$Hcbh1 == min_height) {
+  df6a$effdist1<-0
+}
+
+df6a <- df6a[, colSums(!is.na(df6a)) > 0]
+
 # Check if df_sub is not empty and contains "Hdist" in column names
 col_names <- names(df6a)
 hcbh_cols <- grep("^Hcbh\\d+$", col_names, value = TRUE)
@@ -124,8 +134,7 @@ hdptf_cols <- grep("^Hdptf\\d+$", col_names, value = TRUE)
 hdist_cols <- grep("^Hdist\\d+$", col_names, value = TRUE)
 effdist_cols <- grep("^effdist\\d+$", col_names, value = TRUE)
 
-
-# Create a vector of all Hdist values
+# Create vectors of all Hcbh, Hdist, Hdepth, and effdist values
 hcbh_values <- unlist(df6a[1, hcbh_cols])
 hdist_values <- unlist(df6a[1, hdist_cols])
 hdepth_values <- unlist(df6a[1, hdptf_cols])
@@ -149,9 +158,19 @@ max_lad_column <- lad_columns[index_max_lad]
 # Get the max lad value from the first row of the dataframe
 max_lad_values <- unlist(df6a[1, max_lad_column])
 
-
 # Extract suffix from max_lad_column
-suffix <- as.numeric(sub(".*Hcbh(\\d+)_.*", "\\1", max_lad_column))
+suffix <- as.numeric(sub(".*Hcbh(\\d+)_Hdptf\\d+$", "\\1", max_lad_column))
+
+# Check for any NA values in suffix or df6a$nlayers
+if (any(!is.na(suffix)) || any(!is.na(df6a$nlayers))) {
+
+# Check if the maximum lad column coincides with Hcbh1 and nlayers > 1
+if (suffix == 1 && df6a$nlayers > 1) {
+  suffix <- 2
+}
+
+# Update the max_lad_column based on the adjusted suffix
+max_lad_column <- paste0("Hcbh", suffix, "_Hdptf", suffix)
 
 # Use the suffix to get the corresponding Hcbh, Hdist and Hdepth columns
 max_Hcbh_column <- paste0("Hcbh", suffix)
@@ -159,8 +178,8 @@ max_Hdist_column <- paste0("Hdist", suffix)
 max_Hdepth_column <- paste0("Hdptf", suffix)
 max_effdist_column <- paste0("effdist", suffix)
 max_dptf_column <- paste0("dptf", suffix)
-max_lad_column <- max_lad_column
 
+# Create the data frame with the selected columns
 maxlad_df <- data.frame(
   maxlad_Hcbh = df6a[[max_Hcbh_column]],
   maxlad_Hdist = df6a[[max_Hdist_column]],
@@ -170,8 +189,9 @@ maxlad_df <- data.frame(
   maxlad_lad = df6a[[max_lad_column]]
 )
 
-names(maxlad_df) <- c("maxlad_Hcbh", "maxlad_Hdist", "maxlad_Hdptf","maxlad_dptf", "maxlad_effdist","maxlad_lad")
-
+# Rename the columns for clarity
+names(maxlad_df) <- c("maxlad_Hcbh", "maxlad_Hdist", "maxlad_Hdptf", "maxlad_dptf", "maxlad_effdist", "maxlad_lad")
+}
 
 #########################################################
 ######## Hcbh with max height   ###########################

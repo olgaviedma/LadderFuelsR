@@ -1,8 +1,8 @@
-#' Plots the Canopy Base Height (CBH) based on the last distance criterium
+#' Plots the Crown Base Height (CBH) based on the last distance criterium
 #' @description
 #' This function plots the CBH of a segmented tree based on the fuel layer located at the last distance.
 #' @usage
-#' get_plots_cbh_lastdist(LAD_profiles, cbh_metrics)
+#' get_plots_cbh_lastdist(LAD_profiles, cbh_metrics, min_height=1.5)
 #' @param LAD_profiles
 #' Original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package).
 #' An object of the class text.
@@ -10,10 +10,10 @@
 #' CBH metrics based on three criteria: maximum LAD percentage, maximum distance and last distance.
 #' (output of [get_cbh_metrics()] function).
 #' An object of the class text.
+#' @param min_height Numeric value for the actual minimum base height (in meters).
 #' @return
-#' A plot drawing the Canopy Base Height (CBH) of the fuel layer located at the last distance.
-#' @author
-#' Olga Viedma, Carlos Silva and JM Moreno
+#' A plot drawing the Crown Base Height (CBH) of the fuel layer located at the last distance.
+#' @author Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 #'
 #' @examples
 #' library(ggplot2)
@@ -33,26 +33,51 @@
 #' trees_name2 <- factor(unique(trees_name1))
 #'
 #' # Generate plots for CBH based on the fuel layer at the last distance
-#' plots_cbh_lastdist <- get_plots_cbh_lastdist(LAD_profiles, cbh_metrics)
+#' plots_cbh_lastdist <- get_plots_cbh_lastdist(LAD_profiles, cbh_metrics, min_height=1.5)
 #' }
 #' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
-#' across matches row_number all_of vars
+#' across matches row_number all_of vars bind_cols case_when left_join mutate if_else lag n_distinct
 #' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
 #' @importFrom stats ave dist lm na.omit predict quantile setNames smooth.spline
 #' @importFrom utils tail
 #' @importFrom tidyselect starts_with everything one_of
-#' @importFrom stringr str_extract str_match str_detect
+#' @importFrom stringr str_extract str_match str_detect str_remove_all
 #' @importFrom tibble tibble
-#' @importFrom tidyr pivot_longer fill
+#' @importFrom tidyr pivot_longer fill pivot_wider replace_na
 #' @importFrom gdata startsWith
 #' @importFrom ggplot2 aes geom_line geom_path geom_point geom_polygon geom_text geom_vline ggtitle coord_flip theme_bw
-#' theme element_text xlab ylab ggplot
+#' theme element_text xlab ylab ggplot xlim
 #' @seealso \code{\link{get_cbh_metrics}}
 #' @export
-get_plots_cbh_lastdist <- function (LAD_profiles, cbh_metrics) {
+get_plots_cbh_lastdist <- function (LAD_profiles, cbh_metrics,min_height=1.5) {
 
   df_orig <- LAD_profiles
+
+
+  if(min_height==0){
+    min_height <-0.5
+
+    # Ensure the column starts with a negative value
+    if (df_orig$height[1] < min_height) {
+      # Calculate the shift value
+      shift_value <- abs(df_orig$height[1])
+
+      # Adjust the column to start from 0
+      df_orig$height <- df_orig$height + shift_value
+    }
+
+
+    # Ensure the column starts with a negative value
+    if (df_orig$height[1] > min_height) {
+      # Calculate the shift value
+      shift_value1 <- abs(df_orig$height[1])
+
+      # Adjust the column to start from 0
+      df_orig$height <- df_orig$height - shift_value1
+    }
+  }
+
 
   df_orig$treeID <- factor(df_orig$treeID)
   trees_name1a <- as.character(df_orig$treeID)

@@ -1,11 +1,12 @@
 Package: LadderFuelsR
 Type: Package
 Title: Automated Tool for Vertical Fuel Continuity Analysis using Airborne Laser Scanning Data
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: c(person("Olga", "Viedma", email = "olga.viedma@uclm.es", role = c("aut", "cph", "cre")),
               person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph")),
-              person("Jose Manuel", "Moreno", email = "JoseM.Moreno@uclm.es", role = c("aut", "cph")))
-Description: Set of tools for analyzing vertical fuel continuity at the tree level using Airborne Laser Scanning data. The workflow consisted of: 1) calculating the vertical height profiles of each segmented tree; 2) identifying gaps and fuel layers; 3) estimating the distance between fuel layers; and 4) retrieving the fuel layers base height and depth. Additionally, other functions recalculate previous metrics after considering distances greater than 1 m and calculate the canopy base height as the fuel base height located at the largest- and at the last-distance. Moreover, the package calculates: i) the percentage of Leaf Area Density comprised in each fuel layer, ii) remove fuel layers with Leaf Area Density percentage less than 25, iii) recalculate the distances among the reminder ones, and iv) identify the canopy base height as the fuel base height with the highest Leaf Area Density percentage. On the other hand, when there is only one fuel layer, it identifies the canopy base height performing a segmented linear regression (breaking points) on the cumulative sum of Leaf Area Density as a function of height. Finally, a collection of plotting functions is developed to represent: i) the initial gaps and fuel layers; ii) the fuels base height, depths and gaps with distances greater than 1 m and, iii) the fuels base height and depths after applying the breaking point method over trees with only one fuel layer. The methods implemented in this package are original and have not been published elsewhere.
+              person("Jose Manuel", "Moreno", email = "JoseM.Moreno@uclm.es", role = c("aut", "cph")),
+              person("Andrew T.", "Hudak", email = "andrew.hudak@usda.gov", role = c("aut", "cph")))
+Description: Set of tools for analyzing vertical fuel continuity at the tree level using Airborne Laser Scanning data. The workflow consisted of: 1) calculating the vertical height profiles of each segmented tree; 2) identifying gaps and fuel layers; 3) estimating the distance between fuel layers; and 4) retrieving the fuel layers base height and depth. Additionally, other functions recalculate previous metrics after considering distances greater than certain threshold. Moreover, the package calculates: i) the percentage of Leaf Area Density comprised in each fuel layer, ii) remove fuel layers with Leaf Area Density (LAD) percentage less than 10, and iii) recalculate the distances among the reminder ones. On the other hand, it identifies the crown base height (CBH) based on different criteria: the fuel layer with the highest LAD percentage and the fuel layers located at the largest- and at the last-distance. When there is only one fuel layer, it also identifies the CBH performing a segmented linear regression (breaking points) on the cumulative sum of LAD as a function of height. Finally, a collection of plotting functions is developed to represent: i) the initial gaps and fuel layers; ii) the fuels base height, depths and gaps with distances greater than certain threshold and, iii) the CBH based on different criteria. The methods implemented in this package are original and have not been published elsewhere.
 URL: https://github.com/olgaviedma/LadderFuelsR
 License: GPL-3
 Encoding: UTF-8
@@ -22,7 +23,6 @@ Collate:
     'corrected_depth.R'
     'corrected_distances.R'
     'maxlad_metrics_25perc.R'
-    'remove_no_flayer_noconsec.R'
     'cbh_metrics.R'
     'cummLAD_breaks_metrics.R'
     'plot_cbh_bpoint.R'
@@ -30,7 +30,7 @@ Collate:
     'plot_cbh_maxdist.R'
     'plot_cbh_lastdist.R'
     'plot_cbh_maxlad.R'
-    'plot_effective_metrics.R'
+    'plot_maxlad_metrics.R'
     'renamed0_df.R'
     'renamed_df.R'
     'foofy.R'
