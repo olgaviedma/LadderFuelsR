@@ -4,7 +4,7 @@
 \alias{get_cbh_metrics}
 \title{Methods to estimated the Crown Base Height of a tree: maximum LAD percentage, maximum distance and the last distance}
 \usage{
-get_cbh_metrics(effective_LAD, min_height= 1.5, verbose=TRUE)
+get_cbh_metrics(effective_LAD, min_height= 1.5, hdepth1_height = 2.5, verbose=TRUE)
 }
 \arguments{
 \item{effective_LAD}{Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than a threshold (10%).
@@ -13,15 +13,19 @@ An object of the class text.}
 
 \item{min_height}{Numeric value for the actual minimum base height (in meters).}
 
+\item{hdepth1_height}{Numeric value for the depth height of the first fuel layer. If the first fuel layer has the maximum LAD and its depth is greater than the indicated value,
+then this fuel layer is considered as the CBH of the tree. On the contrary, if its depth is <= the value, the CBH with maximum LAD will be the second fuel layer,
+although it has not the maximum LAD.}
+
 \item{verbose}{Logical, indicating whether to display informational messages (default is TRUE).}
 }
 \value{
 A data frame giving the Crown Base Height (CBH) of a tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
+For the case of maximum LAD CBH, the output gives the actual CBH with maximum LAD and also, the CBH from the second fuel layer when the first fuel layer has the maximum LAD
+but its depth is lesser than the value indicated in the parameter "hdepth1_height".
 }
 \description{
-This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance. In
-the case of maximum LAD, if the first fuel layer meets the condition, then the function will be select the next fuel layer to avoid confusing
-with the understory vegetation.
+This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
 }
 \details{
 List of tree metrics:
@@ -35,9 +39,11 @@ List of tree metrics:
   \item Hdist: Height of the distance (> any number of steps) between consecutive fuel layers (m)
   \item Hcbh_Hdptf - Percentage of LAD values comprised in each effective fuel layer
   \item maxlad_Hcbh - Height of the CBH of the segmented tree based on the maximum LAD percentage
+  \item maxlad1_Hcbh - Height of the CBH from the second fuel layer when the maximum LAD occurred in the first fuel layer but its depth <= "hdepth1_height"
   \item max_Hcbh - Height of the CBH of the segmented tree based on the maximum distance found in its profile
   \item last_Hcbh - Height of the CBH of the segmented tree based on the last distance found in its profile
   \item maxlad_ - Values of distance and fuel depth and their corresponding heights at the maximum LAD percentage
+  \item maxlad1_ - Values of distance and fuel depth and their corresponding heights for the second fuel layer when the maximum LAD occurred in the first fuel layer but its depth <= "hdepth1_height"
   \item max_ - Values of distance and fuel depth and their corresponding heights at the maximum distance
   \item last_ - Values of distance and fuel depth and their corresponding heights at the last distance
   \item nlayers - Number of effective fuel layers
@@ -61,7 +67,7 @@ cbh_dist_list <- list()
 
 for (i in levels(trees_name2)) {
 tree1 <- effective_LAD |> dplyr::filter(treeID == i)
-cbh_dist_metrics <- get_cbh_metrics(tree1, min_height= 1.5, verbose=TRUE)
+cbh_dist_metrics <- get_cbh_metrics(tree1, min_height= 1.5,  hdepth1_height = 2.5, verbose=TRUE)
 cbh_dist_list[[i]] <- cbh_dist_metrics
 }
 
@@ -73,7 +79,7 @@ original_column_names <- colnames(cbh_metrics)
 
 # Specify prefixes
 desired_order <- c("treeID", "Hcbh", "dptf","effdist","dist", "Hdist", "Hdptf", "max_","last_",
-"maxlad_", "nlayers")
+"maxlad_","maxlad1_", "nlayers")
 
 # Identify unique prefixes
 prefixes <- unique(sub("^([a-zA-Z]+).*", "\\\\1", original_column_names))

@@ -100,6 +100,9 @@ get_plots_cbh_LAD <- function (LAD_profiles, cbh_metrics,min_height=1.5) {
     maxlad_CBH <- round(as.numeric(as.character(df_effective1$maxlad_Hcbh)), 1)
     maxlad_Hdepth <- as.numeric(as.character(df_effective1$maxlad_Hdptf))
 
+    maxlad1_CBH <- round(as.numeric(as.character(df_effective1$maxlad1_Hcbh)), 1)
+    maxlad1_Hdepth <- as.numeric(as.character(df_effective1$maxlad1_Hdptf))
+
     min_y <- min(tree_data$lad, na.rm = TRUE)
     max_y <- max(tree_data$lad, na.rm = TRUE)
 
@@ -132,6 +135,26 @@ get_plots_cbh_LAD <- function (LAD_profiles, cbh_metrics,min_height=1.5) {
         }, error = function(e) {})
 
 
+
+        tryCatch({
+
+          if (!any(is.na(maxlad1_CBH)) && !any(is.na(maxlad1_Hdepth))) {
+            if (maxlad1_CBH != maxlad1_Hdepth) {
+              polygon_data_2 <- data.frame(x = c(maxlad1_CBH, maxlad1_CBH, maxlad1_Hdepth, maxlad1_Hdepth),
+                                           y = c(min_y, max_y, max_y, min_y))
+              bp2 <- bp2 +
+                geom_polygon(data = polygon_data_2,
+                             aes(x = x, y = y), fill = "dark green", alpha = 0.3)
+            } else {
+              line_data_2 <- data.frame(x = c(maxlad1_CBH, maxlad1_Hdepth),
+                                        y = c(min_y, max_y))
+              bp2 <- bp2 +
+                geom_path(data = line_data_2,
+                          aes(x = x, y = y), color = "dark green", size = 1, linetype = "solid")
+            } }
+        }, error = function(e) {})
+
+
         bp2 <- bp2 +
           theme_bw() +
           theme(
@@ -150,8 +173,16 @@ get_plots_cbh_LAD <- function (LAD_profiles, cbh_metrics,min_height=1.5) {
         Hcbh1_Hdptf1a <- paste0(as.character(label_Hcbh1_Hdptf1),"","%")
 
 
+        Hcbh2_Hdptf2 <- as.numeric(as.character(df_effective1$maxlad1_lad))
+        label_Hcbh2_Hdptf2<- round(Hcbh2_Hdptf2, 1)
+        Hcbh2_Hdptf2a <- paste0(as.character(label_Hcbh2_Hdptf2),"","%")
+
+
         CBH1_label<- paste0("CBH ="," ",maxlad_CBH,"m")
         Depth1_label<- paste0("Depth ="," ",maxlad_Hdepth,"m")
+
+        CBH2_label<- paste0("CBH1 ="," ",maxlad1_CBH,"m")
+        Depth2_label<- paste0("Depth1 ="," ",maxlad1_Hdepth,"m")
 
 
         bp2_annotations <- bp2
@@ -170,6 +201,24 @@ get_plots_cbh_LAD <- function (LAD_profiles, cbh_metrics,min_height=1.5) {
           y_1 = max_y
           bp2_annotations <- bp2_annotations + geom_text(data = data.frame(maxlad_Hdepth = maxlad_Hdepth, y_1 = max_y , Depth1_label = Depth1_label),
                                                          aes(x = maxlad_Hdepth,y = y_1, label = Depth1_label),
+                                                         color = "black", hjust = 2, vjust = 1, size = 5)
+
+        }
+
+
+        if (any(!is.na(maxlad1_CBH)) && any(!is.na(Hcbh2_Hdptf2a))) {
+
+          y_1 = min_y
+          bp2_annotations <- bp2_annotations + geom_text(data = data.frame(maxlad1_CBH = maxlad1_CBH, y_1 = min_y , Hcbh2_Hdptf2a = Hcbh2_Hdptf2a),
+                                                         aes(x = maxlad1_CBH,y = y_1, label = Hcbh2_Hdptf2a),
+                                                         color = "black", hjust = -2.5, vjust = 0, size = 5)
+          y_1 = max_y
+          bp2_annotations <- bp2_annotations + geom_text(data = data.frame(maxlad1_CBH = maxlad1_CBH, y_1 = max_y , CBH1_label = CBH1_label),
+                                                         aes(x = maxlad1_CBH,y = y_1, label = CBH1_label),
+                                                         color = "black", hjust = 1, vjust = 0, size = 5)
+          y_1 = max_y
+          bp2_annotations <- bp2_annotations + geom_text(data = data.frame(maxlad1_Hdepth = maxlad1_Hdepth, y_1 = max_y , Depth2_label = Depth2_label),
+                                                         aes(x = maxlad1_Hdepth,y = y_1, label = Depth2_label),
                                                          color = "black", hjust = 2, vjust = 1, size = 5)
 
         }

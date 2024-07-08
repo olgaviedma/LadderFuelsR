@@ -95,22 +95,22 @@ get_gaps_fbhs<- function (LAD_profiles, step=1,
     min_height <-0.5
 
     # Ensure the column starts with a negative value
-    if (df_orig$height[1] < min_height) {
+    if (df$height[1] < min_height) {
       # Calculate the shift value
-      shift_value <- abs(df_orig$height[1])
+      shift_value <- abs(df$height[1])
 
       # Adjust the column to start from 0
-      df_orig$height <- df_orig$height + shift_value
+      df$height <- df$height + shift_value
     }
 
 
     # Ensure the column starts with a negative value
-    if (df_orig$height[1] > min_height) {
+    if (df$height[1] > min_height) {
       # Calculate the shift value
-      shift_value1 <- abs(df_orig$height[1])
+      shift_value1 <- abs(df$height[1])
 
       # Adjust the column to start from 0
-      df_orig$height <- df_orig$height - shift_value1
+      df$height <- df$height - shift_value1
     }
   }
 

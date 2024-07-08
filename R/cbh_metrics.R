@@ -1,18 +1,21 @@
 #' Methods to estimated the Crown Base Height of a tree: maximum LAD percentage, maximum distance and the last distance
 #' @description
-#' This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance. In
-#' the case of maximum LAD, if the first fuel layer meets the condition, then the function will be select the next fuel layer to avoid confusing
-#' with the understory vegetation.
+#' This function determines the CBH of a segmented tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
 #' @usage
-#' get_cbh_metrics(effective_LAD, min_height= 1.5, verbose=TRUE)
+#' get_cbh_metrics(effective_LAD, min_height= 1.5, hdepth1_height = 2.5, verbose=TRUE)
 #' @param effective_LAD
 #' Tree metrics with gaps (distances), fuel base heights, and depths of fuel layers with LAD percentage greater than a threshold (10%).
 #' (output of [get_layers_lad()] function).
 #' An object of the class text.
 #' @param min_height Numeric value for the actual minimum base height (in meters).
+#' @param hdepth1_height Numeric value for the depth height of the first fuel layer. If the first fuel layer has the maximum LAD and its depth is greater than the indicated value,
+#' then this fuel layer is considered as the CBH of the tree. On the contrary, if its depth is <= the value, the CBH with maximum LAD will be the second fuel layer,
+#' although it has not the maximum LAD.
 #' @param verbose Logical, indicating whether to display informational messages (default is TRUE).
 #' @return
 #' A data frame giving the Crown Base Height (CBH) of a tree using three criteria: maximum LAD percentage, maximum distance and the last distance.
+#' For the case of maximum LAD CBH, the output gives the actual CBH with maximum LAD and also, the CBH from the second fuel layer when the first fuel layer has the maximum LAD
+#' but its depth is lesser than the value indicated in the parameter "hdepth1_height".
 #' @author Olga Viedma, Carlos Silva, JM Moreno and A.T. Hudak
 #'
 #' @details
@@ -27,9 +30,11 @@
 #'   \item Hdist: Height of the distance (> any number of steps) between consecutive fuel layers (m)
 #'   \item Hcbh_Hdptf - Percentage of LAD values comprised in each effective fuel layer
 #'   \item maxlad_Hcbh - Height of the CBH of the segmented tree based on the maximum LAD percentage
+#'   \item maxlad1_Hcbh - Height of the CBH from the second fuel layer when the maximum LAD occurred in the first fuel layer but its depth <= "hdepth1_height"
 #'   \item max_Hcbh - Height of the CBH of the segmented tree based on the maximum distance found in its profile
 #'   \item last_Hcbh - Height of the CBH of the segmented tree based on the last distance found in its profile
 #'   \item maxlad_ - Values of distance and fuel depth and their corresponding heights at the maximum LAD percentage
+#'   \item maxlad1_ - Values of distance and fuel depth and their corresponding heights for the second fuel layer when the maximum LAD occurred in the first fuel layer but its depth <= "hdepth1_height"
 #'   \item max_ - Values of distance and fuel depth and their corresponding heights at the maximum distance
 #'   \item last_ - Values of distance and fuel depth and their corresponding heights at the last distance
 #'   \item nlayers - Number of effective fuel layers
@@ -53,7 +58,7 @@
 #'
 #' for (i in levels(trees_name2)) {
 #' tree1 <- effective_LAD |> dplyr::filter(treeID == i)
-#' cbh_dist_metrics <- get_cbh_metrics(tree1, min_height= 1.5, verbose=TRUE)
+#' cbh_dist_metrics <- get_cbh_metrics(tree1, min_height= 1.5,  hdepth1_height = 2.5, verbose=TRUE)
 #' cbh_dist_list[[i]] <- cbh_dist_metrics
 #' }
 #'
@@ -65,7 +70,7 @@
 #'
 #' # Specify prefixes
 #' desired_order <- c("treeID", "Hcbh", "dptf","effdist","dist", "Hdist", "Hdptf", "max_","last_",
-#' "maxlad_", "nlayers")
+#' "maxlad_","maxlad1_", "nlayers")
 #'
 #'# Identify unique prefixes
 #' prefixes <- unique(sub("^([a-zA-Z]+).*", "\\1", original_column_names))
@@ -97,7 +102,7 @@
 #' theme element_text xlab ylab ggplot xlim
 #' @seealso \code{\link{get_layers_lad}}
 #' @export
-get_cbh_metrics <- function(effective_LAD, min_height= 1.5, verbose=TRUE) {
+get_cbh_metrics <- function(effective_LAD, min_height= 1.5, hdepth1_height = 2.5, verbose=TRUE) {
 
   if(min_height==0){
     min_height <-0.5
@@ -163,13 +168,7 @@ max_lad_values <- unlist(df6a[1, max_lad_column])
 # Extract suffix from max_lad_column
 suffix <- as.numeric(sub(".*Hcbh(\\d+)_Hdptf\\d+$", "\\1", max_lad_column))
 
-# Check for any NA values in suffix or df6a$nlayers
 if (any(!is.na(suffix)) || any(!is.na(df6a$nlayers))) {
-
-# Check if the maximum lad column coincides with Hcbh1 and nlayers > 1
-if (suffix == 1 && df6a$nlayers > 1) {
-  suffix <- 2
-}
 
 # Update the max_lad_column based on the adjusted suffix
 max_lad_column <- paste0("Hcbh", suffix, "_Hdptf", suffix)
@@ -193,6 +192,37 @@ maxlad_df <- data.frame(
 
 # Rename the columns for clarity
 names(maxlad_df) <- c("maxlad_Hcbh", "maxlad_Hdist", "maxlad_Hdptf", "maxlad_dptf", "maxlad_effdist", "maxlad_lad")
+
+
+  hdepth1_height_value<- hdepth1_height
+
+# Check if the maximum lad column coincides with Hcbh1 and nlayers > 1
+if (suffix == 1 && df6a$nlayers > 1 && any(df6a$Hdptf1 <= hdepth1_height )) {
+  suffix <- 2
+
+# Update the max_lad_column based on the adjusted suffix
+max_lad_column1 <- paste0("Hcbh", suffix, "_Hdptf", suffix)
+
+# Use the suffix to get the corresponding Hcbh, Hdist and Hdepth columns
+max_Hcbh_column <- paste0("Hcbh", suffix)
+max_Hdist_column <- paste0("Hdist", suffix)
+max_Hdepth_column <- paste0("Hdptf", suffix)
+max_effdist_column <- paste0("effdist", suffix)
+max_dptf_column <- paste0("dptf", suffix)
+
+# Create the data frame with the selected columns
+maxlad1_df <- data.frame(
+  maxlad1_Hcbh = df6a[[max_Hcbh_column]],
+  maxlad1_Hdist = df6a[[max_Hdist_column]],
+  maxlad1_Hdptf = df6a[[max_Hdepth_column]],
+  maxlad1_dptf = df6a[[max_dptf_column]],
+  maxlad1_effdist = df6a[[max_effdist_column]],
+  maxlad1_lad = df6a[[max_lad_column1]]
+)
+
+# Rename the columns for clarity
+names(maxlad1_df) <- c("maxlad1_Hcbh", "maxlad1_Hdist", "maxlad1_Hdptf", "maxlad1_dptf", "maxlad1_effdist", "maxlad1_lad")
+}
 }
 
 #########################################################
@@ -281,7 +311,12 @@ df6a <- df6a[, colSums(is.na(df6a)) == 0]
     }
 
 
-  df6f<-data.frame(df6a, maxlad_df,max_df, last_df)
+    if (exists ("maxlad1_df")) {
+  df6f<-data.frame(df6a, maxlad_df,maxlad1_df, max_df, last_df)
+    } else
+    {
+  df6f<-data.frame(df6a, maxlad_df, max_df, last_df)
+    }
 
  cbh_metrics <- data.frame(df6f)
 
