@@ -1,7 +1,7 @@
 Package: LadderFuelsR
 Type: Package
 Title: Automated Tool for Vertical Fuel Continuity Analysis using Airborne Laser Scanning Data
-Version: 0.0.5
+Version: 0.0.6
 Authors@R: c(person("Olga", "Viedma", email = "olga.viedma@uclm.es", role = c("aut", "cph", "cre")),
               person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph")),
               person("Jose Manuel", "Moreno", email = "JoseM.Moreno@uclm.es", role = c("aut", "cph")),
