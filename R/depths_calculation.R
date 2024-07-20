@@ -212,11 +212,19 @@ get_depths <- function (LAD_profiles,distance_metrics,step= 1,min_height= 1.5, v
   # Select only numeric columns
   df1_numeric <- df %>% dplyr::select_if(is.numeric)
 
+  treeID<-unique(factor(df$treeID))
+  treeID1<-unique(factor(df$treeID1))
+
+  max_height<-data.frame(df$max_height)
+  names(max_height)="max_height"
+
 
   # Assuming that columns starting with "Hdist" or "cbh" are the ones you want to keep
   columns_to_keep <- names(df1_numeric)[grepl("^dist\\d+$|^Hdist\\d+$|^cbh\\d+$", names(df1_numeric))]
   # Subset the data frame
   kk_copy <- df1_numeric[, columns_to_keep]
+
+  if (exists("kk_copy") && is.data.frame(kk_copy) && ncol(kk_copy) > 0 && nrow(kk_copy) > 0) {
 
   # Sort the column names based on their values in the first row
   sorted_columns <- names(kk_copy)[order(unlist(kk_copy))]
@@ -581,11 +589,6 @@ get_depths <- function (LAD_profiles,distance_metrics,step= 1,min_height= 1.5, v
   depth_data <- depth_data %>%
     rename_with(~ str_remove_all(., "_"), everything())
 
-  treeID<-unique(factor(df$treeID))
-  treeID1<-unique(factor(df$treeID1))
-
-  max_height<-data.frame(df$max_height)
-  names(max_height)="max_height"
 
   depth_metrics <- cbind.data.frame(treeID, treeID1, depth_data,max_height)
 
@@ -647,6 +650,11 @@ get_depths <- function (LAD_profiles,distance_metrics,step= 1,min_height= 1.5, v
 
   depth_metrics <- cbind.data.frame(treeID, treeID1, depth_data,max_height)
   }
+  }
+
+  } else {
+
+    depth_metrics <- cbind.data.frame(treeID,df1_numeric)
   }
 
   return(depth_metrics)

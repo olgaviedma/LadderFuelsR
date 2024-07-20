@@ -253,8 +253,9 @@ get_distance <- function (gap_cbh_metrics,gaps_perc, step=1, min_height=1.5, ver
 
   ##################################
 
-  if ((exists("distance_data") && !is.null(distance_data) && ncol(distance_data) != 0 && nrow(distance_data) != 0) &&
-      (exists("distance_data1") && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0)) {
+    if ((exists("distance_data") && is.data.frame(distance_data) && !is.null(distance_data) && ncol(distance_data) != 0 && nrow(distance_data) != 0) &&
+        (exists("distance_data1") && is.data.frame(distance_data1) && !is.null(distance_data1) && ncol(distance_data1) != 0 && nrow(distance_data1) != 0)) {
+
 
     # Get column names with prefixes in both dataframes
     gap_cols_distance_data <- names(distance_data)[startsWith(names(distance_data), "gap")]
@@ -1583,21 +1584,32 @@ distance_metrics_def<-data.frame(distance_metrics_modified1,distance_metrics_rem
 
   } else {
 
-      if (min(kk_copy$cbh1) > min_height) {
+      if ("cbh1" %in% colnames(kk_copy) && min(kk_copy$cbh1) > min_height) {
 
         kk_copy$Hdist1 <- min(kk_copy$cbh1) -step
         kk_copy$dist1 <- floor(kk_copy$Hdist1)
       }
 
-      if (min(kk_copy$cbh1) <= min_height) {
+      if ("cbh1" %in% colnames(kk_copy) && min(kk_copy$cbh1) <= min_height) {
 
         kk_copy$Hdist1 <-kk_copy$cbh1
         kk_copy$dist1 <- 0
       }
 
+    if (!"cbh1" %in% colnames(kk_copy)) {
+
+      kk_copy$Hdist1 <-NA
+      kk_copy$dist1 <- NA
+      kk_copy$cbh1 <- NA
+    }
+
 
     # Extract column names
     cbh_cols <- grep("^cbh", names(kk_copy), value = TRUE)
+    hdist_cols <- grep("^Hdist", names(kk_copy), value = TRUE)
+
+    # Check if any value in the cbh columns is not NA
+    if(any(sapply(kk_copy[cbh_cols], function(x) any(!is.na(x)))) && any(sapply(kk_copy[hdist_cols], function(x) any(!is.na(x))))) {
 
     # Function to determine if any Hdist <= cbh value
     check_hdist_le_cbh <- function(hdist_values, cbh_value) {
@@ -1641,6 +1653,7 @@ distance_metrics_def<-data.frame(distance_metrics_modified1,distance_metrics_rem
         kk_copy[[dist_col]] <- 0
       }
     }
+    }
 
 
     treeID<-unique(factor(df$treeID))
@@ -1650,7 +1663,6 @@ distance_metrics_def<-data.frame(distance_metrics_modified1,distance_metrics_rem
     names(max_height)<-"max_height"
 
     distance_metrics_def <- cbind.data.frame(treeID, treeID1, kk_copy, max_height)
-
   }
 
  ##########################################################
@@ -1658,6 +1670,8 @@ distance_metrics_def<-data.frame(distance_metrics_modified1,distance_metrics_rem
     # Identify the columns for cbh and gap values
     cbh_cols <- grep("^cbh", colnames(distance_metrics_def), value = TRUE)
     gap_cols <- grep("^gap", colnames(distance_metrics_def), value = TRUE)
+
+    if(any(sapply(distance_metrics_def[cbh_cols], function(x) any(!is.na(x))))) {
 
     # Initialize a data frame to store the results
     results <- data.frame(gap = numeric(), cbh = numeric())
@@ -1760,7 +1774,7 @@ distance_metrics_def<-data.frame(distance_metrics_modified1,distance_metrics_rem
       distance_metrics_def$Hdist1 <-min_height
       distance_metrics_def$dist1 <-0
     }
-
+}
 
 return(distance_metrics_def)
 }
