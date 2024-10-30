@@ -90,6 +90,20 @@ get_gaps_fbhs<- function (LAD_profiles, step=1,
 
   df <- LAD_profiles
 
+  # check required columns exist in data and stop if not
+  nms_df <- sort(names(df))
+  nms_needed <- sort(c("treeID", "height", "lad"))
+  nms_miss <- nms_needed[!nms_needed %in% nms_df]
+  if(length(nms_miss)>0){
+    stop(paste(
+      "Columns not found in data. Supply missing columns:"
+      , paste(nms_miss, collapse = ", ")
+    ))
+  }
+
+  # reorder the columns so that it doesn't matter how the input data is structured
+  df <- df %>% dplyr::relocate(height, lad, treeID)
+
 
   if(min_height==0){
     min_height <-0.5
@@ -464,26 +478,22 @@ crown_lad <- data.frame(merged_crown2[2,])
    #######################################
 
    # Check if gaps6 exists and has data
-   if (!is.null(gaps6) && nrow(gaps6) > 0) {
-     gaps_height_t <- gaps6[1,] %>%
-       as.data.frame() %>%
-       dplyr::mutate_all(as.numeric) %>%
-       t() %>%
-       as.data.frame() %>%
-       dplyr::mutate(type = "gap")
+   if (!is.null(gaps5m) && nrow(gaps5m) > 0) {
+     gaps_height_t <- gaps5m %>%
+       dplyr::select(height) %>%
+       dplyr::mutate(type = "gap") %>%
+       dplyr::rename(V1=height)
    } else {
      gaps_height_t <- tibble(V1 = NA, type = "gap")
    }
 
 
    # Check if crown4 exists and contains data
-   if (!is.null(crown4) && nrow(crown4) > 0) {
-     crown_height_t <- crown4[1,] %>%
-       as.data.frame() %>%
-       dplyr::mutate_all(as.numeric) %>%
-       t() %>%
-       as.data.frame() %>%
-       dplyr::mutate(type = "cbh")
+   if (!is.null(crown3b) && nrow(crown3b) > 0) {
+     crown_height_t <- crown3b %>%
+       dplyr::select(height) %>%
+       dplyr::mutate(type = "cbh") %>%
+       dplyr::rename(V1=height)
    } else {
      crown_height_t <- tibble(V1 = NA, type = "cbh")
    }
@@ -527,6 +537,8 @@ names(max_height)="max_height"
     gap_cbh_metrics$treeID1 <- as.numeric(gap_cbh_metrics$treeID1)
     gap_cbh_metrics <- dplyr::arrange(gap_cbh_metrics, treeID1)
 
+    # make copy of treeID
+    df$treeID1 <- df$treeID
     treeID1<-unique(factor(df$treeID1))
 
     # Apply the code
