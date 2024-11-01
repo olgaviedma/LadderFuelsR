@@ -1,3 +1,5 @@
+# Suppress global variable warnings for NSE columns
+utils::globalVariables(c("height", ".data", "V1"))
 #' Gaps and Fuel layers Base Height (FBH)
 #' @description This function calculates gaps and fuel layers base height (FBH) as the difference in percentiles between consecutive LAD values along the vertical tree profile (VTP).
 #' Negative differences are linked to gaps and positive differences to fuel base height.
@@ -69,7 +71,7 @@
 #' } else {
 #' gap_cbh_metrics <- metrics_all_percentil
 #' }
-#' @importFrom dplyr select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' @importFrom dplyr bind_rows select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars bind_cols case_when left_join mutate if_else lag n_distinct
 #' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
@@ -476,35 +478,30 @@ crown_lad <- data.frame(merged_crown2[2,])
 
    #######################################
    #######################################
-
-   # Check if gaps6 exists and has data
+   # Check if gaps5m exists and has data
    if (!is.null(gaps5m) && nrow(gaps5m) > 0) {
      gaps_height_t <- gaps5m %>%
        dplyr::select(height) %>%
        dplyr::mutate(type = "gap") %>%
-       dplyr::rename(V1=height)
+       dplyr::rename(V1 = .data$height)
    } else {
      gaps_height_t <- tibble(V1 = NA, type = "gap")
    }
 
-
-   # Check if crown4 exists and contains data
+   # Check if crown3b exists and contains data
    if (!is.null(crown3b) && nrow(crown3b) > 0) {
      crown_height_t <- crown3b %>%
        dplyr::select(height) %>%
        dplyr::mutate(type = "cbh") %>%
-       dplyr::rename(V1=height)
+       dplyr::rename(V1 = .data$height)
    } else {
      crown_height_t <- tibble(V1 = NA, type = "cbh")
    }
 
-   # Rename the column in gaps_height_t to match the column name in crown_height_t
-   colnames(gaps_height_t)[colnames(gaps_height_t) == "V1"] <- "height"
-   colnames(crown_height_t)[colnames(crown_height_t) == "V1"] <- "height"
-
-   # Now you can combine the data frames
-   combined_df <- rbind(gaps_height_t, crown_height_t)
-   combined_df_ord <- combined_df[order(combined_df$height), ]
+   # Combine the data frames and order by height
+   combined_df_ord <- bind_rows(gaps_height_t, crown_height_t) %>%
+     dplyr::rename(height = V1) %>%
+     arrange(height)
 
    combined_df_ord1<-na.omit(combined_df_ord)
 
