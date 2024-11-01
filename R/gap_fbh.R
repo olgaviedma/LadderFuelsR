@@ -2,7 +2,7 @@
 utils::globalVariables(c("height", ".data", "V1"))
 #' Gaps and Fuel layers Base Height (FBH)
 #' @description This function calculates gaps and fuel layers base height (FBH) as the difference in percentiles between consecutive LAD values along the vertical tree profile (VTP).
-#' Negative differences are linked to gaps and positive differences to fuel base height.
+#' Negative differences are linked to gaps and positive differences to fuel base height.It has been updated for reordering input columns.
 #' @usage get_gaps_fbhs (LAD_profiles, step=1, min_height=1.5,
 #' perc_gap= 25, perc_base= 25, verbose=TRUE)
 #' @param LAD_profiles original tree Leaf Area Density (LAD) profile (output of [lad.profile()] function in the \emph{leafR} package.
@@ -71,7 +71,7 @@ utils::globalVariables(c("height", ".data", "V1"))
 #' } else {
 #' gap_cbh_metrics <- metrics_all_percentil
 #' }
-#' @importFrom dplyr bind_rows select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
+#' @importFrom dplyr bind_rows select select_if group_by summarise summarize mutate arrange rename rename_with filter slice slice_tail ungroup distinct
 #' across matches row_number all_of vars bind_cols case_when left_join mutate if_else lag n_distinct
 #' @importFrom segmented segmented seg.control
 #' @importFrom magrittr %>%
