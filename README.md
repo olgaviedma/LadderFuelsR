@@ -1,6 +1,6 @@
 ![](https://github.com/olgaviedma/LadderfuelsR/blob/master/Readme/LadderFuels_image.png)<br/>
 
-[![CRAN](https://www.r-pkg.org/badges/version/LadderFuelsR)](https://cran.r-project.org/package=LadderFuelsR) ![Github](https://img.shields.io/badge/Github-0.0.1-green.svg) ![licence](https://img.shields.io/badge/Licence-GPL--3-blue.svg) ![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/LadderFuelsR)
+[![CRAN](https://www.r-pkg.org/badges/version/LadderFuelsR)](https://CRAN.R-project.org/package=LadderFuelsR) ![Github](https://img.shields.io/badge/Github-0.0.1-green.svg) ![licence](https://img.shields.io/badge/Licence-GPL--3-blue.svg) ![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/LadderFuelsR)
 
 **LadderFuelsR: An R Package for vertical fuel continuity analysis using Airborne Laser Scanning data**
 
