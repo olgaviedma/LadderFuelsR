@@ -26,7 +26,7 @@ A data frame giving the height of gaps and fuel layers bases in meters.
 }
 \description{
 This function calculates gaps and fuel layers base height (FBH) as the difference in percentiles between consecutive LAD values along the vertical tree profile (VTP).
-Negative differences are linked to gaps and positive differences to fuel base height.
+Negative differences are linked to gaps and positive differences to fuel base height.It has been updated for reordering input columns.
 }
 \details{
 # List of tree metrics:
